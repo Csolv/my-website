@@ -32,6 +32,14 @@
       .tl-item { grid-template-columns:80px 1fr; gap:1rem; }
     }
   </style>
+  <!-- Google Analytics 4 — Reemplaza G-XXXXXXXXXX con tu Measurement ID -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
 </head>
 <body>
   <a href="#main" class="skip-link">Saltar al contenido</a>
@@ -46,6 +54,7 @@
         <a href="calendario.html">Calendario</a>
         <a href="participar.html">Participar</a>
         <a href="contactanos.html">Contáctanos</a>
+        <a href="blog.html">Blog</a>
         <a href="donar.html" class="nav-cta">Apoyar</a>
       </nav>
       <button class="hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-nav"><span></span><span></span><span></span></button>
@@ -57,6 +66,7 @@
     <a href="calendario.html">Calendario</a>
     <a href="participar.html">Participar</a>
     <a href="contactanos.html">Contáctanos</a>
+    <a href="blog.html">Blog</a>
     <a href="donar.html" class="nav-cta">Apoyar</a>
   </nav>
 
@@ -187,5 +197,21 @@
     </div>
   </footer>
   <script src="nav.js"></script>
+  <script>
+    // GA4 click tracking for donations and volunteer actions
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('a[href="donar.html"], .nav-cta').forEach(function(el) {
+        el.addEventListener('click', function() {
+          if (typeof gtag === 'function') gtag('event', 'donate_click', {event_category: 'engagement'});
+        });
+      });
+      document.querySelectorAll('a[href="participar.html"]').forEach(function(el) {
+        el.addEventListener('click', function() {
+          if (typeof gtag === 'function') gtag('event', 'volunteer_click', {event_category: 'engagement'});
+        });
+      });
+    });
+  </script>
+  <script src="chatbot.js"></script>
 </body>
 </html>

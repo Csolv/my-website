@@ -4,9 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Web Oficial de AD Curundú</title>
-  <meta name="description" content="Web oficial de Asociación Deportiva Curundú. Deporte, educación y nutrición desde 2014.">
-  <meta property="og:title" content="Web Oficial de AD Curundú">
+  <meta name="description" content="Asociación Deportiva Curundú (ADC) — fundación sin fines de lucro en Panamá. Transformamos vidas en Curundú a través del deporte, educación y nutrición desde 2014. Únete, dona o sé voluntario.">
+  <meta name="keywords" content="Asociación Deportiva Curundú, ADC, fútbol Panamá, nonprofit Panamá, deporte social Curundú, educación Panamá, nutrición niños, voluntariado Panamá, donar Panamá, fundación deportiva">
+  <meta property="og:title" content="Asociación Deportiva Curundú — Deporte, Educación y Nutrición en Panamá">
+  <meta property="og:description" content="Fundación sin fines de lucro que transforma vidas en Curundú, Panamá desde 2014 a través del deporte, la educación y la nutrición.">
   <meta property="og:image" content="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/eac5a1af-b426-495a-9f1b-cd0f0e8485ad/ADCLogoCompressed.png">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_PA">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Asociación Deportiva Curundú — ADC">
+  <meta name="twitter:description" content="Deporte, educación y nutrición para niños de Curundú, Panamá desde 2014.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "NGO",
+    "name": "Asociación Deportiva Curundú",
+    "alternateName": "ADC",
+    "url": "https://csolv.github.io/my-website/",
+    "logo": "https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/eac5a1af-b426-495a-9f1b-cd0f0e8485ad/ADCLogoCompressed.png",
+    "description": "Fundación sin fines de lucro que transforma vidas en el barrio Curundú, Ciudad de Panamá, a través del deporte, la educación y la nutrición desde 2014.",
+    "foundingDate": "2014",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Curundú",
+      "addressRegion": "Ciudad de Panamá",
+      "addressCountry": "PA"
+    },
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "email": "info@adcurundu.org",
+      "contactType": "general"
+    },
+    "sameAs": ["https://www.instagram.com/adcurundu/"]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -258,6 +289,14 @@
       .instagram-grid { gap: 0.6rem; }
     }
   </style>
+  <!-- Google Analytics 4 — Reemplaza G-XXXXXXXXXX con tu Measurement ID -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
 </head>
 <body>
   <a href="#main" class="skip-link">Saltar al contenido</a>
@@ -276,6 +315,7 @@
         <a href="calendario.html">Calendario</a>
         <a href="participar.html">Participar</a>
         <a href="contactanos.html">Contáctanos</a>
+        <a href="blog.html">Blog</a>
         <a href="donar.html" class="nav-cta">Apoyar</a>
       </nav>
       <button class="hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-nav">
@@ -289,6 +329,7 @@
     <a href="calendario.html">Calendario</a>
     <a href="participar.html">Participar</a>
     <a href="contactanos.html">Contáctanos</a>
+    <a href="blog.html">Blog</a>
     <a href="donar.html" class="nav-cta">Apoyar</a>
   </nav>
 
@@ -455,5 +496,21 @@
   </footer>
 
   <script src="nav.js"></script>
+  <script>
+    // GA4 click tracking for donations and volunteer actions
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('a[href="donar.html"], .nav-cta').forEach(function(el) {
+        el.addEventListener('click', function() {
+          if (typeof gtag === 'function') gtag('event', 'donate_click', {event_category: 'engagement'});
+        });
+      });
+      document.querySelectorAll('a[href="participar.html"]').forEach(function(el) {
+        el.addEventListener('click', function() {
+          if (typeof gtag === 'function') gtag('event', 'volunteer_click', {event_category: 'engagement'});
+        });
+      });
+    });
+  </script>
+  <script src="chatbot.js"></script>
 </body>
 </html>

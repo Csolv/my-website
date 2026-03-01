@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es-PA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — AD Curundú | Noticias de deporte, educación y nutrición en Panamá</title>
+  <meta name="description" content="Lee las últimas noticias, historias de éxito y artículos sobre deporte, educación y nutrición de Asociación Deportiva Curundú en Curundú, Panamá.">
+  <meta name="keywords" content="ADC blog, noticias Curundú, deporte Panamá, educación fútbol, nonprofit Panamá, Asociación Deportiva Curundú, voluntariado Panamá">
+  <meta property="og:title" content="Blog ADC — Noticias de Asociación Deportiva Curundú">
+  <meta property="og:description" content="Historias de impacto, noticias de torneos y artículos sobre deporte, educación y nutrición desde Curundú, Panamá.">
+  <meta property="og:image" content="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/eac5a1af-b426-495a-9f1b-cd0f0e8485ad/ADCLogoCompressed.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Google Analytics 4 — Reemplaza G-XXXXXXXXXX con tu Measurement ID -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+
+  <style>
+    .blog-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+    .blog-search {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .blog-search input {
+      padding: 0.55rem 1rem 0.55rem 2.4rem;
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      font-family: var(--font-b);
+      font-size: 0.88rem;
+      outline: none;
+      width: 220px;
+      transition: border-color var(--t);
+    }
+    .blog-search input:focus { border-color: var(--green); }
+    .blog-search svg {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      stroke: var(--gray);
+      fill: none;
+      stroke-width: 2;
+    }
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .blog-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+      transition: transform var(--t), box-shadow var(--t);
+      display: flex;
+      flex-direction: column;
+    }
+    .blog-card:hover { transform: translateY(-5px); box-shadow: 0 14px 40px rgba(0,0,0,0.12); }
+    .blog-card.hidden { display: none; }
+    .blog-card__img {
+      width: 100%;
+      aspect-ratio: 16/10;
+      object-fit: cover;
+      background: var(--light);
+    }
+    .blog-card__body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+    .blog-card__meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    .blog-card__cat {
+      font-family: var(--font-h);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.65rem;
+      border-radius: 100px;
+    }
+    .cat--sport  { background: var(--green-pale); color: var(--green-dark); }
+    .cat--edu    { background: #e8f0fe; color: #1d4ed8; }
+    .cat--nutri  { background: #fff3e0; color: #c2410c; }
+    .cat--social { background: #fce4ec; color: #b91c1c; }
+    .blog-card__date {
+      font-family: var(--font-h);
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--gray);
+      letter-spacing: 0.04em;
+    }
+    .blog-card__title {
+      font-family: var(--font-h);
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 0.65rem;
+      flex: 1;
+    }
+    .blog-card__excerpt {
+      font-size: 0.9rem;
+      color: var(--gray);
+      line-height: 1.65;
+      margin-bottom: 1.25rem;
+    }
+    .blog-card__link {
+      font-family: var(--font-h);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: gap var(--t);
+    }
+    .blog-card__link:hover { gap: 0.6rem; }
+    .blog-card__link svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+    .no-results {
+      display: none;
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--gray);
+      font-family: var(--font-h);
+      font-size: 1rem;
+    }
+    .no-results.show { display: block; }
+    .featured-post {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 6px 36px rgba(0,0,0,0.1);
+      margin-bottom: 3rem;
+    }
+    .featured-post__img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      min-height: 320px;
+    }
+    .featured-post__body {
+      background: var(--black);
+      color: var(--white);
+      padding: 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .featured-post__label {
+      font-family: var(--font-h);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 1rem;
+    }
+    .featured-post__title {
+      font-family: var(--font-h);
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .featured-post__excerpt {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.72);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 900px) {
+      .blog-grid { grid-template-columns: repeat(2, 1fr); }
+      .featured-post { grid-template-columns: 1fr; }
+      .featured-post__img { min-height: 240px; }
+      .featured-post__body { padding: 2rem 1.5rem; }
+      .blog-controls { flex-direction: column; align-items: flex-start; }
+      .blog-search input { width: 100%; }
+    }
+    @media (max-width: 560px) {
+      .blog-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Saltar al contenido</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-logo">
+        <a href="index.html"><img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/eac5a1af-b426-495a-9f1b-cd0f0e8485ad/ADCLogoCompressed.png" alt="AD Curundú" loading="eager"></a>
+      </div>
+      <nav class="header-nav" aria-label="Navegación principal">
+        <a href="acercadeadc.html">Acerca de ADC</a>
+        <a href="quienessomos.html">Quiénes Somos</a>
+        <a href="calendario.html">Calendario</a>
+        <a href="blog.html" class="active">Blog</a>
+        <a href="participar.html">Participar</a>
+        <a href="contactanos.html">Contáctanos</a>
+        <a href="donar.html" class="nav-cta">Apoyar</a>
+      </nav>
+      <button class="hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+  <nav class="mobile-nav" id="mobile-nav">
+    <a href="acercadeadc.html">Acerca de ADC</a>
+    <a href="quienessomos.html">Quiénes Somos</a>
+    <a href="calendario.html">Calendario</a>
+    <a href="blog.html">Blog</a>
+    <a href="participar.html">Participar</a>
+    <a href="contactanos.html">Contáctanos</a>
+    <a href="donar.html" class="nav-cta">Apoyar</a>
+  </nav>
+
+  <main id="main">
+    <!-- Page Hero -->
+    <div class="page-hero" style="background:#071208;">
+      <div class="page-hero__overlay"></div>
+      <div class="page-hero__content">
+        <p class="page-hero__label">Noticias e historias</p>
+        <h1 class="page-hero__title">Blog ADC</h1>
+      </div>
+    </div>
+
+    <!-- Featured Post -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="section-label reveal">Destacado</p>
+        <div class="section-divider reveal"></div>
+        <div class="featured-post reveal">
+          <img class="featured-post__img"
+            src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/1770488098892-L34N3RE798PM8X6MEY0G/image-asset.jpeg"
+            alt="Verano Feliz ADC 2025" loading="lazy">
+          <div class="featured-post__body">
+            <p class="featured-post__label">Comunidad · Julio 2025</p>
+            <h2 class="featured-post__title">Verano Feliz 2025: más de 60 niños vivieron una experiencia transformadora</h2>
+            <p class="featured-post__excerpt">Durante varias semanas de julio, el programa Verano Feliz ADC llenó de vida el barrio Curundú y el Metropolitan School of Panama. Deporte, arte, nutrición y mucha energía positiva en cada jornada.</p>
+            <a href="https://www.instagram.com/adcurundu/" target="_blank" rel="noopener" class="btn btn--primary" style="align-self:flex-start;">Leer más →</a>
+          </div>
+        </div>
+
+        <!-- Filter + Search -->
+        <div class="blog-controls reveal">
+          <div class="filter-bar" id="blog-filters">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn" data-filter="sport">Deporte</button>
+            <button class="filter-btn" data-filter="edu">Educación</button>
+            <button class="filter-btn" data-filter="nutri">Nutrición</button>
+            <button class="filter-btn" data-filter="social">Comunidad</button>
+          </div>
+          <div class="blog-search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="blog-search-input" placeholder="Buscar artículos..." aria-label="Buscar en el blog">
+          </div>
+        </div>
+
+        <!-- Blog Grid -->
+        <div class="blog-grid" id="blog-grid">
+
+          <article class="blog-card reveal" data-cat="sport" data-title="Del barrio para la selección atleta adc">
+            <img class="blog-card__img"
+              src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/1769918473897-RGAQLM6Z6OE208N6UJ7E/image-asset.jpeg"
+              alt="Atleta ADC convocado a la selección" loading="lazy">
+            <div class="blog-card__body">
+              <div class="blog-card__meta">
+                <span class="blog-card__cat cat--sport">Deporte</span>
+                <span class="blog-card__date">Mayo 2025</span>
+              </div>
+              <h3 class="blog-card__title">Del barrio para la Ley: un atleta ADC convocado a la selección panameña</h3>
+              <p class="blog-card__excerpt">Un jugador formado en las canchas de Curundú fue llamado a representar a Panamá en torneo internacional. Un orgullo para toda la familia ADC.</p>
+              <a href="https://www.instagram.com/p/DUQ9maZDtvb/" target="_blank" rel="noopener" class="blog-card__link">
+                Ver historia <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+          </article>
+
+          <article class="blog-card reveal" data-cat="edu" data-title="habilidades para la vida taller educacion">
+            <img class="blog-card__img"
+              src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/238c786e-5f15-4da1-b979-f1a372ec84ed/Edited2-1044497.jpg"
+              alt="Taller de habilidades para la vida" loading="lazy">
+            <div class="blog-card__body">
+              <div class="blog-card__meta">
+                <span class="blog-card__cat cat--edu">Educación</span>
+                <span class="blog-card__date">Marzo 2025</span>
+              </div>
+              <h3 class="blog-card__title">Taller de habilidades para la vida: construyendo futuros desde Curundú</h3>
+              <p class="blog-card__excerpt">Nuestros atletas participaron en un taller intensivo de liderazgo, comunicación y resolución de conflictos, herramientas clave para su desarrollo integral.</p>
+              <a href="participar.html" class="blog-card__link">
+                Saber más <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+          </article>
+
+          <article class="blog-card reveal" data-cat="nutri" data-title="nutricion deportiva alimentacion saludable">
+            <img class="blog-card__img"
+              src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/d006a94c-8ae5-4c35-8b6d-821d69fdf75d/Logotipo-1.jpg"
+              alt="Programa de nutrición ADC" loading="lazy">
+            <div class="blog-card__body">
+              <div class="blog-card__meta">
+                <span class="blog-card__cat cat--nutri">Nutrición</span>
+                <span class="blog-card__date">Febrero 2025</span>
+              </div>
+              <h3 class="blog-card__title">Nutrición deportiva: clave para el rendimiento de nuestros atletas</h3>
+              <p class="blog-card__excerpt">¿Por qué la alimentación importa tanto como el entrenamiento? Nuestro equipo de nutrición comparte los principios que guían las meriendas y planes de alimentación en ADC.</p>
+              <a href="acercadeadc.html" class="blog-card__link">
+                Conocer más <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+          </article>
+
+          <article class="blog-card reveal" data-cat="sport" data-title="torneo primavera futbol partido campeones">
+            <img class="blog-card__img"
+              src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/1770060097211-BF9XCBAP2O9VTR2HO23P/image-asset.jpeg"
+              alt="Torneo Interno de Primavera ADC 2025" loading="lazy">
+            <div class="blog-card__body">
+              <div class="blog-card__meta">
+                <span class="blog-card__cat cat--sport">Deporte</span>
+                <span class="blog-card__date">Abril 2025</span>
+              </div>
+              <h3 class="blog-card__title">Torneo Interno de Primavera 2025: resultados y momentos memorables</h3>
+              <p class="blog-card__excerpt">Cuatro categorías, decenas de goles y un espíritu de equipo que enorgullece a toda la comunidad. Revive los mejores momentos del torneo.</p>
+              <a href="https://www.instagram.com/adcurundu/" target="_blank" rel="noopener" class="blog-card__link">
+                Ver fotos <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+          </article>
+
+          <article class="blog-card reveal" data-cat="social" data-title="10 años aniversario decada impacto curundu">
+            <img class="blog-card__img"
+              src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/28e1ae82-c40d-4bbe-8a6e-45a4195a4a59/WhatsApp+Image+2025-07-11+at+11.10.12+AM.jpg"
+              alt="10 años de ADC" loading="lazy">
+            <div class="blog-card__body">
+              <div class="blog-card__meta">
+                <span class="blog-card__cat cat--social">Comunidad</span>
+                <span class="blog-card__date">Enero 2025</span>
+              </div>
+              <h3 class="blog-card__title">10 años de ADC: una década transformando Curundú</h3>
+              <p class="blog-card__excerpt">En 2024 celebramos diez años de impacto en el barrio. Repasamos los hitos más importantes de esta historia de deporte, educación y comunidad.</p>
+              <a href="acercadeadc.html" class="blog-card__link">
+                Leer historia <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+          </article>
+
+          <article class="blog-card reveal" data-cat="edu" data-title="voluntarios internacionales educacion alianzas">
+            <img class="blog-card__img"
+              src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/5a537285-156b-450d-a6a2-ac36e4396a93/CRLogoTransparent.jpg"
+              alt="Voluntarios internacionales en ADC" loading="lazy">
+            <div class="blog-card__body">
+              <div class="blog-card__meta">
+                <span class="blog-card__cat cat--edu">Educación</span>
+                <span class="blog-card__date">Junio 2025</span>
+              </div>
+              <h3 class="blog-card__title">Voluntarios internacionales refuerzan el programa educativo de ADC</h3>
+              <p class="blog-card__excerpt">Este año recibimos voluntarios de varios países que apoyaron con tutorías, talleres digitales y actividades culturales, enriqueciendo la experiencia de nuestros atletas.</p>
+              <a href="participar.html" class="blog-card__link">
+                Ser voluntario <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+          </article>
+
+        </div>
+
+        <p class="no-results" id="no-results">No se encontraron artículos con ese filtro o búsqueda.</p>
+      </div>
+    </section>
+
+    <!-- Newsletter / Stay Updated -->
+    <section class="section section--pale">
+      <div class="section-inner" style="text-align:center; max-width:680px;">
+        <p class="section-label reveal">Mantente al día</p>
+        <div class="section-divider reveal"></div>
+        <h2 class="sub-heading reveal">¿No quieres perderte ninguna novedad?</h2>
+        <p class="body-text reveal" style="margin: 1rem auto 2rem;">Síguenos en Instagram para ver todos los momentos, historias y novedades de ADC en tiempo real.</p>
+        <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;" class="reveal">
+          <a href="https://www.instagram.com/adcurundu/" target="_blank" rel="noopener" class="btn btn--primary">Seguir en Instagram</a>
+          <a href="contactanos.html" class="btn btn--outline">Contáctanos</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section section--green" style="padding:4rem 4vw; text-align:center;">
+      <div class="section-inner">
+        <h2 class="display-heading reveal" style="color:var(--white);">¿Quieres apoyar a ADC?</h2>
+        <p class="reveal" style="color:rgba(255,255,255,0.85); font-size:1.05rem; margin-bottom:2rem;">Tu donación cambia vidas en Curundú. Cada aporte cuenta.</p>
+        <a href="donar.html" class="btn btn--white reveal" id="blog-donate-btn">Apoyar ahora</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-hashtag"><h3>#nuestroequipo</h3></div>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/adcurundu/" target="_blank" rel="noopener" aria-label="Instagram de ADC">
+          <svg viewBox="0 0 64 64"><path d="M46.91,25.816c-0.073-1.597-0.326-2.687-0.697-3.641c-0.383-0.986-0.896-1.823-1.73-2.657c-0.834-0.834-1.67-1.347-2.657-1.73c-0.954-0.371-2.045-0.624-3.641-0.697C36.585,17.017,36.074,17,32,17s-4.585,0.017-6.184,0.09c-1.597,0.073-2.687,0.326-3.641,0.697c-0.986,0.383-1.823,0.896-2.657,1.73c-0.834,0.834-1.347,1.67-1.73,2.657c-0.371,0.954-0.624,2.045-0.697,3.641C17.017,27.415,17,27.926,17,32c0,4.074,0.017,4.585,0.09,6.184c0.073,1.597,0.326,2.687,0.697,3.641c0.383,0.986,0.896,1.823,1.73,2.657c0.834,0.834,1.67,1.347,2.657,1.73c0.954,0.371,2.045,0.624,3.641,0.697C27.415,46.983,27.926,47,32,47s4.585-0.017,6.184-0.09c1.597-0.073,2.687-0.326,3.641-0.697c0.986-0.383,1.823-0.896,2.657-1.73c0.834-0.834,1.347-1.67,1.73-2.657c0.371-0.954,0.624-2.045,0.697-3.641C46.983,36.585,47,36.074,47,32S46.983,27.415,46.91,25.816z M32,37c-2.761,0-5-2.239-5-5c0-2.761,2.239-5,5-5s5,2.239,5,5C37,34.761,34.761,37,32,37z"/></svg>
+        </a>
+      </div>
+      <p class="footer-copy">© 2025 Asociación Deportiva Curundú · Todos los derechos reservados</p>
+    </div>
+  </footer>
+
+  <script src="nav.js"></script>
+  <script>
+    // Blog filter & search
+    (function() {
+      var cards = document.querySelectorAll('.blog-card');
+      var filterBtns = document.querySelectorAll('#blog-filters .filter-btn');
+      var searchInput = document.getElementById('blog-search-input');
+      var noResults = document.getElementById('no-results');
+      var activeFilter = 'all';
+
+      function applyFilters() {
+        var query = searchInput.value.toLowerCase().trim();
+        var visible = 0;
+        cards.forEach(function(card) {
+          var cat = card.getAttribute('data-cat');
+          var title = card.getAttribute('data-title') || '';
+          var cardText = card.textContent.toLowerCase();
+          var catMatch = activeFilter === 'all' || cat === activeFilter;
+          var searchMatch = !query || cardText.indexOf(query) !== -1 || title.indexOf(query) !== -1;
+          if (catMatch && searchMatch) {
+            card.classList.remove('hidden');
+            visible++;
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+        noResults.classList.toggle('show', visible === 0);
+      }
+
+      filterBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          filterBtns.forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          activeFilter = btn.getAttribute('data-filter');
+          applyFilters();
+        });
+      });
+
+      searchInput.addEventListener('input', applyFilters);
+
+      // GA4 donation click tracking
+      var donateBtn = document.getElementById('blog-donate-btn');
+      if (donateBtn && typeof gtag === 'function') {
+        donateBtn.addEventListener('click', function() {
+          gtag('event', 'donate_click', { event_category: 'engagement', event_label: 'blog_cta' });
+        });
+      }
+    })();
+  </script>
+  <script src="chatbot.js"></script>
+</body>
+</html>

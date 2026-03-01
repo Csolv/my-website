@@ -50,6 +50,14 @@
     }
     @media(max-width:560px){ .schedule-grid { grid-template-columns:1fr; } }
   </style>
+  <!-- Google Analytics 4 — Reemplaza G-XXXXXXXXXX con tu Measurement ID -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
 </head>
 <body>
   <a href="#main" class="skip-link">Saltar al contenido</a>
@@ -62,6 +70,7 @@
         <a href="calendario.html">Calendario</a>
         <a href="participar.html">Participar</a>
         <a href="contactanos.html">Contáctanos</a>
+        <a href="blog.html">Blog</a>
         <a href="donar.html" class="nav-cta">Apoyar</a>
       </nav>
       <button class="hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-nav"><span></span><span></span><span></span></button>
@@ -73,6 +82,7 @@
     <a href="calendario.html">Calendario</a>
     <a href="participar.html">Participar</a>
     <a href="contactanos.html">Contáctanos</a>
+    <a href="blog.html">Blog</a>
     <a href="donar.html" class="nav-cta">Apoyar</a>
   </nav>
 
@@ -90,15 +100,21 @@
       <div class="section-inner">
         <p class="section-label reveal">Próximos eventos</p>
         <div class="section-divider reveal"></div>
-        <div class="filter-bar reveal">
-          <button class="filter-btn active">Todos</button>
-          <button class="filter-btn">Deporte</button>
-          <button class="filter-btn">Educación</button>
-          <button class="filter-btn">Nutrición</button>
-          <button class="filter-btn">Comunidad</button>
+        <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:2.5rem;" class="reveal">
+          <div class="filter-bar" id="cal-filters">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn" data-filter="sport">Deporte</button>
+            <button class="filter-btn" data-filter="edu">Educación</button>
+            <button class="filter-btn" data-filter="nutri">Nutrición</button>
+            <button class="filter-btn" data-filter="social">Comunidad</button>
+          </div>
+          <button id="cal-refresh" class="btn btn--outline" style="padding:0.42rem 1rem; font-size:0.78rem; display:flex; align-items:center; gap:0.4rem;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Actualizar
+          </button>
         </div>
-        <div class="events-list">
-          <div class="event-row reveal">
+        <div class="events-list" id="events-list">
+          <div class="event-row reveal" data-cat="sport">
             <div class="event-date-box"><div class="event-day">15</div><div class="event-mon">Mar</div></div>
             <div>
               <span class="event-badge badge--sport">Deporte</span>
@@ -107,7 +123,7 @@
             </div>
             <div class="event-cta"><a href="participar.html" class="btn btn--primary" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Unirse</a></div>
           </div>
-          <div class="event-row reveal">
+          <div class="event-row reveal" data-cat="edu">
             <div class="event-date-box"><div class="event-day">18</div><div class="event-mon">Mar</div></div>
             <div>
               <span class="event-badge badge--edu">Educación</span>
@@ -116,7 +132,7 @@
             </div>
             <div class="event-cta"><a href="participar.html" class="btn btn--primary" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Registrarse</a></div>
           </div>
-          <div class="event-row reveal">
+          <div class="event-row reveal" data-cat="sport">
             <div class="event-date-box"><div class="event-day">22</div><div class="event-mon">Mar</div></div>
             <div>
               <span class="event-badge badge--sport">Deporte</span>
@@ -125,7 +141,7 @@
             </div>
             <div class="event-cta"><a href="contactanos.html" class="btn btn--outline" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Info</a></div>
           </div>
-          <div class="event-row reveal">
+          <div class="event-row reveal" data-cat="nutri">
             <div class="event-date-box"><div class="event-day">29</div><div class="event-mon">Mar</div></div>
             <div>
               <span class="event-badge badge--nutri">Nutrición</span>
@@ -134,7 +150,7 @@
             </div>
             <div class="event-cta"><a href="participar.html" class="btn btn--primary" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Participar</a></div>
           </div>
-          <div class="event-row reveal">
+          <div class="event-row reveal" data-cat="social">
             <div class="event-date-box"><div class="event-day">05</div><div class="event-mon">Abr</div></div>
             <div>
               <span class="event-badge badge--social">Comunidad</span>
@@ -143,7 +159,7 @@
             </div>
             <div class="event-cta"><a href="contactanos.html" class="btn btn--outline" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Info</a></div>
           </div>
-          <div class="event-row reveal">
+          <div class="event-row reveal" data-cat="sport">
             <div class="event-date-box"><div class="event-day">12</div><div class="event-mon">Abr</div></div>
             <div>
               <span class="event-badge badge--sport">Deporte</span>
@@ -227,13 +243,75 @@
   </footer>
   <script src="nav.js"></script>
   <script>
-    // Filter buttons (visual only)
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+    // Working calendar filter + refresh
+    (function() {
+      var rows = document.querySelectorAll('#events-list .event-row');
+      var filterBtns = document.querySelectorAll('#cal-filters .filter-btn');
+      var refreshBtn = document.getElementById('cal-refresh');
+      var active = 'all';
+
+      function applyFilter() {
+        rows.forEach(function(row) {
+          var cat = row.getAttribute('data-cat');
+          var show = active === 'all' || cat === active;
+          row.style.display = show ? '' : 'none';
+          if (show) {
+            row.style.animation = 'none';
+            row.offsetHeight; // reflow
+            row.style.animation = 'eventFadeIn 0.35s ease forwards';
+          }
+        });
+      }
+
+      filterBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          filterBtns.forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          active = btn.getAttribute('data-filter');
+          applyFilter();
+        });
+      });
+
+      // Refresh button — animates a reload of visible events
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', function() {
+          var icon = refreshBtn.querySelector('svg');
+          icon.style.animation = 'spin 0.7s linear';
+          refreshBtn.disabled = true;
+          setTimeout(function() {
+            rows.forEach(function(row) {
+              if (row.style.display !== 'none') {
+                row.style.animation = 'none';
+                row.offsetHeight;
+                row.style.animation = 'eventFadeIn 0.4s ease forwards';
+              }
+            });
+            icon.style.animation = '';
+            refreshBtn.disabled = false;
+          }, 700);
+        });
+      }
+
+      var style = document.createElement('style');
+      style.textContent = '@keyframes eventFadeIn { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:translateX(0); } } @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }';
+      document.head.appendChild(style);
+    })();
+  </script>
+  <script>
+    // GA4 click tracking for donations and volunteer actions
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('a[href="donar.html"], .nav-cta').forEach(function(el) {
+        el.addEventListener('click', function() {
+          if (typeof gtag === 'function') gtag('event', 'donate_click', {event_category: 'engagement'});
+        });
+      });
+      document.querySelectorAll('a[href="participar.html"]').forEach(function(el) {
+        el.addEventListener('click', function() {
+          if (typeof gtag === 'function') gtag('event', 'volunteer_click', {event_category: 'engagement'});
+        });
       });
     });
   </script>
+  <script src="chatbot.js"></script>
 </body>
 </html>
