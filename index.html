@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es-PA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Oficial de AD Curundú</title>
+  <meta name="description" content="Web oficial de Asociación Deportiva Curundú. Deporte, educación y nutrición desde 2014.">
+  <meta property="og:title" content="Web Oficial de AD Curundú">
+  <meta property="og:image" content="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/eac5a1af-b426-495a-9f1b-cd0f0e8485ad/ADCLogoCompressed.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* ── Hero (homepage only) ── */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #050505;
+      padding-top: var(--header-h);
+    }
+
+    /* Video background */
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0.6;
+      z-index: 0;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(43,173,109,0.08) 0%, transparent 60%),
+        linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.5) 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: var(--max-w);
+      padding: 4vw;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 3vw;
+      min-height: calc(100svh - var(--header-h));
+    }
+
+    .hero-text { color: var(--white); }
+    .hero-text h1 {
+      font-family: var(--font-h);
+      font-size: clamp(2.2rem, 5.5vw, 6rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      display: inline-block;
+      padding: 0.35rem 1rem;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+    }
+
+    .hero-text--left  { text-align: right; }
+    .hero-text--right { text-align: left; }
+
+    .hero-logo { display: flex; justify-content: center; align-items: center; }
+    .hero-logo img {
+      width: clamp(130px, 18vw, 270px);
+      height: auto;
+      filter: drop-shadow(0 4px 30px rgba(0,0,0,0.55));
+      animation: float 4.5s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    /* Scroll cue */
+    .scroll-cue {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      color: rgba(255,255,255,0.5);
+      font-family: var(--font-h);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: bobUp 2s ease-in-out infinite;
+    }
+    .scroll-cue svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; }
+    @keyframes bobUp {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* Equipo grid */
+    .equipo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    .equipo-photo {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+    }
+    .equipo-photo img {
+      width: 100%;
+      height: 420px;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .equipo-photo:hover img { transform: scale(1.03); }
+
+    .equipo-text h2 {
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+    }
+    .equipo-text p { font-size: 1.05rem; color: var(--gray); line-height: 1.78; max-width: 52ch; }
+    .equipo-text .btn { margin-top: 2rem; }
+
+    /* Logotipo */
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+    .logotipo-img {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.08);
+      max-width: 860px;
+      width: 100%;
+    }
+
+    /* Medios */
+    .medios-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+    }
+    .instagram-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+    .ig-card {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      aspect-ratio: 3/4;
+      background: var(--light);
+    }
+    .ig-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .ig-card:hover img { transform: scale(1.06); }
+    .ig-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0);
+      display: flex;
+      align-items: flex-end;
+      padding: 1rem;
+      transition: background 0.3s;
+    }
+    .ig-card:hover .ig-overlay { background: rgba(0,0,0,0.42); }
+    .ig-label {
+      font-family: var(--font-h);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--white);
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.3s, transform 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .ig-card:hover .ig-label { opacity: 1; transform: translateY(0); }
+    .ig-reel {
+      aspect-ratio: 3/4;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ig-reel-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+      transition: opacity 0.3s;
+      text-decoration: none;
+    }
+    .ig-reel-inner:hover { opacity: 0.8; }
+    .play-btn {
+      width: 60px;
+      height: 60px;
+      background: rgba(255,255,255,0.92);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .play-btn svg { width: 24px; height: 24px; fill: var(--black); margin-left: 3px; }
+
+    @media (max-width: 900px) {
+      .hero-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 2rem;
+        padding: 5rem 6vw 4rem;
+        min-height: calc(100svh - var(--header-h));
+      }
+      .hero-text--left,
+      .hero-text--right { text-align: center; order: 1; }
+      .hero-logo { order: 0; }
+      .hero-logo img { width: clamp(110px, 38vw, 190px); }
+      .equipo-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .equipo-photo img { height: 300px; }
+      .instagram-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .instagram-grid { gap: 0.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Saltar al contenido</a>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-logo">
+        <a href="index.html" aria-label="AD Curundú — Inicio">
+          <img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/eac5a1af-b426-495a-9f1b-cd0f0e8485ad/ADCLogoCompressed.png" alt="AD Curundú" fetchpriority="high" loading="eager">
+        </a>
+      </div>
+      <nav class="header-nav" aria-label="Navegación principal">
+        <a href="acercadeadc.html">Acerca de ADC</a>
+        <a href="quienessomos.html">Quiénes Somos</a>
+        <a href="calendario.html">Calendario</a>
+        <a href="participar.html">Participar</a>
+        <a href="contactanos.html">Contáctanos</a>
+        <a href="donar.html" class="nav-cta">Apoyar</a>
+      </nav>
+      <button class="hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+  <nav class="mobile-nav" id="mobile-nav">
+    <a href="acercadeadc.html">Acerca de ADC</a>
+    <a href="quienessomos.html">Quiénes Somos</a>
+    <a href="calendario.html">Calendario</a>
+    <a href="participar.html">Participar</a>
+    <a href="contactanos.html">Contáctanos</a>
+    <a href="donar.html" class="nav-cta">Apoyar</a>
+  </nav>
+
+  <main id="main">
+
+    <!-- HERO -->
+    <section class="hero">
+      <video class="hero-video" autoplay muted loop playsinline poster="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/eac5a1af-b426-495a-9f1b-cd0f0e8485ad/ADCLogoCompressed.png" aria-hidden="true">
+        <source src="https://video.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/ae7f39fd-90db-4519-85de-56a75691d38d/1080:1920" type="video/mp4">
+        <source src="https://video.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/ae7f39fd-90db-4519-85de-56a75691d38d/360:640" type="video/mp4">
+      </video>
+      <div class="hero-overlay" aria-hidden="true"></div>
+
+      <div class="hero-content">
+        <div class="hero-text hero-text--left">
+          <h1>Nuestro barrio,</h1>
+        </div>
+        <div class="hero-logo">
+          <img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/eac5a1af-b426-495a-9f1b-cd0f0e8485ad/ADCLogoCompressed.png" alt="AD Curundú" fetchpriority="high" loading="eager">
+        </div>
+        <div class="hero-text hero-text--right">
+          <h1>nuestro equipo.</h1>
+        </div>
+      </div>
+
+      <div class="scroll-cue" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </section>
+
+    <!-- NUESTRO EQUIPO -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="section-label reveal">Nuestro Equipo</p>
+        <div class="section-divider reveal"></div>
+        <div class="equipo-grid">
+          <div class="equipo-photo reveal">
+            <img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/238c786e-5f15-4da1-b979-f1a372ec84ed/Edited2-1044497.jpg" alt="Equipo infantil de AD Curundú en el campo" loading="lazy" decoding="async">
+          </div>
+          <div class="equipo-text reveal">
+            <h2>Deporte, educación y nutrición desde 2014</h2>
+            <p>Asociación Deportiva Curundú es una fundación sin fines de lucro que combate las dificultades de nuestros barrios con deporte, educación y nutrición desde 2014.</p>
+            <a href="acercadeadc.html" class="btn btn--primary">Conocer más</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="section section--dark">
+      <div class="section-inner">
+        <div class="stats-grid reveal">
+          <div>
+            <div class="stat-num">60+</div>
+            <div class="stat-label">Atletas activos</div>
+          </div>
+          <div>
+            <div class="stat-num">10</div>
+            <div class="stat-label">Años de impacto</div>
+          </div>
+          <div>
+            <div class="stat-num">3</div>
+            <div class="stat-label">Pilares: deporte, educación y nutrición</div>
+          </div>
+          <div>
+            <div class="stat-num">1</div>
+            <div class="stat-label">Barrio, muchos sueños</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIGNIFICADO DEL LOGOTIPO -->
+    <section class="section section--light">
+      <div class="section-inner logo-wrap">
+        <div style="width:100%">
+          <p class="section-label reveal">Significado del Logotipo</p>
+          <div class="section-divider reveal"></div>
+        </div>
+        <div class="logotipo-img reveal">
+          <img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/d006a94c-8ae5-4c35-8b6d-821d69fdf75d/Logotipo-1.jpg" alt="Escudo de AD Curundú con descripción de sus elementos" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </section>
+
+    <!-- MEDIOS ADC -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="section-label reveal">Medios ADC</p>
+        <div class="section-divider reveal"></div>
+        <div class="medios-buttons reveal">
+          <a href="https://www.adcurundu.org/blog-es" class="btn btn--primary" target="_blank" rel="noopener">Noticias ADC</a>
+          <a href="https://www.adcurundu.org/blog-en" class="btn btn--outline" target="_blank" rel="noopener">ADC News</a>
+        </div>
+        <div class="instagram-grid reveal">
+          <div class="ig-reel">
+            <a class="ig-reel-inner" href="https://www.instagram.com/reel/DUdtXNmDsp-/" target="_blank" rel="noopener" aria-label="Ver reel en Instagram">
+              <div class="play-btn">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </a>
+          </div>
+          <div class="ig-card">
+            <a href="https://www.instagram.com/p/DUdtDDFjvOa/" target="_blank" rel="noopener" aria-label="Ver post en Instagram">
+              <img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/1770488098892-L34N3RE798PM8X6MEY0G/image-asset.jpeg" alt="Verano Feliz ADC" loading="lazy" decoding="async">
+              <div class="ig-overlay">
+                <span class="ig-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Ver en Instagram</span>
+              </div>
+            </a>
+          </div>
+          <div class="ig-card">
+            <a href="https://www.instagram.com/p/DUQ9maZDtvb/" target="_blank" rel="noopener" aria-label="Ver post en Instagram">
+              <img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/1770060097211-BF9XCBAP2O9VTR2HO23P/image-asset.jpeg" alt="Del barrio para la Ley" loading="lazy" decoding="async">
+              <div class="ig-overlay">
+                <span class="ig-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Ver en Instagram</span>
+              </div>
+            </a>
+          </div>
+          <div class="ig-card">
+            <a href="https://www.instagram.com/p/DUMy9kPjr06/" target="_blank" rel="noopener" aria-label="Ver post en Instagram">
+              <img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/1769918473897-RGAQLM6Z6OE208N6UJ7E/image-asset.jpeg" alt="Día 2 Verano Feliz ADC" loading="lazy" decoding="async">
+              <div class="ig-overlay">
+                <span class="ig-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Ver en Instagram</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA STRIP -->
+    <section class="section section--green" style="padding: 4rem 4vw; text-align:center;">
+      <div class="section-inner">
+        <h2 class="display-heading reveal" style="color:var(--white); margin-bottom:1rem;">¿Quieres apoyar a ADC?</h2>
+        <p class="reveal" style="color:rgba(255,255,255,0.85); font-size:1.05rem; margin-bottom:2rem;">Tu donación cambia vidas en Curundú. Cada aporte cuenta.</p>
+        <a href="donar.html" class="btn btn--white reveal">Apoyar ahora</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SPONSORS -->
+  <div class="sponsors-bar">
+    <div class="sponsors-inner">
+      <a href="#" class="sponsor-logo"><img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/28e1ae82-c40d-4bbe-8a6e-45a4195a4a59/WhatsApp+Image+2025-07-11+at+11.10.12+AM.jpg" alt="Aliado ADC" loading="lazy"></a>
+      <a href="#" class="sponsor-logo"><img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/1b0ac7f1-29b1-47c8-bcc4-fdc7aa0b8ef1/71ac2a_a528798bf088409cb04fc4be25c9a2c4%7Emv2.jpg" alt="Aliado ADC" loading="lazy"></a>
+      <a href="#" class="sponsor-logo"><img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/5a537285-156b-450d-a6a2-ac36e4396a93/CRLogoTransparent.jpg" alt="Aliado ADC" loading="lazy"></a>
+      <a href="#" class="sponsor-logo"><img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/4c9b1aa5-5b8a-4f4c-b746-cf3930ab7064/2024-DE-logo.png" alt="Aliado ADC" loading="lazy"></a>
+      <a href="#" class="sponsor-logo"><img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/a26f0a6b-bf82-4fb0-b62d-1ea7d5fc6c0a/images.jpg" alt="Aliado ADC" loading="lazy"></a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-hashtag"><h3>#nuestroequipo</h3></div>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/adcurundu/" target="_blank" rel="noopener" aria-label="Instagram de ADC">
+          <svg viewBox="0 0 64 64"><path d="M46.91,25.816c-0.073-1.597-0.326-2.687-0.697-3.641c-0.383-0.986-0.896-1.823-1.73-2.657c-0.834-0.834-1.67-1.347-2.657-1.73c-0.954-0.371-2.045-0.624-3.641-0.697C36.585,17.017,36.074,17,32,17s-4.585,0.017-6.184,0.09c-1.597,0.073-2.687,0.326-3.641,0.697c-0.986,0.383-1.823,0.896-2.657,1.73c-0.834,0.834-1.347,1.67-1.73,2.657c-0.371,0.954-0.624,2.045-0.697,3.641C17.017,27.415,17,27.926,17,32c0,4.074,0.017,4.585,0.09,6.184c0.073,1.597,0.326,2.687,0.697,3.641c0.383,0.986,0.896,1.823,1.73,2.657c0.834,0.834,1.67,1.347,2.657,1.73c0.954,0.371,2.045,0.624,3.641,0.697C27.415,46.983,27.926,47,32,47s4.585-0.017,6.184-0.09c1.597-0.073,2.687-0.326,3.641-0.697c0.986-0.383,1.823-0.896,2.657-1.73c0.834-0.834,1.347-1.67,1.73-2.657c0.371-0.954,0.624-2.045,0.697-3.641C46.983,36.585,47,36.074,47,32S46.983,27.415,46.91,25.816z M32,37c-2.761,0-5-2.239-5-5c0-2.761,2.239-5,5-5s5,2.239,5,5C37,34.761,34.761,37,32,37z"/></svg>
+        </a>
+      </div>
+      <p class="footer-copy">© 2025 Asociación Deportiva Curundú · Todos los derechos reservados</p>
+    </div>
+  </footer>
+
+  <script src="nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es-PA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiénes Somos — AD Curundú</title>
+  <meta name="description" content="Conoce al equipo humano detrás de AD Curundú: entrenadores, voluntarios y líderes comunitarios que hacen posible el proyecto.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .team-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; }
+    .team-card { background:var(--white); border-radius:var(--radius); overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.08); transition:transform var(--t), box-shadow var(--t); }
+    .team-card:hover { transform:translateY(-4px); box-shadow:0 12px 36px rgba(0,0,0,0.13); }
+    .team-card__img { width:100%; aspect-ratio:1; object-fit:cover; background:var(--light); }
+    .team-card__img-placeholder { width:100%; aspect-ratio:1; background:linear-gradient(135deg,var(--green-pale) 0%,#d4f0e3 100%); display:flex; align-items:center; justify-content:center; font-size:3.5rem; }
+    .team-card__body { padding:1.4rem 1.5rem 1.6rem; }
+    .team-card__role { font-family:var(--font-h); font-size:0.72rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--green); margin-bottom:0.3rem; }
+    .team-card__name { font-family:var(--font-h); font-size:1.15rem; font-weight:700; margin-bottom:0.5rem; }
+    .team-card__bio  { font-size:0.9rem; color:var(--gray); line-height:1.65; }
+    .values-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:2rem; }
+    .value-block { border-left:3px solid var(--green); padding:1.25rem 1.5rem; }
+    .value-block h3 { font-family:var(--font-h); font-size:1rem; font-weight:700; margin-bottom:0.4rem; }
+    .value-block p  { font-size:0.92rem; color:var(--gray); line-height:1.65; }
+    .logo-section { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; }
+    .logo-section img { border-radius:var(--radius); box-shadow:0 6px 28px rgba(0,0,0,0.1); }
+    @media(max-width:900px){
+      .team-grid { grid-template-columns:repeat(2,1fr); }
+      .values-grid { grid-template-columns:1fr; }
+      .logo-section { grid-template-columns:1fr; gap:2rem; }
+    }
+    @media(max-width:560px){ .team-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-logo"><a href="index.html"><img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/eac5a1af-b426-495a-9f1b-cd0f0e8485ad/ADCLogoCompressed.png" alt="AD Curundú" loading="eager"></a></div>
+      <nav class="header-nav">
+        <a href="acercadeadc.html">Acerca de ADC</a>
+        <a href="quienessomos.html">Quiénes Somos</a>
+        <a href="calendario.html">Calendario</a>
+        <a href="participar.html">Participar</a>
+        <a href="contactanos.html">Contáctanos</a>
+        <a href="donar.html" class="nav-cta">Apoyar</a>
+      </nav>
+      <button class="hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-nav"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <nav class="mobile-nav" id="mobile-nav">
+    <a href="acercadeadc.html">Acerca de ADC</a>
+    <a href="quienessomos.html">Quiénes Somos</a>
+    <a href="calendario.html">Calendario</a>
+    <a href="participar.html">Participar</a>
+    <a href="contactanos.html">Contáctanos</a>
+    <a href="donar.html" class="nav-cta">Apoyar</a>
+  </nav>
+
+  <main id="main">
+    <div class="page-hero">
+      <img class="page-hero__bg" src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/238c786e-5f15-4da1-b979-f1a372ec84ed/Edited2-1044497.jpg" alt="" aria-hidden="true">
+      <div class="page-hero__overlay"></div>
+      <div class="page-hero__content">
+        <p class="page-hero__label">El equipo humano</p>
+        <h1 class="page-hero__title">Quiénes Somos</h1>
+      </div>
+    </div>
+
+    <!-- Intro -->
+    <section class="section">
+      <div class="section-inner" style="max-width:760px;">
+        <p class="section-label reveal">Nuestra gente</p>
+        <div class="section-divider reveal"></div>
+        <h2 class="display-heading reveal">Somos vecinos, entrenadores y soñadores</h2>
+        <p class="body-text reveal">ADC es posible gracias a un equipo diverso de líderes comunitarios, entrenadores apasionados y voluntarios comprometidos que comparten una misma visión: que cada niño de Curundú tenga la oportunidad de brillar.</p>
+      </div>
+    </section>
+
+    <!-- Team -->
+    <section class="section section--light">
+      <div class="section-inner">
+        <p class="section-label reveal">Liderazgo</p>
+        <div class="section-divider reveal"></div>
+        <div class="team-grid">
+          <div class="team-card reveal">
+            <div class="team-card__img-placeholder">🏆</div>
+            <div class="team-card__body">
+              <p class="team-card__role">Presidente y Fundador</p>
+              <h3 class="team-card__name">Andrés Madrid</h3>
+              <p class="team-card__bio">Visionario del proyecto desde 2014. Andrés lidera la estrategia de ADC y representa a la organización ante instituciones públicas y privadas en Panamá.</p>
+            </div>
+          </div>
+          <div class="team-card reveal">
+            <div class="team-card__img-placeholder">⚽</div>
+            <div class="team-card__body">
+              <p class="team-card__role">Director Técnico</p>
+              <h3 class="team-card__name">Equipo de Entrenadores</h3>
+              <p class="team-card__bio">Nuestros entrenadores certificados trabajan día a día para desarrollar las habilidades deportivas y el carácter de cada atleta del programa.</p>
+            </div>
+          </div>
+          <div class="team-card reveal">
+            <div class="team-card__img-placeholder">📚</div>
+            <div class="team-card__body">
+              <p class="team-card__role">Coordinación Académica</p>
+              <h3 class="team-card__name">Equipo Educativo</h3>
+              <p class="team-card__bio">Tutores y educadores que acompañan a los atletas en su proceso escolar, asegurando que el deporte nunca reste al aprendizaje.</p>
+            </div>
+          </div>
+          <div class="team-card reveal">
+            <div class="team-card__img-placeholder">🤝</div>
+            <div class="team-card__body">
+              <p class="team-card__role">Voluntarios</p>
+              <h3 class="team-card__name">Comunidad ADC</h3>
+              <p class="team-card__bio">Decenas de voluntarios de Panamá e internacionales que dedican su tiempo y talentos para hacer crecer el impacto de ADC en Curundú.</p>
+            </div>
+          </div>
+          <div class="team-card reveal">
+            <div class="team-card__img-placeholder">🥗</div>
+            <div class="team-card__body">
+              <p class="team-card__role">Nutrición y Bienestar</p>
+              <h3 class="team-card__name">Equipo de Salud</h3>
+              <p class="team-card__bio">Especialistas en nutrición deportiva que diseñan los programas de alimentación para garantizar el rendimiento y el desarrollo sano de los atletas.</p>
+            </div>
+          </div>
+          <div class="team-card reveal">
+            <div class="team-card__img-placeholder">🌱</div>
+            <div class="team-card__body">
+              <p class="team-card__role">Aliados Estratégicos</p>
+              <h3 class="team-card__name">Organizaciones Socias</h3>
+              <p class="team-card__bio">Metropolitan School of Panama, Fundación +Deporte y otros aliados que hacen posible el Verano Feliz y otras iniciativas clave de ADC.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Values -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="section-label reveal">Lo que nos guía</p>
+        <div class="section-divider reveal"></div>
+        <div class="values-grid">
+          <div class="value-block reveal">
+            <h3>Comunidad</h3>
+            <p>Curundú es nuestro origen y nuestra razón de ser. Todo lo que hacemos busca fortalecer el tejido social de nuestro barrio.</p>
+          </div>
+          <div class="value-block reveal">
+            <h3>Integridad</h3>
+            <p>Operamos con transparencia total ante nuestros atletas, familias, aliados y donantes.</p>
+          </div>
+          <div class="value-block reveal">
+            <h3>Excelencia</h3>
+            <p>Exigimos lo mejor dentro y fuera del campo — en el deporte, en el aula y en la vida.</p>
+          </div>
+          <div class="value-block reveal">
+            <h3>Inclusión</h3>
+            <p>Las puertas de ADC están abiertas para todos los niños y jóvenes de la comunidad, sin importar su situación socioeconómica.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Logo Significance -->
+    <section class="section section--light">
+      <div class="section-inner">
+        <p class="section-label reveal">Nuestra identidad</p>
+        <div class="section-divider reveal"></div>
+        <div class="logo-section">
+          <div class="reveal">
+            <h2 class="sub-heading">El significado de nuestro escudo</h2>
+            <p class="body-text">Cada elemento del logotipo de ADC tiene un significado profundo: el mapa de Curundú como nuestro territorio, el verde para la naturaleza y la esperanza, el negro para la identidad y la fuerza, el blanco para la paz, y el año 2014 marcando nuestros inicios.</p>
+          </div>
+          <div class="reveal">
+            <img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/d006a94c-8ae5-4c35-8b6d-821d69fdf75d/Logotipo-1.jpg" alt="Explicación del escudo de ADC" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--green" style="padding:4rem 4vw; text-align:center;">
+      <div class="section-inner">
+        <h2 class="display-heading reveal" style="color:var(--white);">¿Quieres unirte al equipo?</h2>
+        <p class="reveal" style="color:rgba(255,255,255,0.85); margin:1rem auto 2rem; max-width:48ch; font-size:1.05rem;">Siempre buscamos voluntarios apasionados que quieran marcar la diferencia en Curundú.</p>
+        <a href="participar.html" class="btn btn--white reveal">Cómo participar</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-hashtag"><h3>#nuestroequipo</h3></div>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/adcurundu/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 64 64"><path d="M46.91,25.816c-0.073-1.597-0.326-2.687-0.697-3.641c-0.383-0.986-0.896-1.823-1.73-2.657c-0.834-0.834-1.67-1.347-2.657-1.73c-0.954-0.371-2.045-0.624-3.641-0.697C36.585,17.017,36.074,17,32,17s-4.585,0.017-6.184,0.09c-1.597,0.073-2.687,0.326-3.641,0.697c-0.986,0.383-1.823,0.896-2.657,1.73c-0.834,0.834-1.347,1.67-1.73,2.657c-0.371,0.954-0.624,2.045-0.697,3.641C17.017,27.415,17,27.926,17,32c0,4.074,0.017,4.585,0.09,6.184c0.073,1.597,0.326,2.687,0.697,3.641c0.383,0.986,0.896,1.823,1.73,2.657c0.834,0.834,1.67,1.347,2.657,1.73c0.954,0.371,2.045,0.624,3.641,0.697C27.415,46.983,27.926,47,32,47s4.585-0.017,6.184-0.09c1.597-0.073,2.687-0.326,3.641-0.697c0.986-0.383,1.823-0.896,2.657-1.73c0.834-0.834,1.347-1.67,1.73-2.657c0.371-0.954,0.624-2.045,0.697-3.641C46.983,36.585,47,36.074,47,32S46.983,27.415,46.91,25.816z M32,37c-2.761,0-5-2.239-5-5c0-2.761,2.239-5,5-5s5,2.239,5,5C37,34.761,34.761,37,32,37z"/></svg>
+        </a>
+      </div>
+      <p class="footer-copy">© 2025 Asociación Deportiva Curundú · Todos los derechos reservados</p>
+    </div>
+  </footer>
+  <script src="nav.js"></script>
+</body>
+</html>

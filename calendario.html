@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es-PA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendario — AD Curundú</title>
+  <meta name="description" content="Consulta los próximos eventos, torneos y actividades de Asociación Deportiva Curundú.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .events-list { display:flex; flex-direction:column; gap:0; }
+    .event-row {
+      display:grid; grid-template-columns:100px 1fr auto;
+      gap:2rem; align-items:center;
+      padding:1.75rem 0; border-bottom:1px solid var(--border);
+      transition:background var(--t);
+    }
+    .event-row:last-child { border-bottom:none; }
+    .event-row:hover { background:var(--green-pale); margin:0 -1.5rem; padding-left:1.5rem; padding-right:1.5rem; border-radius:var(--radius); }
+    .event-date-box { text-align:center; }
+    .event-day  { font-family:var(--font-h); font-size:2.2rem; font-weight:700; line-height:1; color:var(--green); }
+    .event-mon  { font-family:var(--font-h); font-size:0.72rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--gray); }
+    .event-badge { display:inline-block; font-family:var(--font-h); font-size:0.68rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; padding:0.2rem 0.6rem; border-radius:100px; margin-bottom:0.4rem; }
+    .badge--sport   { background:var(--green-pale); color:var(--green-dark); }
+    .badge--edu     { background:#e8f0fe; color:#2563eb; }
+    .badge--nutri   { background:#fff3e0; color:#e65100; }
+    .badge--social  { background:#fce4ec; color:#c62828; }
+    .event-title { font-family:var(--font-h); font-size:1.05rem; font-weight:700; margin-bottom:0.2rem; }
+    .event-meta  { font-size:0.88rem; color:var(--gray); }
+    .event-cta   { }
+    .filter-bar  { display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:2.5rem; }
+    .filter-btn  {
+      font-family:var(--font-h); font-size:0.78rem; font-weight:600;
+      letter-spacing:0.07em; text-transform:uppercase;
+      padding:0.45rem 1rem; border-radius:100px; border:1.5px solid var(--border);
+      background:var(--white); cursor:pointer; transition:all var(--t);
+    }
+    .filter-btn:hover, .filter-btn.active { background:var(--black); color:var(--white); border-color:var(--black); }
+    .schedule-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
+    .schedule-card { background:var(--white); border-radius:var(--radius); padding:1.5rem; box-shadow:0 3px 16px rgba(0,0,0,0.07); }
+    .schedule-card h3 { font-family:var(--font-h); font-size:0.95rem; font-weight:700; margin-bottom:0.5rem; }
+    .schedule-card p  { font-size:0.88rem; color:var(--gray); line-height:1.6; }
+    .schedule-card .time { font-family:var(--font-h); font-size:1.1rem; font-weight:700; color:var(--green); margin-top:0.75rem; }
+    @media(max-width:900px){
+      .event-row { grid-template-columns:80px 1fr; gap:1.25rem; }
+      .event-cta { display:none; }
+      .schedule-grid { grid-template-columns:1fr 1fr; }
+    }
+    @media(max-width:560px){ .schedule-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-logo"><a href="index.html"><img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/eac5a1af-b426-495a-9f1b-cd0f0e8485ad/ADCLogoCompressed.png" alt="AD Curundú" loading="eager"></a></div>
+      <nav class="header-nav">
+        <a href="acercadeadc.html">Acerca de ADC</a>
+        <a href="quienessomos.html">Quiénes Somos</a>
+        <a href="calendario.html">Calendario</a>
+        <a href="participar.html">Participar</a>
+        <a href="contactanos.html">Contáctanos</a>
+        <a href="donar.html" class="nav-cta">Apoyar</a>
+      </nav>
+      <button class="hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-nav"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <nav class="mobile-nav" id="mobile-nav">
+    <a href="acercadeadc.html">Acerca de ADC</a>
+    <a href="quienessomos.html">Quiénes Somos</a>
+    <a href="calendario.html">Calendario</a>
+    <a href="participar.html">Participar</a>
+    <a href="contactanos.html">Contáctanos</a>
+    <a href="donar.html" class="nav-cta">Apoyar</a>
+  </nav>
+
+  <main id="main">
+    <div class="page-hero" style="background:#0a1a10;">
+      <div class="page-hero__overlay" style="background:linear-gradient(to top,rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.2) 100%);"></div>
+      <div class="page-hero__content">
+        <p class="page-hero__label">Agenda 2025</p>
+        <h1 class="page-hero__title">Calendario</h1>
+      </div>
+    </div>
+
+    <!-- Upcoming Events -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="section-label reveal">Próximos eventos</p>
+        <div class="section-divider reveal"></div>
+        <div class="filter-bar reveal">
+          <button class="filter-btn active">Todos</button>
+          <button class="filter-btn">Deporte</button>
+          <button class="filter-btn">Educación</button>
+          <button class="filter-btn">Nutrición</button>
+          <button class="filter-btn">Comunidad</button>
+        </div>
+        <div class="events-list">
+          <div class="event-row reveal">
+            <div class="event-date-box"><div class="event-day">15</div><div class="event-mon">Mar</div></div>
+            <div>
+              <span class="event-badge badge--sport">Deporte</span>
+              <div class="event-title">Entrenamiento General — Categoría Sub-12</div>
+              <div class="event-meta">📍 Cancha ADC, Curundú &nbsp;·&nbsp; 🕔 4:00 – 6:00 PM</div>
+            </div>
+            <div class="event-cta"><a href="participar.html" class="btn btn--primary" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Unirse</a></div>
+          </div>
+          <div class="event-row reveal">
+            <div class="event-date-box"><div class="event-day">18</div><div class="event-mon">Mar</div></div>
+            <div>
+              <span class="event-badge badge--edu">Educación</span>
+              <div class="event-title">Taller de Habilidades para la Vida</div>
+              <div class="event-meta">📍 Sede ADC, Curundú &nbsp;·&nbsp; 🕔 10:00 AM – 12:00 PM</div>
+            </div>
+            <div class="event-cta"><a href="participar.html" class="btn btn--primary" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Registrarse</a></div>
+          </div>
+          <div class="event-row reveal">
+            <div class="event-date-box"><div class="event-day">22</div><div class="event-mon">Mar</div></div>
+            <div>
+              <span class="event-badge badge--sport">Deporte</span>
+              <div class="event-title">Partido Amistoso — ADC vs Invitado</div>
+              <div class="event-meta">📍 Estadio Comunitario &nbsp;·&nbsp; 🕔 9:00 AM</div>
+            </div>
+            <div class="event-cta"><a href="contactanos.html" class="btn btn--outline" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Info</a></div>
+          </div>
+          <div class="event-row reveal">
+            <div class="event-date-box"><div class="event-day">29</div><div class="event-mon">Mar</div></div>
+            <div>
+              <span class="event-badge badge--nutri">Nutrición</span>
+              <div class="event-title">Día de Nutrición y Salud Deportiva</div>
+              <div class="event-meta">📍 Sede ADC &nbsp;·&nbsp; 🕔 8:00 AM – 2:00 PM</div>
+            </div>
+            <div class="event-cta"><a href="participar.html" class="btn btn--primary" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Participar</a></div>
+          </div>
+          <div class="event-row reveal">
+            <div class="event-date-box"><div class="event-day">05</div><div class="event-mon">Abr</div></div>
+            <div>
+              <span class="event-badge badge--social">Comunidad</span>
+              <div class="event-title">Asamblea Comunitaria ADC 2025</div>
+              <div class="event-meta">📍 Centro Comunal de Curundú &nbsp;·&nbsp; 🕔 6:00 PM</div>
+            </div>
+            <div class="event-cta"><a href="contactanos.html" class="btn btn--outline" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Info</a></div>
+          </div>
+          <div class="event-row reveal">
+            <div class="event-date-box"><div class="event-day">12</div><div class="event-mon">Abr</div></div>
+            <div>
+              <span class="event-badge badge--sport">Deporte</span>
+              <div class="event-title">Torneo Interno de Primavera</div>
+              <div class="event-meta">📍 Cancha ADC, Curundú &nbsp;·&nbsp; 🕔 Todo el día</div>
+            </div>
+            <div class="event-cta"><a href="participar.html" class="btn btn--primary" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Inscribirse</a></div>
+          </div>
+          <div class="event-row reveal">
+            <div class="event-date-box"><div class="event-day">Jul</div><div class="event-mon">2025</div></div>
+            <div>
+              <span class="event-badge badge--social">Comunidad</span>
+              <div class="event-title">Verano Feliz ADC 2025</div>
+              <div class="event-meta">📍 Curundú + Metropolitan School of Panama &nbsp;·&nbsp; 🕔 Varias semanas</div>
+            </div>
+            <div class="event-cta"><a href="participar.html" class="btn btn--primary" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Más info</a></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Weekly Schedule -->
+    <section class="section section--light">
+      <div class="section-inner">
+        <p class="section-label reveal">Rutina semanal</p>
+        <div class="section-divider reveal"></div>
+        <div class="schedule-grid">
+          <div class="schedule-card reveal">
+            <h3>Lunes &amp; Miércoles</h3>
+            <p>Entrenamiento técnico — Sub-8 y Sub-10</p>
+            <div class="time">3:30 – 5:30 PM</div>
+          </div>
+          <div class="schedule-card reveal">
+            <h3>Martes &amp; Jueves</h3>
+            <p>Entrenamiento técnico — Sub-12 y Sub-14</p>
+            <div class="time">4:00 – 6:00 PM</div>
+          </div>
+          <div class="schedule-card reveal">
+            <h3>Miércoles</h3>
+            <p>Tutorías académicas y sesión de nutrición</p>
+            <div class="time">9:00 – 11:00 AM</div>
+          </div>
+          <div class="schedule-card reveal">
+            <h3>Viernes</h3>
+            <p>Entrenamiento libre y actividades recreativas</p>
+            <div class="time">3:00 – 5:00 PM</div>
+          </div>
+          <div class="schedule-card reveal">
+            <h3>Sábado</h3>
+            <p>Partidos, torneos y eventos especiales</p>
+            <div class="time">8:00 AM – 12:00 PM</div>
+          </div>
+          <div class="schedule-card reveal">
+            <h3>Domingo</h3>
+            <p>Descanso y actividades familiares comunitarias</p>
+            <div class="time">Según agenda</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--green" style="padding:4rem 4vw; text-align:center;">
+      <div class="section-inner">
+        <h2 class="display-heading reveal" style="color:var(--white);">¿Quieres estar al día?</h2>
+        <p class="reveal" style="color:rgba(255,255,255,0.85); margin:1rem auto 2rem; max-width:48ch; font-size:1.05rem;">Síguenos en Instagram para no perderte ningún evento ni novedad de ADC.</p>
+        <a href="https://www.instagram.com/adcurundu/" target="_blank" rel="noopener" class="btn btn--white reveal">@adcurundu en Instagram</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-hashtag"><h3>#nuestroequipo</h3></div>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/adcurundu/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 64 64"><path d="M46.91,25.816c-0.073-1.597-0.326-2.687-0.697-3.641c-0.383-0.986-0.896-1.823-1.73-2.657c-0.834-0.834-1.67-1.347-2.657-1.73c-0.954-0.371-2.045-0.624-3.641-0.697C36.585,17.017,36.074,17,32,17s-4.585,0.017-6.184,0.09c-1.597,0.073-2.687,0.326-3.641,0.697c-0.986,0.383-1.823,0.896-2.657,1.73c-0.834,0.834-1.347,1.67-1.73,2.657c-0.371,0.954-0.624,2.045-0.697,3.641C17.017,27.415,17,27.926,17,32c0,4.074,0.017,4.585,0.09,6.184c0.073,1.597,0.326,2.687,0.697,3.641c0.383,0.986,0.896,1.823,1.73,2.657c0.834,0.834,1.67,1.347,2.657,1.73c0.954,0.371,2.045,0.624,3.641,0.697C27.415,46.983,27.926,47,32,47s4.585-0.017,6.184-0.09c1.597-0.073,2.687-0.326,3.641-0.697c0.986-0.383,1.823-0.896,2.657-1.73c0.834-0.834,1.347-1.67,1.73-2.657c0.371-0.954,0.624-2.045,0.697-3.641C46.983,36.585,47,36.074,47,32S46.983,27.415,46.91,25.816z M32,37c-2.761,0-5-2.239-5-5c0-2.761,2.239-5,5-5s5,2.239,5,5C37,34.761,34.761,37,32,37z"/></svg>
+        </a>
+      </div>
+      <p class="footer-copy">© 2025 Asociación Deportiva Curundú · Todos los derechos reservados</p>
+    </div>
+  </footer>
+  <script src="nav.js"></script>
+  <script>
+    // Filter buttons (visual only)
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

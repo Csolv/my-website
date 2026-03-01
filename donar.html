@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es-PA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apoyar — AD Curundú</title>
+  <meta name="description" content="Apoya a Asociación Deportiva Curundú. Tu donación financia deporte, educación y nutrición para niños en Panamá.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Hero override — green gradient */
+    .donate-hero {
+      position:relative; padding-top:var(--header-h);
+      min-height:360px; display:flex; align-items:flex-end;
+      background:linear-gradient(135deg,#064d2a 0%,#0a6e3c 60%,#0d8a4c 100%);
+      overflow:hidden;
+    }
+    .donate-hero::before {
+      content:''; position:absolute; inset:0;
+      background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .donate-hero .page-hero__content { position:relative; z-index:2; }
+    .donate-hero .page-hero__label { color:rgba(255,255,255,0.7); }
+    .donate-hero .page-hero__title { color:var(--white); }
+
+    /* Amount selector */
+    .amount-selector { display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+    .amount-btn {
+      font-family:var(--font-h); font-size:1rem; font-weight:700;
+      padding:0.7rem 1.4rem; border-radius:8px;
+      border:2px solid var(--border); background:var(--white);
+      cursor:pointer; transition:all var(--t);
+    }
+    .amount-btn:hover, .amount-btn.selected { background:var(--green); color:var(--white); border-color:var(--green); }
+
+    /* Donate form card */
+    .donate-layout { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:start; }
+    .donate-form-card { background:var(--white); border-radius:var(--radius); box-shadow:0 6px 32px rgba(0,0,0,0.1); padding:2.5rem; }
+    .donate-form-card h3 { font-family:var(--font-h); font-size:1.2rem; font-weight:700; margin-bottom:1.5rem; }
+    .form-group { display:flex; flex-direction:column; gap:0.35rem; margin-bottom:1.1rem; }
+    label { font-family:var(--font-h); font-size:0.76rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--gray); }
+    input, select {
+      width:100%; padding:0.75rem 1rem;
+      border:1.5px solid var(--border); border-radius:6px;
+      font-family:var(--font-b); font-size:0.95rem; color:var(--black);
+      background:var(--white); outline:none; transition:border-color var(--t);
+    }
+    input:focus, select:focus { border-color:var(--green); }
+    .custom-amount { display:flex; align-items:center; }
+    .custom-amount span { font-family:var(--font-h); font-weight:700; font-size:1.1rem; padding:0.75rem 0.75rem; background:var(--light); border:1.5px solid var(--border); border-right:none; border-radius:6px 0 0 6px; color:var(--gray); }
+    .custom-amount input { border-radius:0 6px 6px 0; }
+    .impact-cards { display:grid; grid-template-columns:1fr; gap:1rem; }
+    .impact-card { display:flex; gap:1.25rem; align-items:center; padding:1.25rem; background:var(--white); border-radius:10px; box-shadow:0 2px 12px rgba(0,0,0,0.06); }
+    .impact-card__amount { font-family:var(--font-h); font-size:1.6rem; font-weight:700; color:var(--green); min-width:80px; text-align:center; }
+    .impact-card__desc h4 { font-family:var(--font-h); font-size:0.95rem; font-weight:700; margin-bottom:0.2rem; }
+    .impact-card__desc p  { font-size:0.88rem; color:var(--gray); line-height:1.55; }
+    .transparency-list { list-style:none; display:flex; flex-direction:column; gap:1rem; }
+    .transparency-list li { display:flex; gap:1rem; align-items:center; }
+    .t-bar-wrap { flex:1; background:var(--border); border-radius:100px; height:8px; }
+    .t-bar { height:8px; background:var(--green); border-radius:100px; transition:width 0.8s ease; }
+    .t-label { font-family:var(--font-h); font-size:0.78rem; font-weight:600; min-width:130px; }
+    .t-pct { font-family:var(--font-h); font-size:0.85rem; font-weight:700; color:var(--green); min-width:36px; text-align:right; }
+    @media(max-width:900px){
+      .donate-layout { grid-template-columns:1fr; gap:3rem; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-logo"><a href="index.html"><img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/eac5a1af-b426-495a-9f1b-cd0f0e8485ad/ADCLogoCompressed.png" alt="AD Curundú" loading="eager"></a></div>
+      <nav class="header-nav">
+        <a href="acercadeadc.html">Acerca de ADC</a>
+        <a href="quienessomos.html">Quiénes Somos</a>
+        <a href="calendario.html">Calendario</a>
+        <a href="participar.html">Participar</a>
+        <a href="contactanos.html">Contáctanos</a>
+        <a href="donar.html" class="nav-cta">Apoyar</a>
+      </nav>
+      <button class="hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-nav"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <nav class="mobile-nav" id="mobile-nav">
+    <a href="acercadeadc.html">Acerca de ADC</a>
+    <a href="quienessomos.html">Quiénes Somos</a>
+    <a href="calendario.html">Calendario</a>
+    <a href="participar.html">Participar</a>
+    <a href="contactanos.html">Contáctanos</a>
+    <a href="donar.html" class="nav-cta">Apoyar</a>
+  </nav>
+
+  <main id="main">
+    <div class="donate-hero">
+      <div class="page-hero__content">
+        <p class="page-hero__label">Haz la diferencia</p>
+        <h1 class="page-hero__title">Apoyar a ADC</h1>
+      </div>
+    </div>
+
+    <!-- Main donate section -->
+    <section class="section">
+      <div class="section-inner">
+        <div class="donate-layout">
+
+          <!-- Impact info -->
+          <div class="reveal">
+            <p class="section-label">Tu impacto</p>
+            <div class="section-divider"></div>
+            <h2 style="font-size:clamp(1.6rem,3vw,2.4rem); font-weight:700; margin-bottom:1rem;">Cada dólar cambia una vida en Curundú</h2>
+            <p style="color:var(--gray); font-size:1rem; line-height:1.78; margin-bottom:2rem;">ADC es una organización 100% sin fines de lucro. Cada donación va directamente a financiar entrenamientos, materiales educativos y programas de nutrición para más de 60 niños en Curundú.</p>
+
+            <div class="impact-cards">
+              <div class="impact-card">
+                <div class="impact-card__amount">$10</div>
+                <div class="impact-card__desc">
+                  <h4>Meriendas nutritivas</h4>
+                  <p>Una semana de alimentación saludable para un atleta ADC durante los entrenamientos.</p>
+                </div>
+              </div>
+              <div class="impact-card">
+                <div class="impact-card__amount">$25</div>
+                <div class="impact-card__desc">
+                  <h4>Material educativo</h4>
+                  <p>Un mes de materiales escolares y tutorías para un campeón ADC.</p>
+                </div>
+              </div>
+              <div class="impact-card">
+                <div class="impact-card__amount">$50</div>
+                <div class="impact-card__desc">
+                  <h4>Equipamiento deportivo</h4>
+                  <p>Un uniforme completo para que un niño participe con orgullo en torneos.</p>
+                </div>
+              </div>
+              <div class="impact-card">
+                <div class="impact-card__amount">$100</div>
+                <div class="impact-card__desc">
+                  <h4>Programa mensual integral</h4>
+                  <p>Un mes completo de deporte, educación y nutrición para un atleta de ADC.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Donate form -->
+          <div class="donate-form-card reveal">
+            <h3>Hacer una donación</h3>
+            <p style="font-size:0.9rem; color:var(--gray); margin-bottom:1.5rem;">Selecciona un monto o ingresa el tuyo:</p>
+
+            <div class="amount-selector" id="amountSelector">
+              <button class="amount-btn" data-amount="10">$10</button>
+              <button class="amount-btn selected" data-amount="25">$25</button>
+              <button class="amount-btn" data-amount="50">$50</button>
+              <button class="amount-btn" data-amount="100">$100</button>
+            </div>
+
+            <div class="form-group">
+              <label for="custom-amount">O ingresa un monto personalizado</label>
+              <div class="custom-amount">
+                <span>$</span>
+                <input type="number" id="custom-amount" placeholder="Otro monto" min="1" step="1">
+              </div>
+            </div>
+
+            <form onsubmit="handleDonate(event)" style="margin-top:1.5rem;">
+              <div class="form-group">
+                <label for="d-nombre">Nombre completo</label>
+                <input type="text" id="d-nombre" placeholder="Tu nombre" required>
+              </div>
+              <div class="form-group">
+                <label for="d-email">Correo electrónico</label>
+                <input type="email" id="d-email" placeholder="tu@correo.com" required>
+              </div>
+              <div class="form-group">
+                <label for="d-tipo">Tipo de donación</label>
+                <select id="d-tipo">
+                  <option>Donación única</option>
+                  <option>Mensual</option>
+                  <option>Trimestral</option>
+                  <option>Anual</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn--primary" style="width:100%; border:none; cursor:pointer; margin-top:0.5rem; font-size:1rem; padding:1rem;">
+                Donar ahora
+              </button>
+            </form>
+
+            <p style="font-size:0.78rem; color:var(--gray); text-align:center; margin-top:1rem; line-height:1.6;">
+              🔒 Transacción segura · ADC es una organización sin fines de lucro registrada en Panamá.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Transparency -->
+    <section class="section section--light">
+      <div class="section-inner">
+        <p class="section-label reveal">Transparencia</p>
+        <div class="section-divider reveal"></div>
+        <h2 class="sub-heading reveal" style="margin-bottom:0.75rem;">¿Cómo usamos los fondos?</h2>
+        <p class="body-text reveal" style="margin-bottom:2.5rem;">Operamos con total transparencia. Así distribuimos cada dólar que recibimos:</p>
+        <ul class="transparency-list reveal">
+          <li>
+            <span class="t-label">Programas deportivos</span>
+            <div class="t-bar-wrap"><div class="t-bar" style="width:45%"></div></div>
+            <span class="t-pct">45%</span>
+          </li>
+          <li>
+            <span class="t-label">Educación y tutorías</span>
+            <div class="t-bar-wrap"><div class="t-bar" style="width:25%"></div></div>
+            <span class="t-pct">25%</span>
+          </li>
+          <li>
+            <span class="t-label">Nutrición</span>
+            <div class="t-bar-wrap"><div class="t-bar" style="width:20%"></div></div>
+            <span class="t-pct">20%</span>
+          </li>
+          <li>
+            <span class="t-label">Administración</span>
+            <div class="t-bar-wrap"><div class="t-bar" style="width:10%"></div></div>
+            <span class="t-pct">10%</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="section section--dark">
+      <div class="section-inner">
+        <div class="stats-grid reveal">
+          <div><div class="stat-num">60+</div><div class="stat-label">Atletas que apoyas</div></div>
+          <div><div class="stat-num">10</div><div class="stat-label">Años de impacto</div></div>
+          <div><div class="stat-num">100%</div><div class="stat-label">Sin fines de lucro</div></div>
+          <div><div class="stat-num">3</div><div class="stat-label">Programas activos</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Other ways -->
+    <section class="section section--green" style="padding:4.5rem 4vw; text-align:center;">
+      <div class="section-inner">
+        <h2 class="display-heading reveal" style="color:var(--white);">Otras formas de apoyar</h2>
+        <p class="reveal" style="color:rgba(255,255,255,0.85); margin:1rem auto 2rem; max-width:50ch; font-size:1.05rem;">No solo con dinero se apoya a ADC. Tu tiempo y talento también transforman vidas.</p>
+        <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;" class="reveal">
+          <a href="participar.html" class="btn btn--white">Ser voluntario</a>
+          <a href="contactanos.html" class="btn btn--outline-white">Proponer alianza</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-hashtag"><h3>#nuestroequipo</h3></div>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/adcurundu/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 64 64"><path d="M46.91,25.816c-0.073-1.597-0.326-2.687-0.697-3.641c-0.383-0.986-0.896-1.823-1.73-2.657c-0.834-0.834-1.67-1.347-2.657-1.73c-0.954-0.371-2.045-0.624-3.641-0.697C36.585,17.017,36.074,17,32,17s-4.585,0.017-6.184,0.09c-1.597,0.073-2.687,0.326-3.641,0.697c-0.986,0.383-1.823,0.896-2.657,1.73c-0.834,0.834-1.347,1.67-1.73,2.657c-0.371,0.954-0.624,2.045-0.697,3.641C17.017,27.415,17,27.926,17,32c0,4.074,0.017,4.585,0.09,6.184c0.073,1.597,0.326,2.687,0.697,3.641c0.383,0.986,0.896,1.823,1.73,2.657c0.834,0.834,1.67,1.347,2.657,1.73c0.954,0.371,2.045,0.624,3.641,0.697C27.415,46.983,27.926,47,32,47s4.585-0.017,6.184-0.09c1.597-0.073,2.687-0.326,3.641-0.697c0.986-0.383,1.823-0.896,2.657-1.73c0.834-0.834,1.347-1.67,1.73-2.657c0.371-0.954,0.624-2.045,0.697-3.641C46.983,36.585,47,36.074,47,32S46.983,27.415,46.91,25.816z M32,37c-2.761,0-5-2.239-5-5c0-2.761,2.239-5,5-5s5,2.239,5,5C37,34.761,34.761,37,32,37z"/></svg>
+        </a>
+      </div>
+      <p class="footer-copy">© 2025 Asociación Deportiva Curundú · Todos los derechos reservados</p>
+    </div>
+  </footer>
+  <script src="nav.js"></script>
+  <script>
+    // Amount selector
+    document.querySelectorAll('.amount-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        document.getElementById('custom-amount').value = '';
+      });
+    });
+    document.getElementById('custom-amount').addEventListener('input', () => {
+      document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+    });
+    function handleDonate(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type="submit"]');
+      btn.textContent = '✓ ¡Gracias por tu apoyo!';
+      btn.style.background = '#1a8f4e';
+      btn.disabled = true;
+    }
+  </script>
+</body>
+</html>
