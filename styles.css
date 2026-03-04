@@ -388,11 +388,9 @@ h1, h2, h3, h4, h5 { font-family: var(--font-h); line-height: 1.1; letter-spacin
   height: 48px;
   width: auto;
   object-fit: contain;
-  filter: grayscale(1);
-  opacity: 0.65;
-  transition: filter var(--t), opacity var(--t);
+  transition: opacity var(--t);
 }
-.sponsor-logo:hover img { filter: none; opacity: 1; }
+.sponsor-logo:hover img { opacity: 0.8; }
 
 /* ═══ SITE FOOTER ═══ */
 .site-footer {
