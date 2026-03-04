@@ -190,6 +190,76 @@
       line-height: 1.7;
       margin-bottom: 1.5rem;
     }
+    /* Stories of Change */
+    .story-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .story-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+      display: flex;
+      flex-direction: column;
+    }
+    .story-card__img-wrap {
+      position: relative;
+    }
+    .story-card__img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+    .story-card__badge {
+      position: absolute;
+      bottom: 0.75rem;
+      left: 0.75rem;
+      background: var(--green);
+      color: var(--white);
+      font-family: var(--font-h);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 100px;
+    }
+    .story-card__body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .story-card__name {
+      font-family: var(--font-h);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+    .story-card__bio {
+      font-size: 0.9rem;
+      color: var(--gray);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+    .story-card__quote {
+      border-left: 3px solid var(--green);
+      padding: 0.75rem 1rem;
+      background: var(--green-pale);
+      border-radius: 0 6px 6px 0;
+      font-style: italic;
+      font-size: 0.88rem;
+      color: var(--green-dark);
+      margin: 0;
+    }
+
+    @media (max-width: 900px) {
+      .story-grid { grid-template-columns: 1fr; }
+    }
+
     @media (max-width: 900px) {
       .blog-grid { grid-template-columns: repeat(2, 1fr); }
       .featured-post { grid-template-columns: 1fr; }
@@ -317,6 +387,79 @@
         </div>
 
         <p class="no-results" id="no-results">No se encontraron artículos con ese filtro o búsqueda.</p>
+      </div>
+    </section>
+
+    <!-- STORIES OF CHANGE -->
+    <section class="section section--light">
+      <div class="section-inner">
+        <p class="section-label reveal">Historias de cambio</p>
+        <div class="section-divider reveal"></div>
+        <h2 class="sub-heading reveal" style="margin-bottom:0.5rem;">Voces de Curundú</h2>
+        <p class="body-text reveal" style="margin-bottom:3rem; max-width:60ch;">
+          <!-- TODO: Add 2–3 sentences introducing the stories section. Example: "Behind every goal is a story. Meet the young athletes of ADC." -->
+          [Introducción de la sección — agregar texto descriptivo aquí.]
+        </p>
+        <div class="story-grid reveal">
+
+          <!-- STORY CARD 1 — Replace all [placeholders] with real data -->
+          <div class="story-card">
+            <div class="story-card__img-wrap">
+              <!-- TODO: Replace src with a real photo of the athlete -->
+              <img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/238c786e-5f15-4da1-b979-f1a372ec84ed/Edited2-1044497.jpg"
+                alt="Foto del atleta — pendiente" loading="lazy" class="story-card__img">
+              <span class="story-card__badge">Sub-__</span>
+            </div>
+            <div class="story-card__body">
+              <h3 class="story-card__name">[Nombre del Atleta]</h3>
+              <p class="story-card__bio">
+                <!-- TODO: 2–3 sentences about the athlete's background, challenges, and growth at ADC. -->
+                [Breve historia del atleta — ¿De dónde viene? ¿Qué ha logrado con ADC? ¿Cómo ha cambiado su vida?]
+              </p>
+              <blockquote class="story-card__quote">
+                <!-- TODO: Direct quote from the athlete or their parent -->
+                "[Cita directa del atleta o su familia sobre el impacto de ADC.]"
+              </blockquote>
+            </div>
+          </div>
+
+          <!-- STORY CARD 2 -->
+          <div class="story-card">
+            <div class="story-card__img-wrap">
+              <img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/238c786e-5f15-4da1-b979-f1a372ec84ed/Edited2-1044497.jpg"
+                alt="Foto del atleta — pendiente" loading="lazy" class="story-card__img">
+              <span class="story-card__badge">Sub-__</span>
+            </div>
+            <div class="story-card__body">
+              <h3 class="story-card__name">[Nombre del Atleta]</h3>
+              <p class="story-card__bio">
+                [Breve historia del atleta — ¿De dónde viene? ¿Qué ha logrado con ADC? ¿Cómo ha cambiado su vida?]
+              </p>
+              <blockquote class="story-card__quote">
+                "[Cita directa del atleta o su familia sobre el impacto de ADC.]"
+              </blockquote>
+            </div>
+          </div>
+
+          <!-- STORY CARD 3 -->
+          <div class="story-card">
+            <div class="story-card__img-wrap">
+              <img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/238c786e-5f15-4da1-b979-f1a372ec84ed/Edited2-1044497.jpg"
+                alt="Foto del atleta — pendiente" loading="lazy" class="story-card__img">
+              <span class="story-card__badge">Sub-__</span>
+            </div>
+            <div class="story-card__body">
+              <h3 class="story-card__name">[Nombre del Atleta]</h3>
+              <p class="story-card__bio">
+                [Breve historia del atleta — ¿De dónde viene? ¿Qué ha logrado con ADC? ¿Cómo ha cambiado su vida?]
+              </p>
+              <blockquote class="story-card__quote">
+                "[Cita directa del atleta o su familia sobre el impacto de ADC.]"
+              </blockquote>
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
 

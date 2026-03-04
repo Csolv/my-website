@@ -272,6 +272,18 @@
     }
     .play-btn svg { width: 24px; height: 24px; fill: var(--black); margin-left: 3px; }
 
+    /* Impact stats */
+    .impact-stat { text-align: center; padding: 0.5rem; }
+    .stat-context {
+      font-family: var(--font-h);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-top: 0.2rem;
+    }
+
     @media (max-width: 900px) {
       .hero-content {
         grid-template-columns: 1fr;
@@ -372,25 +384,35 @@
       </div>
     </section>
 
-    <!-- STATS -->
+    <!-- IMPACT STATS -->
     <section class="section section--dark">
       <div class="section-inner">
+        <p class="section-label reveal" style="color:rgba(255,255,255,0.5);">Nuestro impacto</p>
+        <div class="section-divider reveal"></div>
         <div class="stats-grid reveal">
-          <div>
-            <div class="stat-num">60+</div>
+          <div class="impact-stat">
+            <div class="stat-num">—</div>
+            <!-- TODO: Fill in total youth served since founding -->
+            <div class="stat-label">Jóvenes en programas</div>
+            <div class="stat-context">desde 2014</div>
+          </div>
+          <div class="impact-stat">
+            <div class="stat-num">—</div>
+            <!-- TODO: Fill in number of active athletes this season -->
             <div class="stat-label">Atletas activos</div>
+            <div class="stat-context">esta temporada</div>
           </div>
-          <div>
-            <div class="stat-num">10</div>
-            <div class="stat-label">Años de impacto</div>
+          <div class="impact-stat">
+            <div class="stat-num">—</div>
+            <!-- TODO: Fill in number of families reached -->
+            <div class="stat-label">Familias alcanzadas</div>
+            <div class="stat-context">en Curundú</div>
           </div>
-          <div>
-            <div class="stat-num">3</div>
-            <div class="stat-label">Pilares: deporte, educación y nutrición</div>
-          </div>
-          <div>
-            <div class="stat-num">1</div>
-            <div class="stat-label">Barrio, muchos sueños</div>
+          <div class="impact-stat">
+            <div class="stat-num">—</div>
+            <!-- TODO: Fill in years of operation (founded 2014) -->
+            <div class="stat-label">Años sirviendo</div>
+            <div class="stat-context">a la comunidad</div>
           </div>
         </div>
       </div>
