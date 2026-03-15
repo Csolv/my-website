@@ -13,34 +13,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Acerca de ADC — AD Curundú</title>
-  <meta name="description" content="Conoce la historia, misión y valores de Asociación Deportiva Curundú, fundada en 2014 en Ciudad de Panamá.">
+  <meta name="description" content="Conoce la historia, misión, equipo y logros de Asociación Deportiva Curundú, fundada en 2014 en Ciudad de Panamá.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <style>
+    /* Historia */
     .story-grid { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; }
     .story-grid img { border-radius:var(--radius); box-shadow:0 8px 40px rgba(0,0,0,0.12); width:100%; height:420px; object-fit:cover; }
     .story-text h2 { font-size:clamp(1.7rem,3vw,2.8rem); font-weight:700; margin-bottom:1.25rem; }
     .story-text p  { font-size:1rem; color:var(--gray); line-height:1.8; margin-bottom:1rem; }
-    .pillars { display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; }
-    .pillar  { background:var(--white); border-radius:var(--radius); padding:2rem 1.75rem; box-shadow:0 4px 20px rgba(0,0,0,0.07); text-align:center; }
-    .pillar-icon { font-size:2.5rem; margin-bottom:1rem; }
-    .pillar h3 { font-family:var(--font-h); font-size:1.1rem; font-weight:700; margin-bottom:0.6rem; }
-    .pillar p  { font-size:0.92rem; color:var(--gray); line-height:1.65; }
+
+    /* Team cards */
+    .team-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; }
+    .team-card { background:var(--white); border-radius:var(--radius); overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.08); transition:transform var(--t), box-shadow var(--t); }
+    .team-card:hover { transform:translateY(-4px); box-shadow:0 12px 36px rgba(0,0,0,0.13); }
+    .team-card__img { width:100%; aspect-ratio:1; object-fit:cover; background:var(--light); }
+    .team-card__body { padding:1.4rem 1.5rem 1.6rem; }
+    .team-card__role { font-family:var(--font-h); font-size:0.72rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--green); margin-bottom:0.3rem; }
+    .team-card__name { font-family:var(--font-h); font-size:1.15rem; font-weight:700; margin-bottom:0.5rem; }
+    .team-card__bio  { font-size:0.9rem; color:var(--gray); line-height:1.65; }
+
+    /* Guiding principles */
+    .values-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:2rem; }
+    .value-block { border-left:3px solid var(--green); padding:1.25rem 1.5rem; }
+    .value-block h3 { font-family:var(--font-h); font-size:1rem; font-weight:700; margin-bottom:0.4rem; }
+    .value-block p  { font-size:0.92rem; color:var(--gray); line-height:1.65; }
+
+    /* Timeline */
     .timeline  { display:flex; flex-direction:column; gap:0; }
     .tl-item   { display:grid; grid-template-columns:120px 1fr; gap:2rem; padding:2rem 0; border-bottom:1px solid var(--border); }
     .tl-item:last-child { border-bottom:none; }
     .tl-year   { font-family:var(--font-h); font-size:1.6rem; font-weight:700; color:var(--green); }
     .tl-desc h4 { font-family:var(--font-h); font-size:1rem; font-weight:700; margin-bottom:0.35rem; }
     .tl-desc p  { font-size:0.93rem; color:var(--gray); line-height:1.65; }
+
     @media(max-width:900px) {
       .story-grid { grid-template-columns:1fr; gap:2rem; }
       .story-grid img { height:280px; }
-      .pillars { grid-template-columns:1fr; }
+      .team-grid { grid-template-columns:repeat(2,1fr); }
+      .values-grid { grid-template-columns:1fr; }
       .tl-item { grid-template-columns:80px 1fr; gap:1rem; }
     }
-  </style>||
+    @media(max-width:560px) { .team-grid { grid-template-columns:1fr; } }
+  </style>
 </head>
 <body>
   <a href="#main" class="skip-link">Saltar al contenido</a>
@@ -50,8 +67,7 @@
         <a href="index.html"><img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/eac5a1af-b426-495a-9f1b-cd0f0e8485ad/ADCLogoCompressed.png" alt="AD Curundú" loading="eager"></a>
       </div>
       <nav class="header-nav">
-        <a href="acercadeadc.html">Acerca de ADC</a>
-        <a href="quienessomos.html">Quiénes Somos</a>
+        <a href="acercadeadc.html" class="active">Acerca de ADC</a>
         <a href="calendario.html">Calendario</a>
         <a href="participar.html">Participar</a>
         <a href="contactanos.html">Contáctanos</a>
@@ -63,7 +79,6 @@
   </header>
   <nav class="mobile-nav" id="mobile-nav">
     <a href="acercadeadc.html">Acerca de ADC</a>
-    <a href="quienessomos.html">Quiénes Somos</a>
     <a href="calendario.html">Calendario</a>
     <a href="participar.html">Participar</a>
     <a href="contactanos.html">Contáctanos</a>
@@ -72,6 +87,7 @@
   </nav>
 
   <main id="main">
+
     <!-- Page Hero -->
     <div class="page-hero">
       <img class="page-hero__bg" src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/238c786e-5f15-4da1-b979-f1a372ec84ed/Edited2-1044497.jpg" alt="" aria-hidden="true">
@@ -82,7 +98,7 @@
       </div>
     </div>
 
-    <!-- Nuestra Historia -->
+    <!-- Nacimos en Curundú -->
     <section class="section">
       <div class="section-inner">
         <p class="section-label reveal">Historia</p>
@@ -99,45 +115,68 @@
       </div>
     </section>
 
-    <!-- Pillars -->
+    <!-- Líderes -->
     <section class="section section--light">
       <div class="section-inner">
-        <p class="section-label reveal">Lo que hacemos</p>
+        <p class="section-label reveal">Liderazgo</p>
         <div class="section-divider reveal"></div>
-        <div class="pillars">
-          <div class="pillar reveal">
-            <div class="pillar-icon">⚽</div>
-            <h3>Deporte</h3>
-            <p>Entrenamiento de fútbol y actividad física estructurada para niños y jóvenes de Curundú, fomentando disciplina, trabajo en equipo y autoestima.</p>
+        <div class="team-grid">
+          <div class="team-card reveal">
+            <img class="team-card__img" src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/3ca8f44d-e2ab-4eab-8601-762e9999509c/Edited2-1044300.jpg" alt="Andrés Madrid" loading="lazy">
+            <div class="team-card__body">
+              <p class="team-card__role">Entrenador, Fundador y Presidente</p>
+              <h3 class="team-card__name">Andrés Madrid</h3>
+              <p class="team-card__bio">Con ADC y los MET Jaguars desde 2015. Entrenador de equipos U8, U10, U12, U14, U16, U12F y U18. Posee la certificación de fútbol Nivel C de Fepafut (Concacaf) y actualmente está cursando el Nivel B.</p>
+            </div>
           </div>
-          <div class="pillar reveal">
-            <div class="pillar-icon">📚</div>
-            <h3>Educación</h3>
-            <p>Tutorías académicas y talleres complementarios que ayudan a nuestros atletas a mantenerse en la escuela y construir un proyecto de vida sólido.</p>
+          <div class="team-card reveal">
+            <img class="team-card__img" src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/7475c24e-378b-4114-b6e3-68df04a75c8d/Edited2-1044547.jpg" alt="César Santos" loading="lazy">
+            <div class="team-card__body">
+              <p class="team-card__role">Entrenador, Fundador y Vicepresidente</p>
+              <h3 class="team-card__name">César Santos</h3>
+              <p class="team-card__bio">Con ADC desde 2015 y con los Met Jaguars desde 2022. Entrenador de equipos U8, U10, U12, U14, U16 y U18. Posee la certificación de fútbol Nivel C de Fepafut (Concacaf).</p>
+            </div>
           </div>
-          <div class="pillar reveal">
-            <div class="pillar-icon">🥗</div>
-            <h3>Nutrición</h3>
-            <p>Programas de alimentación saludable y meriendas nutritivas para asegurar que cada campeón tenga la energía que necesita para crecer y aprender.</p>
+          <div class="team-card reveal">
+            <img class="team-card__img" src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/1b31507f-7f69-47c6-864c-84194e5c10ee/Screenshot+2025-07-16+112657.png" alt="Javier Wallace" loading="lazy">
+            <div class="team-card__body">
+              <p class="team-card__role">Asesor y Aliado</p>
+              <h3 class="team-card__name">Javier Wallace</h3>
+              <p class="team-card__bio">Con ADC desde 2015. Profesor en la Universidad de Duke y asesor de ADC. Co-propietario de Afrolatinx Tours, que facilita intercambios, viajes y giras de desarrollo sociocultural.</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Stats -->
-    <section class="section section--dark">
-      <div class="section-inner">
-        <div class="stats-grid reveal">
-          <div><div class="stat-num">2014</div><div class="stat-label">Año de fundación</div></div>
-          <div><div class="stat-num">60+</div><div class="stat-label">Atletas activos</div></div>
-          <div><div class="stat-num">10</div><div class="stat-label">Años de impacto</div></div>
-          <div><div class="stat-num">1</div><div class="stat-label">Barrio, muchos sueños</div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Timeline -->
+    <!-- Principios Rectores -->
     <section class="section">
+      <div class="section-inner">
+        <p class="section-label reveal">Lo que nos guía</p>
+        <div class="section-divider reveal"></div>
+        <div class="values-grid">
+          <div class="value-block reveal">
+            <h3>Comunidad</h3>
+            <p>Curundú es nuestro origen y nuestra razón de ser. Todo lo que hacemos busca fortalecer el tejido social de nuestro barrio.</p>
+          </div>
+          <div class="value-block reveal">
+            <h3>Integridad</h3>
+            <p>Operamos con transparencia total ante nuestros atletas, familias, aliados y donantes.</p>
+          </div>
+          <div class="value-block reveal">
+            <h3>Excelencia</h3>
+            <p>Exigimos lo mejor dentro y fuera del campo — en el deporte, en el aula y en la vida.</p>
+          </div>
+          <div class="value-block reveal">
+            <h3>Inclusión</h3>
+            <p>Las puertas de ADC están abiertas para todos los niños y jóvenes de la comunidad, sin importar su situación socioeconómica.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cronología -->
+    <section class="section section--light">
       <div class="section-inner">
         <p class="section-label reveal">Cronología</p>
         <div class="section-divider reveal"></div>
@@ -166,8 +205,8 @@
       </div>
     </section>
 
-    <!-- Achievements -->
-    <section class="section section--light">
+    <!-- Logros -->
+    <section class="section">
       <div class="section-inner">
         <p class="section-label reveal">Logros</p>
         <div class="section-divider reveal"></div>
@@ -218,9 +257,10 @@
         </div>
       </div>
     </section>
+
   </main>
 
-    <div class="sponsors-bar">
+  <div class="sponsors-bar">
     <div class="sponsors-inner">
       <a href="#" class="sponsor-logo" aria-label="BY"><img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/a26f0a6b-bf82-4fb0-b62d-1ea7d5fc6c0a/images.jpg" alt="BY" loading="lazy"></a>
       <a href="https://www.afrolatinxtours.com" target="_blank" rel="noopener" class="sponsor-logo" aria-label="Afrolatinx Travel"><img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/1b0ac7f1-29b1-47c8-bcc4-fdc7aa0b8ef1/71ac2a_a528798bf088409cb04fc4be25c9a2c4%7Emv2.jpg" alt="Afrolatinx Travel" loading="lazy"></a>
@@ -229,7 +269,7 @@
       <a href="https://dukeengage.duke.edu" target="_blank" rel="noopener" class="sponsor-logo" aria-label="Duke Engage"><img src="https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/4c9b1aa5-5b8a-4f4c-b746-cf3930ab7064/2024-DE-logo.png" alt="Duke Engage" loading="lazy"></a>
     </div>
   </div>
-<footer class="site-footer">
+  <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-hashtag"><h3>#nuestroequipo</h3></div>
       <div class="footer-social">
@@ -242,16 +282,10 @@
   </footer>
   <script src="nav.js"></script>
   <script>
-    // GA4 click tracking for donations and volunteer actions
     document.addEventListener('DOMContentLoaded', function() {
       document.querySelectorAll('a[href="donar.html"], .nav-cta').forEach(function(el) {
         el.addEventListener('click', function() {
           if (typeof gtag === 'function') gtag('event', 'donate_click', {event_category: 'engagement'});
-        });
-      });
-      document.querySelectorAll('a[href="participar.html"]').forEach(function(el) {
-        el.addEventListener('click', function() {
-          if (typeof gtag === 'function') gtag('event', 'volunteer_click', {event_category: 'engagement'});
         });
       });
     });
