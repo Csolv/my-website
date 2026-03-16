@@ -186,13 +186,15 @@
       gap: 2rem;
     }
     .logotipo-img {
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: 0 6px 28px rgba(0,0,0,0.08);
       max-width: 860px;
       width: 100%;
     }
-    .logotipo-img img { mix-blend-mode: multiply; }
+    .logotipo-img img {
+      width: 100%;
+      display: block;
+      mask-image: radial-gradient(ellipse 80% 80% at center, black 50%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 80% at center, black 50%, transparent 100%);
+    }
 
     /* Medios */
     .medios-buttons {
