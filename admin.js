@@ -57,29 +57,22 @@
     '  --adm-bg:      #f4f6f4;',
     '}',
 
-    /* Trigger button */
+    /* Trigger button — sits in the footer, not fixed */
     '#adm-trigger {',
-    '  position: fixed;',
-    '  bottom: 1.75rem;',
-    '  left: 1.75rem;',
-    '  z-index: 9997;',
-    '  background: rgba(6,77,42,0.88);',
-    '  color: #fff;',
+    '  background: none;',
     '  border: none;',
-    '  border-radius: 999px;',
-    '  padding: 0.5rem 1rem;',
-    '  font-size: 0.78rem;',
+    '  color: rgba(255,255,255,0.55);',
+    '  font-size: 0.72rem;',
     '  font-family: inherit;',
     '  cursor: pointer;',
-    '  backdrop-filter: blur(6px);',
-    '  -webkit-backdrop-filter: blur(6px);',
-    '  box-shadow: 0 2px 10px rgba(0,0,0,0.25);',
-    '  transition: background 0.18s, transform 0.15s;',
-    '  letter-spacing: 0.01em;',
+    '  letter-spacing: 0.04em;',
+    '  padding: 0;',
+    '  transition: color 0.15s;',
+    '  text-decoration: none;',
+    '  display: inline-block;',
     '}',
     '#adm-trigger:hover {',
-    '  background: rgba(6,77,42,1);',
-    '  transform: scale(1.05);',
+    '  color: rgba(255,255,255,0.9);',
     '}',
 
     /* Overlay */
@@ -729,14 +722,26 @@
     '  </div>',    /* end adm-panel */
     '</div>',      /* end adm-overlay */
 
-    /* Trigger button */
-    '<button id="adm-trigger">🔒 Administración</button>',
   ].join('\n');
 
   var wrapper = document.createElement('div');
   wrapper.innerHTML = overlayHTML;
   while (wrapper.firstChild) {
     document.body.appendChild(wrapper.firstChild);
+  }
+
+  /* Inject trigger into footer-copy line */
+  var footerCopy = document.querySelector('.footer-copy');
+  var triggerBtn = document.createElement('button');
+  triggerBtn.id = 'adm-trigger';
+  triggerBtn.textContent = '🔒 Administración';
+  if (footerCopy) {
+    footerCopy.appendChild(document.createTextNode(' · '));
+    footerCopy.appendChild(triggerBtn);
+  } else {
+    /* Fallback: append at end of footer, or body if no footer */
+    var footer = document.querySelector('.site-footer') || document.body;
+    footer.appendChild(triggerBtn);
   }
 
   /* ─────────────────────────────────────────
