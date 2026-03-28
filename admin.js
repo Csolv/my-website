@@ -4,7 +4,8 @@
   /* ─────────────────────────────────────────
      CONSTANTS
   ───────────────────────────────────────── */
-  var PASS = 'adcadmin2025';
+  /* Password is never stored in plaintext — compared as SHA-256 hash only */
+  var PASS_HASH = '87ac7086beadc393a2992e2531be5d797f518889a1c73850a1555ce0d8d0b4d2';
   var SESSION_KEY = 'adc-adm';
   var DRAFT_PREFIX = 'adc-draft-';
   var WORKER_URL = 'https://adc-grant-proxy.YOUR-SUBDOMAIN.workers.dev';
@@ -476,6 +477,60 @@
     '  animation: adm-spin 0.7s linear infinite;',
     '}',
 
+    /* Accordion pendientes */
+    '.adm-acc-item {',
+    '  border: 1.5px solid var(--adm-border);',
+    '  border-radius: 8px;',
+    '  margin-bottom: 0.6rem;',
+    '  overflow: hidden;',
+    '}',
+    '.adm-acc-trigger {',
+    '  width: 100%;',
+    '  background: #fff;',
+    '  border: none;',
+    '  text-align: left;',
+    '  padding: 0.8rem 1rem;',
+    '  cursor: pointer;',
+    '  display: flex;',
+    '  align-items: center;',
+    '  justify-content: space-between;',
+    '  gap: 0.75rem;',
+    '  font-family: inherit;',
+    '  font-size: 0.875rem;',
+    '  font-weight: 600;',
+    '  color: #222;',
+    '  transition: background 0.12s;',
+    '}',
+    '.adm-acc-trigger:hover { background: var(--adm-green-l); }',
+    '.adm-acc-trigger .adm-acc-left { display: flex; align-items: center; gap: 0.6rem; flex: 1; }',
+    '.adm-acc-trigger .adm-acc-tag {',
+    '  font-size: 0.68rem;',
+    '  font-weight: 700;',
+    '  padding: 2px 7px;',
+    '  border-radius: 4px;',
+    '  letter-spacing: 0.04em;',
+    '  flex-shrink: 0;',
+    '}',
+    '.adm-tag-urgent { background: #fdecea; color: #b71c1c; }',
+    '.adm-tag-content { background: #fff3e0; color: #e65100; }',
+    '.adm-tag-feature { background: #e8f5e9; color: #1b5e20; }',
+    '.adm-tag-transfer { background: #e3f2fd; color: #0d47a1; }',
+    '.adm-acc-chevron { font-size: 0.7rem; color: var(--adm-gray); flex-shrink: 0; transition: transform 0.2s; }',
+    '.adm-acc-item.open .adm-acc-chevron { transform: rotate(180deg); }',
+    '.adm-acc-body {',
+    '  display: none;',
+    '  padding: 0.75rem 1rem 0.9rem 2.6rem;',
+    '  background: #fafafa;',
+    '  border-top: 1px solid var(--adm-border);',
+    '  font-size: 0.83rem;',
+    '  line-height: 1.6;',
+    '  color: #444;',
+    '}',
+    '.adm-acc-item.open .adm-acc-body { display: block; }',
+    '.adm-acc-body ul { margin: 0.4rem 0 0 1rem; padding: 0; }',
+    '.adm-acc-body ul li { margin-bottom: 0.25rem; }',
+    '.adm-acc-body .adm-acc-who { margin-top: 0.5rem; font-size: 0.78rem; color: var(--adm-gray); }',
+
     /* Mobile */
     '@media (max-width: 680px) {',
     '  #adm-sidebar { display: none; }',
@@ -536,6 +591,7 @@
     '        <button class="adm-nav-item" data-view="borradores">💾 Borradores Guardados</button>',
     '        <button class="adm-nav-item" data-view="recursos">🔗 Recursos de Grants</button>',
     '        <div class="adm-sidebar-section">SITIO</div>',
+    '        <button class="adm-nav-item" data-view="analytics">📈 Google Analytics</button>',
     '        <button class="adm-nav-item" data-view="pendientes">⚠️ Pendientes</button>',
     '      </nav>',
 
@@ -709,11 +765,30 @@
     '          </div>',
     '        </div>',
 
+    /* ── Analytics ── */
+    '        <div class="adm-view" id="adm-view-analytics">',
+    '          <div class="adm-card">',
+    '            <h3>📈 Google Analytics — ADC (G-5VQJH72CD2)</h3>',
+    '            <p style="font-size:0.82rem;color:var(--adm-gray);margin-bottom:1rem;">Google Analytics no permite incrustación directa (iframe bloqueado). Usa los accesos rápidos a continuación para abrir cada reporte directamente en GA4.</p>',
+    '            <div class="adm-resources-grid" id="adm-ga-grid"></div>',
+    '          </div>',
+    '          <div class="adm-card">',
+    '            <h3>ℹ️ Datos clave de la propiedad</h3>',
+    '            <ul style="list-style:none;padding:0;margin:0;font-size:0.875rem;line-height:2;">',
+    '              <li><strong>Measurement ID:</strong> G-5VQJH72CD2</li>',
+    '              <li><strong>Cuenta:</strong> connorsolvason (pendiente transferir a ADC)</li>',
+    '              <li><strong>Sitio:</strong> csolv.github.io/my-website</li>',
+    '              <li><strong>Estado:</strong> Activo — instalado en las 11 páginas</li>',
+    '            </ul>',
+    '          </div>',
+    '        </div>',
+
     /* ── Pendientes ── */
     '        <div class="adm-view" id="adm-view-pendientes">',
     '          <div class="adm-card">',
     '            <h3>⚠️ Pendientes del Sitio</h3>',
-    '            <ul class="adm-pending-list" id="adm-pending-list"></ul>',
+    '            <p style="font-size:0.82rem;color:var(--adm-gray);margin-bottom:1rem;">Haz clic en cualquier ítem para ver detalles y pasos a seguir.</p>',
+    '            <div id="adm-pending-list"></div>',
     '          </div>',
     '        </div>',
 
@@ -817,16 +892,25 @@
      LOGIN
   ───────────────────────────────────────── */
   function attemptLogin() {
-    if (passInput.value === PASS) {
-      setAuthed(true);
-      loginErr.style.display = 'none';
-      loginScreen.style.display = 'none';
-      panel.style.display = 'flex';
-      refreshDraftCount();
-    } else {
-      loginErr.style.display = 'block';
-      passInput.select();
-    }
+    var raw = passInput.value;
+    if (!raw) return;
+    /* Hash the input with SHA-256 — plaintext never compared directly */
+    var enc = new TextEncoder().encode(raw);
+    crypto.subtle.digest('SHA-256', enc).then(function (buf) {
+      var hex = Array.from(new Uint8Array(buf))
+        .map(function (b) { return b.toString(16).padStart(2, '0'); })
+        .join('');
+      if (hex === PASS_HASH) {
+        setAuthed(true);
+        loginErr.style.display = 'none';
+        loginScreen.style.display = 'none';
+        panel.style.display = 'flex';
+        refreshDraftCount();
+      } else {
+        loginErr.style.display = 'block';
+        passInput.select();
+      }
+    });
   }
 
   loginBtn.addEventListener('click', attemptLogin);
@@ -850,6 +934,7 @@
     if (viewName === 'borradores') renderDrafts();
     if (viewName === 'recursos')   renderResources();
     if (viewName === 'pendientes') renderPendientes();
+    if (viewName === 'analytics')  renderGA();
     if (viewName === 'dashboard')  refreshDraftCount();
   }
 
@@ -1204,33 +1289,243 @@
   }
 
   /* ─────────────────────────────────────────
+     ANALYTICS VIEW
+  ───────────────────────────────────────── */
+  var GA_LINKS = [
+    { icon: '🏠', name: 'Resumen general',       url: 'https://analytics.google.com/analytics/web/#/p' + '000000000' + '/reports/intelligenthome', label: 'Home' },
+    { icon: '👥', name: 'Usuarios en tiempo real', url: 'https://analytics.google.com/analytics/web/', label: 'Realtime' },
+    { icon: '📄', name: 'Páginas más vistas',     url: 'https://analytics.google.com/analytics/web/', label: 'Pages' },
+    { icon: '🌐', name: 'Fuentes de tráfico',     url: 'https://analytics.google.com/analytics/web/', label: 'Traffic' },
+    { icon: '🗺️', name: 'Ubicación de visitantes', url: 'https://analytics.google.com/analytics/web/', label: 'Geo' },
+    { icon: '📱', name: 'Dispositivos usados',    url: 'https://analytics.google.com/analytics/web/', label: 'Tech' },
+    { icon: '🔍', name: 'Google Search Console',  url: 'https://search.google.com/search-console',    label: 'GSC' },
+    { icon: '📊', name: 'Abrir GA4 completo',     url: 'https://analytics.google.com',               label: 'Full' },
+  ];
+
+  function renderGA() {
+    var grid = document.getElementById('adm-ga-grid');
+    if (!grid || grid.children.length > 0) return;
+    GA_LINKS.forEach(function (r) {
+      var a = document.createElement('a');
+      a.className = 'adm-resource-card';
+      a.href = r.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.innerHTML = '<span class="adm-res-icon">' + r.icon + '</span>'
+        + '<div><div class="adm-res-name">' + escHtml(r.name) + '</div>'
+        + '<div class="adm-res-url">analytics.google.com</div></div>';
+      grid.appendChild(a);
+    });
+  }
+
+  /* ─────────────────────────────────────────
      PENDIENTES VIEW
   ───────────────────────────────────────── */
   var PENDIENTES = [
-    'Subir fotos reales del equipo y entrenamientos a las páginas de galería',
-    'Configurar formulario de contacto con backend real (actualmente solo frontend)',
-    'Integrar pasarela de pago real para donaciones (PayPal, Stripe o similar)',
-    'Agregar página de galería de fotos / videos de torneos',
-    'Crear perfil de cada entrenador y cuerpo técnico',
-    'Publicar resultados actualizados de torneos en el calendario',
-    'Agregar sección de noticias / blog con más entradas',
-    'Optimizar imágenes para carga más rápida (WebP)',
-    'Implementar newsletter real con integración Mailchimp o similar',
-    'Revisar y actualizar sección FAQ con preguntas recientes',
-    'Agregar botón de WhatsApp para contacto directo',
-    'Traducir sitio completo al inglés (versión bilingüe)',
-    'Registrar organización en Google for Nonprofits',
-    'Crear página de transparencia con informes de impacto anuales',
-    'Configurar Google Analytics para seguimiento de conversiones de donaciones',
+    {
+      icon: '🚨', tag: 'urgent', tagLabel: 'URGENTE',
+      title: 'Desplegar Cloudflare Worker (activa el generador de grants)',
+      detail: 'El generador de grants está construido pero inactivo. Requiere 3 pasos:',
+      steps: [
+        'Instalar Wrangler: npm install -g wrangler',
+        'Ejecutar: wrangler deploy desde la carpeta adc-admin/',
+        'Agregar clave de API: wrangler secret put ANTHROPIC_API_KEY',
+        'Actualizar WORKER_URL en admin.js con el subdominio real',
+      ],
+      who: 'Responsable: Connor (requiere cuenta Cloudflare + clave Anthropic)'
+    },
+    {
+      icon: '🔑', tag: 'transfer', tagLabel: 'TRANSFERENCIA',
+      title: 'Transferir repositorio GitHub a cuenta de ADC',
+      detail: 'Sin esta transferencia, el sitio depende de la cuenta personal de Connor. Si Connor pierde acceso, ADC pierde el sitio.',
+      steps: [
+        'Crear cuenta GitHub para ADC (ej. github.com/adcurundu)',
+        'Settings → Danger Zone → Transfer ownership en el repo my-website',
+        'ADC acepta la transferencia desde su cuenta',
+      ],
+      who: 'Responsable: Connor + Andrés/César (necesitan email de ADC)'
+    },
+    {
+      icon: '📊', tag: 'transfer', tagLabel: 'TRANSFERENCIA',
+      title: 'Transferir Google Analytics (G-5VQJH72CD2) a cuenta ADC',
+      detail: 'Analytics está en la cuenta personal de Connor. Si ADC no tiene acceso, no puede ver datos de tráfico ni donaciones.',
+      steps: [
+        'Crear cuenta Google para ADC (adcurundu@gmail.com ya existe)',
+        'GA4 → Admin → Account Access Management → Add user con rol Editor',
+        'Transferir propiedad completa cuando ADC confirme acceso',
+      ],
+      who: 'Responsable: Connor — pendiente crear acceso ADC'
+    },
+    {
+      icon: '📅', tag: 'feature', tagLabel: 'FUNCIÓN',
+      title: 'Conectar Google Calendar en vivo (reemplaza eventos hardcodeados)',
+      detail: 'Actualmente todos los eventos del calendario están escritos en el código JavaScript. ADC no puede actualizarlos sin editar código.',
+      steps: [
+        'Ir a calendar.google.com con cuenta adcurundu@gmail.com',
+        'Configuración del calendario → Integrar → copiar Calendar ID',
+        'Enviar el Calendar ID a Connor para insertar el embed',
+        'Verificar horarios reales: Sub-8/10 Lun/Mié 3:30–5:30, Sub-12/14 Mar/Jue 4:00–6:00',
+      ],
+      who: 'Necesita: Calendar ID de adcurundu@gmail.com → enviar a Connor'
+    },
+    {
+      icon: '📸', tag: 'feature', tagLabel: 'FUNCIÓN',
+      title: 'Instagram auto-feed en el homepage (LightWidget / Behold.so)',
+      detail: 'Las fotos de Instagram no se actualizan automáticamente. Hay que conectar @adcurundu a un widget.',
+      steps: [
+        'Opción A (gratis): LightWidget.com → conectar @adcurundu → copiar código embed',
+        'Opción B (gratis): Behold.so → mismo proceso',
+        'Insertar código en index.html donde aparece el placeholder de Instagram',
+      ],
+      who: 'Necesita: acceso de ADC a su cuenta de Instagram para autorizar widget'
+    },
+    {
+      icon: '💬', tag: 'content', tagLabel: 'CONTENIDO',
+      title: 'Testimonios reales de atletas — "Voces de Curundú"',
+      detail: 'La sección de testimonios existe con placeholders. Sin historias reales, el impacto de ADC no se comunica.',
+      steps: [
+        '2–3 citas de atletas o familias sobre cómo ADC cambió su vida',
+        'Foto del atleta (o foto del equipo si prefieren privacidad)',
+        'Nombre y edad del atleta (o seudónimo si se prefiere)',
+      ],
+      who: 'Necesita: Andrés o César recopilar testimonios de familias'
+    },
+    {
+      icon: '💰', tag: 'urgent', tagLabel: 'URGENTE',
+      title: 'Botón de donación real (PayPal, Yappy, GoFundMe)',
+      detail: 'El botón de donar no tiene destino real. Cada día sin donaciones reales es ingresos perdidos.',
+      steps: [
+        'Confirmar plataforma preferida: PayPal Giving Fund, GoFundMe Charity, o Yappy (Panama)',
+        'Crear cuenta y obtener link de donación',
+        'Enviar link a Connor para actualizar donar.html',
+        'También confirmar dirección de entrega para donaciones de equipos deportivos',
+      ],
+      who: 'Necesita: Andrés/César decidir plataforma y enviar link'
+    },
+    {
+      icon: '🤖', tag: 'feature', tagLabel: 'FUNCIÓN',
+      title: 'Chatbot público con Claude API real',
+      detail: 'El chatbot actual usa respuestas predefinidas. Con la misma infraestructura del Worker, puede responder en español e inglés con IA.',
+      steps: [
+        'Completar primero: desplegar Cloudflare Worker (ítem #1)',
+        'Actualizar chatbot.js para llamar al Worker en lugar de respuestas estáticas',
+        'Agregar contexto de ADC al system prompt del chatbot',
+      ],
+      who: 'Depende de: Cloudflare Worker desplegado + clave API'
+    },
+    {
+      icon: '📝', tag: 'feature', tagLabel: 'FUNCIÓN',
+      title: 'Netlify CMS para editar el blog sin código',
+      detail: 'Actualmente cada artículo del blog es un archivo HTML que requiere edición de código. Con Decap CMS, los fundadores pueden publicar desde un formulario web.',
+      steps: [
+        'Mover el repo a un repositorio privado en la cuenta GitHub de ADC',
+        'Instalar Decap CMS: agregar admin/index.html y admin/config.yml',
+        'Conectar con Netlify Identity para autenticación',
+        'Capacitar a Andrés/César en el editor visual',
+      ],
+      who: 'Depende de: transferencia de repo GitHub (ítem #2)'
+    },
+    {
+      icon: '❓', tag: 'content', tagLabel: 'CONTENIDO',
+      title: 'Completar respuestas del FAQ',
+      detail: 'Varias preguntas frecuentes tienen respuestas incompletas o placeholder.',
+      steps: [
+        'Dirección exacta del campo/cancha en Curundú',
+        'Grupos de edad confirmados (¿Sub-8 hasta Sub-16?)',
+        'Número de registro oficial como nonprofit en Panamá',
+        'Costo del programa (¿gratis para todas las familias?)',
+        'Horario de inscripción y proceso de selección',
+      ],
+      who: 'Necesita: Andrés o César responder estas preguntas'
+    },
+    {
+      icon: '🔗', tag: 'content', tagLabel: 'CONTENIDO',
+      title: 'URLs de patrocinadores BY y CR Enterprise',
+      detail: 'El logo bar de patrocinadores no tiene links activos para BY ni CR Enterprise.',
+      steps: [
+        'Confirmar si BY y CR Enterprise tienen sitios web públicos',
+        'Enviar URLs a Connor para actualizar el código',
+        'Confirmar si hay patrocinadores nuevos a agregar',
+      ],
+      who: 'Necesita: Andrés/César confirmar URLs'
+    },
+    {
+      icon: '🏛', tag: 'transfer', tagLabel: 'TRANSFERENCIA',
+      title: 'Registrar ADC en Google for Nonprofits',
+      detail: 'Google for Nonprofits da acceso gratuito a Google Workspace, Google Ad Grants ($10,000/mes en anuncios gratis), y YouTube Nonprofit.',
+      steps: [
+        'Registrar en google.com/nonprofits con número de registro nonprofit de ADC',
+        'Requiere: certificado de organización sin fines de lucro de Panamá',
+        'Una vez aprobado, solicitar Google Ad Grants para visibilidad en búsquedas',
+      ],
+      who: 'Necesita: Andrés/César + número de registro oficial de ADC'
+    },
+    {
+      icon: '📣', tag: 'feature', tagLabel: 'FUNCIÓN',
+      title: 'Newsletter real con Mailchimp o similar',
+      detail: 'El formulario de newsletter existe pero no envía emails a ningún lado.',
+      steps: [
+        'Crear cuenta gratuita en Mailchimp (hasta 500 suscriptores gratis)',
+        'Obtener embed code del formulario de Mailchimp',
+        'Reemplazar el formulario placeholder en index.html y contactanos.html',
+      ],
+      who: 'Responsable: Connor — solo necesita acceso Mailchimp de ADC'
+    },
+    {
+      icon: '📊', tag: 'feature', tagLabel: 'FUNCIÓN',
+      title: 'Estadísticas del sitio manejables sin código (stats.json)',
+      detail: 'Los números de impacto (70+ atletas, 60+ familias, etc.) están hardcodeados en el HTML. ADC no puede actualizarlos sin editar código.',
+      steps: [
+        'Crear archivo data/stats.json con los números actuales',
+        'Actualizar index.html para leer del JSON con fetch()',
+        'ADC puede actualizar números editando un solo archivo JSON',
+      ],
+      who: 'Responsable: Connor — simple cambio técnico'
+    },
+    {
+      icon: '🌐', tag: 'feature', tagLabel: 'FUNCIÓN',
+      title: 'Versión bilingüe español/inglés',
+      detail: 'El sitio es solo en español. Donantes internacionales y aliados como Duke Engage necesitan versión en inglés.',
+      steps: [
+        'Opción rápida: agregar toggle de traducción (Google Translate widget)',
+        'Opción completa: duplicar páginas con sufijo -en.html',
+        'Prioridad: traducir donar.html y acercadeadc.html primero',
+      ],
+      who: 'Responsable: Connor — con ayuda de traducciones de ADC'
+    },
   ];
 
   function renderPendientes() {
-    var list = document.getElementById('adm-pending-list');
-    if (list.children.length > 0) return;
-    PENDIENTES.forEach(function (item) {
-      var li = document.createElement('li');
-      li.innerHTML = '<span class="adm-todo-icon">⚠️</span><span>' + escHtml(item) + '</span>';
-      list.appendChild(li);
+    var container = document.getElementById('adm-pending-list');
+    if (!container || container.children.length > 0) return;
+    PENDIENTES.forEach(function (item, idx) {
+      var tagClass = 'adm-tag-' + item.tag;
+      var div = document.createElement('div');
+      div.className = 'adm-acc-item';
+      var stepsHTML = '';
+      if (item.steps && item.steps.length) {
+        stepsHTML = '<ul>' + item.steps.map(function (s) {
+          return '<li>' + escHtml(s) + '</li>';
+        }).join('') + '</ul>';
+      }
+      div.innerHTML =
+        '<button class="adm-acc-trigger">' +
+          '<span class="adm-acc-left">' +
+            '<span>' + item.icon + '</span>' +
+            '<span>' + escHtml(item.title) + '</span>' +
+          '</span>' +
+          '<span class="adm-acc-tag ' + tagClass + '">' + escHtml(item.tagLabel) + '</span>' +
+          '<span class="adm-acc-chevron">▼</span>' +
+        '</button>' +
+        '<div class="adm-acc-body">' +
+          '<p style="margin:0 0 0.4rem;">' + escHtml(item.detail) + '</p>' +
+          stepsHTML +
+          (item.who ? '<p class="adm-acc-who">👤 ' + escHtml(item.who) + '</p>' : '') +
+        '</div>';
+      div.querySelector('.adm-acc-trigger').addEventListener('click', function () {
+        div.classList.toggle('open');
+      });
+      container.appendChild(div);
     });
   }
 
