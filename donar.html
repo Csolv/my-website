@@ -9,7 +9,7 @@
     gtag('js', new Date());
     gtag('config', 'G-5VQJH72CD2');
   </script>
-  <meta name="robots" content="noindex, nofollow">
+  <!-- Search indexing enabled for production -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Apoyar — AD Curundú</title>
@@ -171,7 +171,8 @@
               <label for="custom-amount">O ingresa un monto personalizado</label>
               <div class="custom-amount">
                 <span>$</span>
-                <input type="number" id="custom-amount" placeholder="Otro monto" min="1" step="1">
+                <label for="custom-amount" class="sr-only">Cantidad personalizada en USD</label>
+              <input type="number" id="custom-amount" placeholder="Otro monto" min="1" step="1">
               </div>
             </div>
 
@@ -244,7 +245,7 @@
       <div class="section-inner">
         <div class="stats-grid reveal">
           <div><div class="stat-num">60+</div><div class="stat-label">Atletas que apoyas</div></div>
-          <div><div class="stat-num">10</div><div class="stat-label">Años de impacto</div></div>
+          <div><div class="stat-num">11</div><div class="stat-label">Años de impacto</div></div>
           <div><div class="stat-num">100%</div><div class="stat-label">Sin fines de lucro</div></div>
           <div><div class="stat-num">3</div><div class="stat-label">Programas activos</div></div>
         </div>
@@ -343,5 +344,6 @@
     });
   </script>
   <script src="chatbot.js"></script>
+  <script src="admin.js"></script>
 </body>
 </html>
