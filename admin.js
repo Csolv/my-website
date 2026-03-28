@@ -450,20 +450,6 @@
     '.adm-resource-card .adm-res-name { font-weight: 600; font-size: 0.875rem; color: var(--adm-green-d); }',
     '.adm-resource-card .adm-res-url { font-size: 0.72rem; color: var(--adm-gray); margin-top: 0.15rem; }',
 
-    /* Pendientes */
-    '.adm-pending-list { list-style: none; padding: 0; margin: 0; }',
-    '.adm-pending-list li {',
-    '  display: flex;',
-    '  align-items: flex-start;',
-    '  gap: 0.6rem;',
-    '  padding: 0.65rem 0;',
-    '  border-bottom: 1px solid var(--adm-border);',
-    '  font-size: 0.875rem;',
-    '  line-height: 1.45;',
-    '  color: #333;',
-    '}',
-    '.adm-pending-list li:last-child { border-bottom: none; }',
-    '.adm-pending-list .adm-todo-icon { flex-shrink: 0; margin-top: 1px; }',
 
     /* Spinner */
     '@keyframes adm-spin { to { transform: rotate(360deg); } }',
@@ -574,7 +560,6 @@
     '        <span class="adm-badge">PRIVADO</span>',
     '      </div>',
     '      <div class="adm-hdr-right">',
-    '        <button class="adm-hdr-btn" id="adm-logout-btn">Cerrar sesión</button>',
     '        <button class="adm-hdr-btn" id="adm-close-btn">✕ Cerrar</button>',
     '      </div>',
     '    </div>',
@@ -828,7 +813,6 @@
   var passInput   = document.getElementById('adm-pass-input');
   var loginBtn    = document.getElementById('adm-login-btn');
   var loginErr    = document.getElementById('adm-login-err');
-  var logoutBtn   = document.getElementById('adm-logout-btn');
   var closeBtn    = document.getElementById('adm-close-btn');
   var trigger     = document.getElementById('adm-trigger');
   var ctxToggle   = document.getElementById('adm-ctx-toggle');
@@ -882,11 +866,6 @@
   ───────────────────────────────────────── */
   trigger.addEventListener('click', showOverlay);
   closeBtn.addEventListener('click', hideOverlay);
-
-  logoutBtn.addEventListener('click', function () {
-    setAuthed(false);
-    hideOverlay();
-  });
 
   /* ─────────────────────────────────────────
      LOGIN
