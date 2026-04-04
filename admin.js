@@ -8,7 +8,7 @@
   var PASS_HASH = '87ac7086beadc393a2992e2531be5d797f518889a1c73850a1555ce0d8d0b4d2';
   var SESSION_KEY = 'adc-adm';
   var DRAFT_PREFIX = 'adc-draft-';
-  var WORKER_URL = 'https://adc-grant-proxy.YOUR-SUBDOMAIN.workers.dev';
+  var WORKER_URL = 'https://adc-grant-proxy.adcurundu.workers.dev';
 
   var ADC_CONTEXT = [
     'Asociación Deportiva Curundú (ADC) es una organización sin fines de lucro fundada en 2014 en el barrio de Curundú, Ciudad de Panamá — una de las comunidades urbanas más vulnerables de Centroamérica.',
@@ -1302,16 +1302,14 @@
   ───────────────────────────────────────── */
   var PENDIENTES = [
     {
-      icon: '🚨', tag: 'urgent', tagLabel: 'URGENTE',
-      title: 'Desplegar Cloudflare Worker (activa el generador de grants)',
-      detail: 'El generador de grants está construido pero inactivo. Requiere 3 pasos:',
+      icon: '✅', tag: 'done', tagLabel: 'COMPLETADO',
+      title: 'Cloudflare Worker desplegado — generador de grants activo',
+      detail: 'Worker desplegado en adc-grant-proxy.adcurundu.workers.dev. ANTHROPIC_API_KEY configurado como secreto encriptado.',
       steps: [
-        'Instalar Wrangler: npm install -g wrangler',
-        'Ejecutar: wrangler deploy desde la carpeta adc-admin/',
-        'Agregar clave de API: wrangler secret put ANTHROPIC_API_KEY',
-        'Actualizar WORKER_URL en admin.js con el subdominio real',
+        'Worker URL: https://adc-grant-proxy.adcurundu.workers.dev',
+        'API key configurada como secreto Cloudflare (no expuesta en código)',
       ],
-      who: 'Responsable: Connor (requiere cuenta Cloudflare + clave Anthropic)'
+      who: 'Completado por Connor — abril 2026'
     },
     {
       icon: '🔑', tag: 'transfer', tagLabel: 'TRANSFERENCIA',
