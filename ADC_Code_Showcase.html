@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ADC Website — Code Showcase | FECON 390</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <style>
+    :root {
+      --green:     #1b6b3a;
+      --green-l:   #2ead6b;
+      --green-pale:#e8f5ee;
+      --dark:      #0f0f0f;
+      --mid:       #1a1a1a;
+      --border:    #2a2a2a;
+      --text:      #e8e8e8;
+      --muted:     #888;
+      --accent:    #2ead6b;
+      --yellow:    #f5c842;
+      --blue:      #4a9eff;
+      --red:       #e05c5c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 15px; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── TOP BAR ── */
+    .top-bar {
+      background: var(--green);
+      padding: 0.6rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    }
+    .top-bar-left { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; color: #fff; }
+    .top-bar-left span { opacity: 0.7; font-weight: 400; }
+    .top-nav { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+    .top-nav a {
+      color: rgba(255,255,255,0.75);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .top-nav a:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 5rem 2rem 4rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green-l);
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 600;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+    .hero h1 em { font-style: normal; color: var(--green-l); }
+    .hero-sub {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 60ch;
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+    }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: flex;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+      padding: 1.5rem 2rem;
+      background: var(--mid);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stat { text-align: center; }
+    .stat-num { font-size: 2.2rem; font-weight: 700; color: var(--green-l); line-height: 1; }
+    .stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; letter-spacing: 0.04em; }
+
+    /* ── FILE TREE ── */
+    .tree-section {
+      max-width: 900px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+    }
+    .section-heading {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green-l);
+      margin-bottom: 1rem;
+    }
+    .file-tree {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      background: var(--mid);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .file-tree thead th {
+      background: var(--border);
+      padding: 0.6rem 1rem;
+      text-align: left;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .file-tree tbody tr { border-top: 1px solid var(--border); }
+    .file-tree tbody tr:hover { background: rgba(255,255,255,0.03); }
+    .ft-name { padding: 0.55rem 1rem; color: var(--green-l); }
+    .ft-lines { padding: 0.55rem 1rem; color: var(--muted); text-align: right; }
+    .ft-desc { padding: 0.55rem 1rem; color: #bbb; font-family: 'Inter', sans-serif; font-size: 0.8rem; }
+    .tree-total {
+      text-align: right;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .tree-total strong { color: var(--green-l); }
+
+    /* ── FILE SECTIONS ── */
+    .file-section {
+      max-width: 900px;
+      margin: 3.5rem auto;
+      padding: 0 2rem;
+    }
+    .file-header {
+      margin-bottom: 1.25rem;
+    }
+    .file-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .file-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .file-badge.html       { background: #e44d26; color: #fff; }
+    .file-badge.css        { background: #264de4; color: #fff; }
+    .file-badge.javascript { background: #f7df1e; color: #000; }
+    .file-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .file-lines {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: var(--mid);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+    .file-role {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    /* ── PROMPT BOX ── */
+    .prompt-box {
+      background: #0d1f14;
+      border: 1px solid var(--green);
+      border-left: 3px solid var(--green-l);
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    .prompt-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green-l);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .phase-tag {
+      background: var(--green);
+      color: #fff;
+      font-size: 0.65rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    .prompt-text {
+      font-size: 0.9rem;
+      color: #c8e6d4;
+      font-style: italic;
+      line-height: 1.65;
+    }
+
+    /* ── CODE BLOCK ── */
+    .snippet-wrap {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .snippet-label {
+      background: #1e1e1e;
+      padding: 0.5rem 1rem;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+      border-bottom: 1px solid var(--border);
+    }
+    .snippet-wrap pre {
+      margin: 0 !important;
+      border-radius: 0 !important;
+      max-height: 420px;
+      overflow-y: auto;
+      font-size: 0.8rem !important;
+    }
+    .snippet-wrap pre::-webkit-scrollbar { width: 6px; }
+    .snippet-wrap pre::-webkit-scrollbar-track { background: #1a1a1a; }
+    .snippet-wrap pre::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 3rem auto;
+      max-width: 900px;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    .footer a { color: var(--green-l); text-decoration: none; }
+    .footer strong { color: #ccc; }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-bar-left">
+    ADC Code Showcase &nbsp;<span>· FECON 390 · Connor Solvason</span>
+  </div>
+  <nav class="top-nav">
+    <a href="#index">index.html</a>
+<a href="#styles">styles.css</a>
+<a href="#nav">nav.js</a>
+<a href="#chatbot">chatbot.js</a>
+<a href="#admin">admin.js</a>
+<a href="#worker">worker.js</a>
+  </nav>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-eyebrow">FECON 390 — Project Artifact</p>
+  <h1>Asociación Deportiva Curundú<br><em>Built entirely with conversational AI</em></h1>
+  <p class="hero-sub">
+    Every line of code below was generated by Claude AI in response to plain-English prompts —
+    no prior coding knowledge required. This file documents the key source files of a fully
+    deployed nonprofit website and admin backend.
+  </p>
+  <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+    <a href="https://csolv.github.io/my-website/" target="_blank"
+       style="background:var(--green); color:#fff; padding:0.55rem 1.2rem; border-radius:6px;
+              font-size:0.85rem; font-weight:600; text-decoration:none;">
+      → Live Site
+    </a>
+    <a href="https://github.com/csolv/my-website" target="_blank"
+       style="border:1px solid var(--border); color:#ccc; padding:0.55rem 1.2rem; border-radius:6px;
+              font-size:0.85rem; font-weight:500; text-decoration:none;">
+      GitHub Repository
+    </a>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat"><div class="stat-num">6,346</div><div class="stat-label">Total lines of code</div></div>
+  <div class="stat"><div class="stat-num">13</div><div class="stat-label">Source files</div></div>
+  <div class="stat"><div class="stat-num">48</div><div class="stat-label">AI prompts documented</div></div>
+  <div class="stat"><div class="stat-num">$0</div><div class="stat-label">Developer cost</div></div>
+  <div class="stat"><div class="stat-num">3</div><div class="stat-label">Languages (HTML/CSS/JS)</div></div>
+  <div class="stat"><div class="stat-num">0</div><div class="stat-label">Lines written by hand</div></div>
+</div>
+
+<!-- FILE TREE -->
+<div class="tree-section">
+  <p class="section-heading">Project File Structure</p>
+  <table class="file-tree">
+    <thead>
+      <tr>
+        <th>File</th>
+        <th style="text-align:right;">Lines</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="ft-name">index.html</td><td class="ft-lines">581</td><td class="ft-desc">Homepage</td></tr>
+<tr><td class="ft-name">acercadeadc.html</td><td class="ft-lines">299</td><td class="ft-desc">About page — team bios, values, timeline, achievements</td></tr>
+<tr><td class="ft-name">calendario.html</td><td class="ft-lines">328</td><td class="ft-desc">Calendar — styled event list with category badges</td></tr>
+<tr><td class="ft-name">participar.html</td><td class="ft-lines">260</td><td class="ft-desc">Participation — 6 audience pathways</td></tr>
+<tr><td class="ft-name">contactanos.html</td><td class="ft-lines">297</td><td class="ft-desc">Contact — map embed, contact form, newsletter</td></tr>
+<tr><td class="ft-name">donar.html</td><td class="ft-lines">349</td><td class="ft-desc">Donation — tiered giving levels, fund transparency</td></tr>
+<tr><td class="ft-name">blog.html</td><td class="ft-lines">564</td><td class="ft-desc">Blog — featured hero + filterable article grid</td></tr>
+<tr><td class="ft-name">faq.html</td><td class="ft-lines">337</td><td class="ft-desc">FAQ — accordion by audience segment</td></tr>
+<tr><td class="ft-name">styles.css</td><td class="ft-lines">788</td><td class="ft-desc">Shared stylesheet — all components</td></tr>
+<tr><td class="ft-name">nav.js</td><td class="ft-lines">42</td><td class="ft-desc">Navigation — hamburger, active state, scroll-reveal</td></tr>
+<tr><td class="ft-name">chatbot.js</td><td class="ft-lines">197</td><td class="ft-desc">Virtual assistant chatbot</td></tr>
+<tr><td class="ft-name">admin.js</td><td class="ft-lines">1,535</td><td class="ft-desc">Private admin dashboard + AI grant writer</td></tr>
+<tr><td class="ft-name">worker.js</td><td class="ft-lines">111</td><td class="ft-desc">Cloudflare Worker — serverless API proxy</td></tr>
+    </tbody>
+  </table>
+  <p class="tree-total">Total: <strong>6,346 lines</strong> across 13 files</p>
+</div>
+
+<hr class="section-divider">
+
+<!-- FILE SECTIONS -->
+
+<section class="file-section" id="index">
+  <div class="file-header">
+    <div class="file-meta">
+      <span class="file-badge html">HTML</span>
+      <span class="file-name">index.html</span>
+      <span class="file-lines">581 lines</span>
+    </div>
+    <p class="file-role">Homepage — hero section, impact stats, Instagram feed, sponsor bar</p>
+  </div>
+
+  <div class="prompt-box">
+    <div class="prompt-label">
+      <span class="phase-tag">Phase 1</span>
+      PROMPT THAT GENERATED THIS FILE
+    </div>
+    <p class="prompt-text">"Build a complete multi-page website for ADC, a nonprofit soccer and education organization in Curundú, Panama. Include a hero section with a video background, a clean navigation menu, and ADC's green and black brand colors."</p>
+  </div>
+
+  <div class="snippet-wrap">
+    <div class="snippet-label">Hero section: cycling video background + floating animated logo</div>
+    <pre><code class="language-html">    &lt;section class=&quot;hero&quot;&gt;
+      &lt;video id=&quot;hero-video&quot; class=&quot;hero-video&quot; autoplay muted playsinline aria-hidden=&quot;true&quot;&gt;
+        &lt;source src=&quot;hero-video-1.mp4&quot; type=&quot;video/mp4&quot;&gt;
+      &lt;/video&gt;
+      &lt;div class=&quot;hero-overlay&quot; aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;hero-content&quot;&gt;
+        &lt;div class=&quot;hero-text hero-text--left&quot;&gt;
+          &lt;h1&gt;Nuestro barrio,&lt;/h1&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;hero-logo&quot;&gt;
+          &lt;img src=&quot;https://images.squarespace-cdn.com/content/v1/6849b1e51a6feb2e09db3f6e/eac5a1af-b426-495a-9f1b-cd0f0e8485ad/ADCLogoCompressed.png&quot; alt=&quot;AD Curundú&quot; fetchpriority=&quot;high&quot; loading=&quot;eager&quot;&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;hero-text hero-text--right&quot;&gt;
+          &lt;h1&gt;nuestro equipo.&lt;/h1&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;scroll-cue&quot; aria-hidden=&quot;true&quot;&gt;
+        &lt;svg viewBox=&quot;0 0 24 24&quot;&gt;&lt;polyline points=&quot;6 9 12 15 18 9&quot;/&gt;&lt;/svg&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+
+    &lt;!-- PROBLEM-FIRST FRAMING --&gt;
+    &lt;section style=&quot;background:#0d0d0d; padding:3rem 4vw;&quot;&gt;
+      &lt;div style=&quot;max-width:var(--max-w); margin:0 auto; display:grid; grid-template-columns:1fr auto; align-items:center; gap:3rem;&quot;&gt;
+        &lt;div&gt;
+          &lt;p style=&quot;font-family:var(--font-h); font-size:0.72rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--green); margin-bottom:0.75rem;&quot;&gt;Donde el deporte abre puertas&lt;/p&gt;
+          &lt;p style=&quot;font-family:var(--font-h); font-size:clamp(1.1rem,2vw,1.4rem); font-weight:600; color:var(--white); line-height:1.55; max-width:70ch;&quot;&gt;En Curundú y las comunidades vecinas, hay jóvenes con talento que solo necesitan la oportunidad correcta. ADC existe para darles exactamente eso: entrenamiento deportivo de calidad, apoyo educativo y una comunidad que los respalda — &lt;span style=&quot;color:var(--green);&quot;&gt;desde 2014.&lt;/span&gt;&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;a href=&quot;acercadeadc.html&quot; class=&quot;btn btn--primary&quot; style=&quot;white-space:nowrap; flex-shrink:0;&quot;&gt;Nuestra historia&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+
+</code></pre>
+  </div>
+</section>
+
+<section class="file-section" id="styles">
+  <div class="file-header">
+    <div class="file-meta">
+      <span class="file-badge css">CSS</span>
+      <span class="file-name">styles.css</span>
+      <span class="file-lines">788 lines</span>
+    </div>
+    <p class="file-role">Shared stylesheet — design tokens, responsive grid, all component styles</p>
+  </div>
+
+  <div class="prompt-box">
+    <div class="prompt-label">
+      <span class="phase-tag">Phase 2</span>
+      PROMPT THAT GENERATED THIS FILE
+    </div>
+    <p class="prompt-text">"Add a visual impact statistics section to the about page showing ADC's key numbers with animated counting effect. Style it as a dark full-width band consistent with the rest of the site."</p>
+  </div>
+
+  <div class="snippet-wrap">
+    <div class="snippet-label">CSS custom properties (design tokens) + stats grid + scroll-reveal animation</div>
+    <pre><code class="language-css">/* ═══════════════════════════════════════════
+   AD Curundú — Shared Stylesheet
+   ═══════════════════════════════════════════ */
+
+/* ─── Reset &amp; Base ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black:      #0d0d0d;
+  --white:      #ffffff;
+  --green:      #2bad6d;
+  --green-dark: #1f9059;
+  --green-pale: #e8f8ef;
+  --light:      #f5f5f5;
+  --gray:       #6b6b6b;
+  --border:     #e0e0e0;
+  --font-h:     &#x27;League Spartan&#x27;, sans-serif;
+  --font-b:     &#x27;Inter&#x27;, sans-serif;
+  --max-w:      1400px;
+  --header-h:   70px;
+  --t:          0.25s ease;
+  --radius:     8px;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--font-b);
+  background: var(--white);
+  color: var(--black);
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+img  { display: block; max-width: 100%; height: auto; }
+
+/* ... */
+
+  color: var(--gray);
+  line-height: 1.78;
+  max-width: 65ch;
+}
+.section--dark  .body-text  { color: rgba(255,255,255,0.65); }
+.section--green .body-text  { color: rgba(255,255,255,0.85); }
+
+/* ═══ BUTTONS ═══ */
+.btn {
+  display: inline-block;
+  font-family: var(--font-h);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.8rem 2rem;
+  border-radius: 100px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: background var(--t), color var(--t), transform var(--t), border-color var(--t);
+}
+.btn:hover { transform: translateY(-2px); }
+
+.btn--primary  { background: var(--green); color: var(--white); }
+.btn--primary:hover { background: var(--green-dark); }
+
+.btn--outline  { background: transparent; color: var(--black); border-color: var(--black); }
+.btn--outline:hover { background: var(--black); color: var(--white); }
+
+</code></pre>
+  </div>
+</section>
+
+<section class="file-section" id="nav">
+  <div class="file-header">
+    <div class="file-meta">
+      <span class="file-badge javascript">JAVASCRIPT</span>
+      <span class="file-name">nav.js</span>
+      <span class="file-lines">42 lines</span>
+    </div>
+    <p class="file-role">Shared navigation — hamburger toggle, active link detection, IntersectionObserver scroll-reveal</p>
+  </div>
+
+  <div class="prompt-box">
+    <div class="prompt-label">
+      <span class="phase-tag">Phase 1</span>
+      PROMPT THAT GENERATED THIS FILE
+    </div>
+    <p class="prompt-text">"Add a hamburger menu for mobile, highlight the active page in the nav, and add a scroll-reveal animation so sections fade in as the user scrolls."</p>
+  </div>
+
+  <div class="snippet-wrap">
+    <div class="snippet-label">Full file — mobile nav + IntersectionObserver scroll-reveal (42 lines)</div>
+    <pre><code class="language-javascript">// Shared nav behaviour for all pages
+(function () {
+  const burger    = document.querySelector(&#x27;.hamburger&#x27;);
+  const mobileNav = document.getElementById(&#x27;mobile-nav&#x27;);
+
+  if (burger &amp;&amp; mobileNav) {
+    burger.addEventListener(&#x27;click&#x27;, () =&gt; {
+      const open = mobileNav.classList.toggle(&#x27;open&#x27;);
+      burger.classList.toggle(&#x27;open&#x27;, open);
+      burger.setAttribute(&#x27;aria-expanded&#x27;, open);
+    });
+    mobileNav.querySelectorAll(&#x27;a&#x27;).forEach(a =&gt; {
+      a.addEventListener(&#x27;click&#x27;, () =&gt; {
+        mobileNav.classList.remove(&#x27;open&#x27;);
+        burger.classList.remove(&#x27;open&#x27;);
+        burger.setAttribute(&#x27;aria-expanded&#x27;, &#x27;false&#x27;);
+      });
+    });
+    document.addEventListener(&#x27;click&#x27;, e =&gt; {
+      if (!burger.contains(e.target) &amp;&amp; !mobileNav.contains(e.target)) {
+        mobileNav.classList.remove(&#x27;open&#x27;);
+        burger.classList.remove(&#x27;open&#x27;);
+        burger.setAttribute(&#x27;aria-expanded&#x27;, &#x27;false&#x27;);
+      }
+    });
+  }
+
+  // Mark active nav link
+  const path = location.pathname.split(&#x27;/&#x27;).pop() || &#x27;index.html&#x27;;
+  document.querySelectorAll(&#x27;.header-nav a, .mobile-nav a&#x27;).forEach(a =&gt; {
+    if (a.getAttribute(&#x27;href&#x27;) === path) a.classList.add(&#x27;active&#x27;);
+  });
+
+  // Scroll reveal
+  const els = document.querySelectorAll(&#x27;.reveal&#x27;);
+  const obs = new IntersectionObserver(entries =&gt; {
+    entries.forEach(e =&gt; {
+      if (e.isIntersecting) { e.target.classList.add(&#x27;visible&#x27;); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  els.forEach(el =&gt; obs.observe(el));
+})();
+</code></pre>
+  </div>
+</section>
+
+<section class="file-section" id="chatbot">
+  <div class="file-header">
+    <div class="file-meta">
+      <span class="file-badge javascript">JAVASCRIPT</span>
+      <span class="file-name">chatbot.js</span>
+      <span class="file-lines">197 lines</span>
+    </div>
+    <p class="file-role">AI virtual assistant — bilingual keyword matching, suggestion chips, animated chat UI</p>
+  </div>
+
+  <div class="prompt-box">
+    <div class="prompt-label">
+      <span class="phase-tag">Phase 4</span>
+      PROMPT THAT GENERATED THIS FILE
+    </div>
+    <p class="prompt-text">"Build a chatbot widget for the ADC website that answers common questions about donating, volunteering, events, and the organization. It should float in the bottom-right corner and support Spanish."</p>
+  </div>
+
+  <div class="snippet-wrap">
+    <div class="snippet-label">FAQ trigger matching with Unicode normalization (accent-insensitive search)</div>
+    <pre><code class="language-javascript">/* ─── ADC Virtual Assistant ─── */
+(function () {
+  &#x27;use strict&#x27;;
+
+  var FAQS = [
+    {
+      triggers: [&#x27;donar&#x27;, &#x27;donacion&#x27;, &#x27;apoyar&#x27;, &#x27;contribuir&#x27;, &#x27;ayuda economica&#x27;, &#x27;dar dinero&#x27;],
+      answer: &#x27;¡Gracias por tu interés en apoyar! Puedes hacer una donación en nuestra página. Cada aporte transforma vidas en Curundú.&lt;br&gt;&lt;a href=&quot;donar.html&quot; class=&quot;chat-link&quot;&gt;💚 Hacer una donación →&lt;/a&gt;&#x27;
+    },
+    {
+      triggers: [&#x27;voluntario&#x27;, &#x27;voluntaria&#x27;, &#x27;voluntariado&#x27;, &#x27;participar&#x27;, &#x27;colaborar&#x27;, &#x27;unirme&#x27;, &#x27;unirse&#x27;],
+      answer: &#x27;¡Nos encanta que quieras unirte! Visita nuestra página de participación para saber cómo colaborar.&lt;br&gt;&lt;a href=&quot;participar.html&quot; class=&quot;chat-link&quot;&gt;🤝 Ver cómo participar →&lt;/a&gt;&#x27;
+    },
+    {
+      triggers: [&#x27;contacto&#x27;, &#x27;contactar&#x27;, &#x27;correo&#x27;, &#x27;email&#x27;, &#x27;telefono&#x27;, &#x27;llamar&#x27;, &#x27;escribir&#x27;, &#x27;mensaje&#x27;],
+      answer: &#x27;Puedes contactarnos por nuestro formulario. Respondemos en menos de 48 horas.&lt;br&gt;&lt;a href=&quot;contactanos.html&quot; class=&quot;chat-link&quot;&gt;📧 Contáctanos →&lt;/a&gt;&#x27;
+    },
+    {
+      triggers: [&#x27;evento&#x27;, &#x27;eventos&#x27;, &#x27;calendario&#x27;, &#x27;actividad&#x27;, &#x27;actividades&#x27;, &#x27;horario&#x27;, &#x27;entrenamiento&#x27;, &#x27;partido&#x27;, &#x27;torneo&#x27;],
+      answer: &#x27;Tenemos entrenamientos, talleres y eventos durante toda la semana.&lt;br&gt;&lt;a href=&quot;calendario.html&quot; class=&quot;chat-link&quot;&gt;📅 Ver Calendario →&lt;/a&gt;&#x27;
+    },
+    {
+      triggers: [&#x27;quienes&#x27;, &#x27;historia&#x27;, &#x27;fundacion&#x27;, &#x27;mision&#x27;, &#x27;sobre adc&#x27;, &#x27;sobre nosotros&#x27;, &#x27;que es adc&#x27;, &#x27;conocer&#x27;],
+      answer: &#x27;ADC es una fundación sin fines de lucro que desde 2014 transforma vidas en Curundú a través del deporte, la educación y la nutrición.&lt;br&gt;&lt;a href=&quot;quienessomos.html&quot; class=&quot;chat-link&quot;&gt;ℹ️ Conocer más →&lt;/a&gt;&#x27;
+    },
+    {
+      triggers: [&#x27;blog&#x27;, &#x27;noticias&#x27;, &#x27;noticia&#x27;, &#x27;articulo&#x27;, &#x27;publicacion&#x27;, &#x27;novedades&#x27;],
+      answer: &#x27;Encuentra las últimas noticias y artículos de ADC en nuestro blog.&lt;br&gt;&lt;a href=&quot;blog.html&quot; class=&quot;chat-link&quot;&gt;📰 Ir al Blog →&lt;/a&gt;&#x27;
+    },
+    {
+      triggers: [&#x27;atleta&#x27;, &#x27;nino&#x27;, &#x27;nina&#x27;, &#x27;inscribir&#x27;, &#x27;inscripcion&#x27;, &#x27;registrar&#x27;, &#x27;hijo&#x27;, &#x27;hija&#x27;, &#x27;edad&#x27;],
+      answer: &#x27;Para inscribir a un atleta entre 6 y 16 años, visita nuestra página de participación o escríbenos directamente.&lt;br&gt;&lt;a href=&quot;participar.html&quot; class=&quot;chat-link&quot;&gt;⚽ Inscribir un atleta →&lt;/a&gt;&#x27;
+    },
+    {
+      triggers: [&#x27;verano feliz&#x27;, &#x27;verano&#x27;],
+      answer: &#x27;El Verano Feliz ADC es nuestro programa de vacaciones de verano para niños y jóvenes de Curundú. Incluye actividades deportivas, educativas y recreativas. ¡Revisa el calendario para más info!&lt;br&gt;&lt;a href=&quot;calendario.html&quot; class=&quot;chat-link&quot;&gt;📅 Ver Calendario →&lt;/a&gt;&#x27;
+    },
+    {
+      triggers: [&#x27;gracias&#x27;, &#x27;muchas gracias&#x27;, &#x27;thank&#x27;, &#x27;excelente&#x27;, &#x27;perfecto&#x27;],
+      answer: &#x27;¡Con mucho gusto! Si tienes más preguntas, aquí estaré. 😊&#x27;
+    },
+    {
+      triggers: [&#x27;hola&#x27;, &#x27;buenas&#x27;, &#x27;buenos&#x27;, &#x27;hey&#x27;, &#x27;hello&#x27;, &#x27;saludos&#x27;, &#x27;buen dia&#x27;, &#x27;buenas tardes&#x27;],
+      answer: &#x27;¡Hola! Soy el asistente virtual de ADC. ¿En qué te puedo ayudar hoy?&#x27;
+    }
+  ];
+
+  var SUGGESTIONS = [
+    &#x27;¿Cómo puedo donar?&#x27;,
+    &#x27;¿Cómo ser voluntario?&#x27;,
+    &#x27;¿Cuáles son los eventos?&#x27;,
+    &#x27;¿Quiénes son?&#x27;
+  ];
+
+  function normalize(s) {
+    return s.toLowerCase()
+      .normalize(&#x27;NFD&#x27;)
+      .replace(/[\u0300-\u036f]/g, &#x27;&#x27;)
+      .replace(/[^a-z0-9 ]/g, &#x27; &#x27;);
+  }
+
+  function findAnswer(text) {
+    var n = normalize(text);
+    for (var i = 0; i &lt; FAQS.length; i++) {
+      for (var j = 0; j &lt; FAQS[i].triggers.length; j++) {
+</code></pre>
+  </div>
+</section>
+
+<section class="file-section" id="admin">
+  <div class="file-header">
+    <div class="file-meta">
+      <span class="file-badge javascript">JAVASCRIPT</span>
+      <span class="file-name">admin.js</span>
+      <span class="file-lines">1,535 lines</span>
+    </div>
+    <p class="file-role">Private admin dashboard — SHA-256 password gate, AI grant writer, draft storage, GA panel</p>
+  </div>
+
+  <div class="prompt-box">
+    <div class="prompt-label">
+      <span class="phase-tag">Phase 4</span>
+      PROMPT THAT GENERATED THIS FILE
+    </div>
+    <p class="prompt-text">"Build a private admin dashboard for ADC's founders. Include a password gate (no backend, SHA-256 hash only), a Claude-powered grant proposal writer that calls a Cloudflare Worker, auto-save drafts to localStorage, and a to-do tracker."</p>
+  </div>
+
+  <div class="snippet-wrap">
+    <div class="snippet-label">Grant writer: build prompt → call Cloudflare Worker → display streamed output</div>
+    <pre><code class="language-javascript">(function () {
+  &#x27;use strict&#x27;;
+
+  /* ─────────────────────────────────────────
+     CONSTANTS
+  ───────────────────────────────────────── */
+  /* Password is never stored in plaintext — compared as SHA-256 hash only */
+  var PASS_HASH = &#x27;[REDACTED — SHA-256 hash]&#x27;;
+  var SESSION_KEY = &#x27;adc-adm&#x27;;
+  var DRAFT_PREFIX = &#x27;adc-draft-&#x27;;
+  var WORKER_URL = &#x27;[REDACTED — live endpoint]&#x27;;
+
+
+/* ... */
+
+  genBtn.addEventListener(&#x27;click&#x27;, function () {
+    var f = getFormValues();
+
+    genError.style.display = &#x27;none&#x27;;
+    outputWrap.style.display = &#x27;none&#x27;;
+    grantOutput.textContent = &#x27;&#x27;;
+
+    var prompt = buildPrompt(f);
+    var systemCtx = ctxText.value.trim() || ADC_CONTEXT;
+
+    /* Loading state */
+    var spinner = document.createElement(&#x27;span&#x27;);
+    spinner.className = &#x27;adm-spinner&#x27;;
+    genBtn.disabled = true;
+    genBtn.textContent = &#x27;&#x27;;
+    genBtn.appendChild(spinner);
+    genBtn.appendChild(document.createTextNode(&#x27; Generando...&#x27;));
+
+    fetch(WORKER_URL, {
+      method: &#x27;POST&#x27;,
+      headers: { &#x27;Content-Type&#x27;: &#x27;application/json&#x27; },
+      body: JSON.stringify({ system: systemCtx, prompt: prompt })
+    })
+    .then(function (res) {
+      if (!res.ok) throw new Error(&#x27;HTTP &#x27; + res.status);
+      return res.json();
+    })
+    .then(function (data) {
+      var text = (data &amp;&amp; data.result) ? data.result
+               : (data &amp;&amp; data.content) ? data.content
+               : (data &amp;&amp; typeof data.text === &#x27;string&#x27;) ? data.text
+               : JSON.stringify(data);
+
+      grantOutput.textContent = text;
+      outputWrap.style.display = &#x27;block&#x27;;
+      sessionCount++;
+      statCount.textContent = sessionCount;
+
+      /* Store text for save button */
+      saveOutBtn._lastText   = text;
+      saveOutBtn._lastFunder = f.funder;
+      saveOutBtn._lastAmount = f.amount;
+      saveOutBtn._lastFocus  = f.focus;
+    })
+</code></pre>
+  </div>
+</section>
+
+<section class="file-section" id="worker">
+  <div class="file-header">
+    <div class="file-meta">
+      <span class="file-badge javascript">JAVASCRIPT</span>
+      <span class="file-name">worker.js  (Cloudflare Worker)</span>
+      <span class="file-lines">111 lines</span>
+    </div>
+    <p class="file-role">Serverless API proxy — routes grant writer requests to Groq LLM, keeps API key off the client</p>
+  </div>
+
+  <div class="prompt-box">
+    <div class="prompt-label">
+      <span class="phase-tag">Phase 4</span>
+      PROMPT THAT GENERATED THIS FILE
+    </div>
+    <p class="prompt-text">"Create a Cloudflare Worker that acts as a proxy between the admin dashboard and the Groq API. Accept POST requests with a system prompt and user prompt, forward them to Groq's llama-3.3-70b model, and return the response. Handle CORS."</p>
+  </div>
+
+  <div class="snippet-wrap">
+    <div class="snippet-label">Full Cloudflare Worker — CORS handling, Groq API call, error forwarding (111 lines)</div>
+    <pre><code class="language-javascript">/**
+ * ADC Grant Proposal Writer — Cloudflare Worker
+ * Uses Groq API (free tier — no credit card required)
+ *
+ * SETUP:
+ * 1. Get free API key at console.groq.com
+ * 2. Run: wrangler secret put GROQ_API_KEY
+ * 3. Run: wrangler deploy
+ */
+
+const GROQ_MODEL = &quot;llama-3.3-70b-versatile&quot;;
+const GROQ_API   = &quot;https://api.groq.com/openai/v1/chat/completions&quot;;
+const MAX_TOKENS = 8192;
+
+export default {
+  async fetch(request, env) {
+
+    // ── CORS pre-flight ──────────────────────────────────────────────────────
+    const corsHeaders = {
+      &quot;Access-Control-Allow-Origin&quot;:  &quot;*&quot;,
+      &quot;Access-Control-Allow-Methods&quot;: &quot;POST, OPTIONS&quot;,
+      &quot;Access-Control-Allow-Headers&quot;: &quot;Content-Type&quot;,
+    };
+
+    if (request.method === &quot;OPTIONS&quot;) {
+      return new Response(null, { status: 204, headers: corsHeaders });
+    }
+
+    if (request.method !== &quot;POST&quot;) {
+      return new Response(&quot;Method not allowed&quot;, { status: 405, headers: corsHeaders });
+    }
+
+    // ── parse body ───────────────────────────────────────────────────────────
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: &quot;Invalid JSON body&quot; }),
+        { status: 400, headers: { ...corsHeaders, &quot;Content-Type&quot;: &quot;application/json&quot; } }
+      );
+    }
+
+    const { system, prompt } = body;
+
+    if (!prompt) {
+      return new Response(
+        JSON.stringify({ error: &quot;Missing required field: prompt&quot; }),
+        { status: 400, headers: { ...corsHeaders, &quot;Content-Type&quot;: &quot;application/json&quot; } }
+      );
+    }
+
+    // ── call Groq ────────────────────────────────────────────────────────────
+    const apiKey = env.GROQ_API_KEY;
+    if (!apiKey) {
+      return new Response(
+        JSON.stringify({ error: &quot;GROQ_API_KEY secret not configured on this Worker.&quot; }),
+        { status: 500, headers: { ...corsHeaders, &quot;Content-Type&quot;: &quot;application/json&quot; } }
+      );
+    }
+
+    const messages = [];
+    if (system) {
+      messages.push({ role: &quot;system&quot;, content: system });
+    }
+    messages.push({ role: &quot;user&quot;, content: prompt });
+
+    const groqPayload = {
+      model: GROQ_MODEL,
+      messages,
+      max_tokens: MAX_TOKENS,
+    };
+
+    let groqResponse;
+    try {
+      groqResponse = await fetch(GROQ_API, {
+        method:  &quot;POST&quot;,
+        headers: {
+          &quot;Content-Type&quot;:  &quot;application/json&quot;,
+          &quot;Authorization&quot;: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(groqPayload),
+      });
+    } catch (err) {
+      return new Response(
+        JSON.stringify({ error: `Failed to reach Groq API: ${err.message}` }),
+        { status: 502, headers: { ...corsHeaders, &quot;Content-Type&quot;: &quot;application/json&quot; } }
+      );
+    }
+
+    if (!groqResponse.ok) {
+      const errText = await groqResponse.text();
+      return new Response(
+        JSON.stringify({ error: `Groq API error ${groqResponse.status}: ${errText}` }),
+        { status: groqResponse.status, headers: { ...corsHeaders, &quot;Content-Type&quot;: &quot;application/json&quot; } }
+      );
+    }
+
+    const groqData = await groqResponse.json();
+    const text = groqData?.choices?.[0]?.message?.content ?? &quot;&quot;;
+
+    return new Response(
+      JSON.stringify({ text }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, &quot;Content-Type&quot;: &quot;application/json&quot; },
+      }
+    );
+  },
+};
+</code></pre>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>
+    <strong>Asociación Deportiva Curundú Website</strong> — Built with Claude AI (Anthropic) ·
+    <a href="https://csolv.github.io/my-website/" target="_blank">adcurundu.org</a>
+  </p>
+  <p style="margin-top:0.4rem;">
+    Connor Solvason · FECON 390 · Prof. Daniel Egger · Duke University · April 2026
+  </p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+</body>
+</html>
