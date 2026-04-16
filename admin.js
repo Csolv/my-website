@@ -547,6 +547,7 @@
     '      <input type="password" id="adm-pass-input" placeholder="Contraseña" autocomplete="current-password">',
     '      <button id="adm-login-btn">Entrar</button>',
     '      <div id="adm-login-err">Contraseña incorrecta</div>',
+    '      <button id="adm-login-close-btn" style="margin-top:1rem;background:none;border:none;color:#999;font-size:0.82rem;cursor:pointer;font-family:inherit;padding:0;">✕ Cerrar</button>',
     '    </div>',
     '  </div>',
 
@@ -875,6 +876,7 @@
   ───────────────────────────────────────── */
   trigger.addEventListener('click', showOverlay);
   closeBtn.addEventListener('click', hideOverlay);
+  document.getElementById('adm-login-close-btn').addEventListener('click', hideOverlay);
 
   /* ─────────────────────────────────────────
      LOGIN
