@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Mapa de Grants — ADC Admin</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green:   #0a6e3c;
+      --green-d: #064d2a;
+      --green-l: #e8f5ee;
+      --gold:    #FFD700;
+      --red:     #c0392b;
+      --blue:    #2980b9;
+      --orange:  #e67e22;
+      --purple:  #8e44ad;
+      --gray:    #5a5a5a;
+      --border:  #e0e0e0;
+      --white:   #fff;
+      --bg:      #f4f6f4;
+      --radius:  10px;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: #222; }
+
+    header {
+      background: var(--green-d); color: #fff;
+      padding: 0 1.5rem; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    header .brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; font-size: 1.05rem; }
+    header .badge { background: rgba(255,255,255,0.18); font-size: 0.72rem; padding: 0.2rem 0.55rem; border-radius: 20px; }
+    .back-btn {
+      background: rgba(255,255,255,0.15); border: none; color: #fff;
+      padding: 0.35rem 0.9rem; border-radius: 6px; font-size: 0.85rem;
+      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.25); }
+
+    .page-wrap { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .page-title { font-size: 1.5rem; font-weight: 800; color: var(--green-d); margin-bottom: 0.3rem; }
+    .page-sub { font-size: 0.9rem; color: var(--gray); margin-bottom: 1.5rem; }
+
+    /* ── Filter & Sort Bar ── */
+    .toolbar {
+      display: flex; gap: 0.75rem; flex-wrap: wrap;
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.75rem 1rem;
+      margin-bottom: 1.5rem; align-items: center;
+    }
+    .toolbar-label { font-size: 0.75rem; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.06em; }
+    .filter-chip {
+      padding: 0.3rem 0.75rem; border-radius: 20px; border: 1.5px solid var(--border);
+      font-size: 0.8rem; font-weight: 600; cursor: pointer; background: var(--white);
+      color: var(--gray); transition: all 0.15s;
+    }
+    .filter-chip.active { background: var(--green); color: #fff; border-color: var(--green); }
+    .divider { width: 1px; height: 24px; background: var(--border); }
+    .sort-select {
+      padding: 0.35rem 0.65rem; border: 1.5px solid var(--border); border-radius: 6px;
+      font-size: 0.82rem; font-family: inherit; background: var(--white); cursor: pointer;
+    }
+    .sort-select:focus { outline: none; border-color: var(--green); }
+
+    /* ── Road Map ── */
+    .road-wrap {
+      position: relative;
+    }
+
+    /* Center road stripe */
+    .road-line {
+      position: absolute;
+      left: 50%;
+      top: 0; bottom: 0;
+      width: 4px;
+      transform: translateX(-50%);
+      background: repeating-linear-gradient(
+        to bottom,
+        var(--green-d) 0px, var(--green-d) 20px,
+        transparent 20px, transparent 35px
+      );
+      z-index: 0;
+    }
+
+    .road-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Alternate left / right */
+    .road-item:nth-child(odd)  { flex-direction: row; }
+    .road-item:nth-child(even) { flex-direction: row-reverse; }
+
+    .road-item:nth-child(odd)  .road-card { margin-right: calc(50% + 28px); }
+    .road-item:nth-child(even) .road-card { margin-left: calc(50% + 28px); }
+
+    /* Center dot */
+    .road-dot {
+      position: absolute;
+      left: 50%;
+      top: 20px;
+      transform: translateX(-50%);
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; z-index: 2;
+      border: 3px solid var(--white);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+    .dot-high     { background: var(--green); }
+    .dot-medium   { background: var(--blue); }
+    .dot-low      { background: #aaa; }
+    .dot-done     { background: var(--gold); }
+    .dot-applied  { background: var(--orange); }
+
+    /* Grant cards */
+    .road-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      flex: 1;
+      max-width: 42%;
+    }
+    .road-card:hover { border-color: var(--green); box-shadow: 0 3px 16px rgba(10,110,60,0.1); }
+    .road-card.expanded { border-color: var(--green); box-shadow: 0 4px 24px rgba(10,110,60,0.12); }
+    .road-card.status-applied { border-color: var(--orange); }
+    .road-card.status-done    { border-color: var(--gold); }
+    .road-card.status-skip    { opacity: 0.5; }
+
+    .card-top { display: flex; align-items: flex-start; gap: 0.75rem; }
+    .card-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .card-info { flex: 1; min-width: 0; }
+    .card-name { font-size: 0.95rem; font-weight: 700; color: var(--green-d); }
+    .card-org  { font-size: 0.78rem; color: var(--gray); margin-top: 0.1rem; }
+
+    .meta-row { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    .meta-badge {
+      font-size: 0.72rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 20px;
+    }
+    .badge-amount   { background: #e8f5ee; color: var(--green-d); }
+    .badge-deadline { background: #fde8e8; color: var(--red); }
+    .badge-deadline.open { background: #e8f5ee; color: var(--green-d); }
+    .badge-complexity { background: #f0f0f0; color: #555; }
+    .badge-priority-high   { background: var(--green-l); color: var(--green-d); }
+    .badge-priority-medium { background: #e8f0fe; color: #1a73e8; }
+    .badge-priority-low    { background: #f5f5f5; color: #888; }
+
+    /* Expand arrow */
+    .expand-btn {
+      background: none; border: none; color: #ccc; font-size: 0.9rem;
+      cursor: pointer; padding: 0; transition: transform 0.2s; flex-shrink: 0;
+      align-self: flex-start; margin-top: 2px;
+    }
+    .road-card.expanded .expand-btn { transform: rotate(180deg); color: var(--green); }
+
+    /* Expanded body */
+    .card-body { display: none; margin-top: 0.9rem; border-top: 1px solid var(--border); padding-top: 0.9rem; }
+    .road-card.expanded .card-body { display: block; }
+
+    .body-section { margin-bottom: 0.75rem; }
+    .body-label {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: #aaa; margin-bottom: 0.25rem;
+    }
+    .body-text { font-size: 0.85rem; line-height: 1.6; color: #333; }
+
+    .tip-box {
+      background: #fffbea; border-left: 3px solid var(--gold);
+      padding: 0.6rem 0.85rem; border-radius: 0 7px 7px 0;
+      font-size: 0.83rem; line-height: 1.55; margin-top: 0.5rem;
+    }
+    .warning-box {
+      background: #fff4e6; border-left: 3px solid var(--orange);
+      padding: 0.6rem 0.85rem; border-radius: 0 7px 7px 0;
+      font-size: 0.83rem; line-height: 1.55; margin-top: 0.5rem;
+    }
+
+    /* Checklist */
+    .grant-checklist { list-style: none; margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.35rem; }
+    .grant-checklist li { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.82rem; line-height: 1.4; }
+    .grant-checklist li input[type="checkbox"] { margin-top: 0.15rem; width: 14px; height: 14px; accent-color: var(--green); flex-shrink: 0; cursor: pointer; }
+
+    /* Notes */
+    .grant-notes {
+      width: 100%; min-height: 55px; padding: 0.5rem 0.7rem;
+      border: 1.5px solid var(--border); border-radius: 7px;
+      font-size: 0.83rem; font-family: inherit; resize: vertical;
+      background: #fafafa; margin-top: 0.5rem;
+    }
+    .grant-notes:focus { outline: none; border-color: var(--green); background: #fff; }
+
+    /* Status select */
+    .status-row { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap; }
+    .status-sel {
+      padding: 0.3rem 0.55rem; border: 1.5px solid var(--border); border-radius: 6px;
+      font-size: 0.8rem; font-family: inherit; background: var(--white); cursor: pointer;
+    }
+    .status-sel:focus { outline: none; border-color: var(--green); }
+
+    .official-link {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      color: var(--blue); font-size: 0.82rem; text-decoration: none; font-weight: 500;
+    }
+    .official-link:hover { text-decoration: underline; }
+
+    /* Summary banner */
+    .summary-banner {
+      background: var(--green-d); color: #fff;
+      border-radius: var(--radius); padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .summary-banner h2 { font-size: 1rem; margin-bottom: 0.75rem; }
+    .summary-stats { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    .stat-box { text-align: center; }
+    .stat-num  { font-size: 1.6rem; font-weight: 800; color: var(--gold); }
+    .stat-lbl  { font-size: 0.72rem; color: rgba(255,255,255,0.7); }
+
+    .save-toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      background: var(--green-d); color: #fff; padding: 0.65rem 1.25rem;
+      border-radius: 8px; font-size: 0.88rem; font-weight: 600;
+      opacity: 0; transform: translateY(10px); transition: all 0.3s;
+      pointer-events: none; z-index: 999;
+    }
+    .save-toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 640px) {
+      .road-line { display: none; }
+      .road-item { flex-direction: column !important; }
+      .road-item .road-card { margin: 0 0 0 44px !important; max-width: 100% !important; }
+      .road-dot { left: 14px; transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><span>⚽</span><span>ADC Admin</span><span class="badge">PRIVADO</span></div>
+  <a href="index.html" class="back-btn">← Panel principal</a>
+</header>
+
+<div class="page-wrap">
+  <div class="page-title">🗺️ Mapa de Grants — ADC Panamá</div>
+  <div class="page-sub">Todos los grants investigados para ADC. Marca cada convocatoria según tu progreso. Los cambios se guardan automáticamente.</div>
+
+  <!-- Summary banner -->
+  <div class="summary-banner">
+    <h2>📊 Resumen de oportunidades</h2>
+    <div class="summary-stats">
+      <div class="stat-box"><div class="stat-num" id="stat-total">—</div><div class="stat-lbl">Grants identificados</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat-eligible">—</div><div class="stat-lbl">ADC es elegible</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat-applied">—</div><div class="stat-lbl">Aplicados</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat-won">—</div><div class="stat-lbl">Ganados</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat-potential">—</div><div class="stat-lbl">Potencial total (USD)</div></div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <span class="toolbar-label">Filtrar:</span>
+    <button class="filter-chip active" onclick="filter('all', this)">Todos</button>
+    <button class="filter-chip" onclick="filter('high', this)">🔥 Alta prioridad</button>
+    <button class="filter-chip" onclick="filter('eligible', this)">✅ Elegibles</button>
+    <button class="filter-chip" onclick="filter('open', this)">📬 Convocatoria abierta</button>
+    <button class="filter-chip" onclick="filter('applied', this)">✈️ Aplicados</button>
+    <div class="divider"></div>
+    <span class="toolbar-label">Ordenar:</span>
+    <select class="sort-select" onchange="sortGrants(this.value)">
+      <option value="priority">Por prioridad</option>
+      <option value="amount">Por monto (mayor)</option>
+      <option value="complexity">Por facilidad</option>
+    </select>
+  </div>
+
+  <!-- Road -->
+  <div class="road-wrap">
+    <div class="road-line"></div>
+    <div id="road-container"></div>
+  </div>
+</div>
+
+<div class="save-toast" id="save-toast">✅ Guardado</div>
+
+<script>
+// ── GRANT DATA (researched April 2026) ──
+const GRANTS = [
+  {
+    id: 'iaf',
+    icon: '🌎',
+    name: 'Inter-American Foundation (IAF)',
+    org: 'U.S. Government Agency',
+    priority: 'high',
+    eligible: true,
+    amount: '$25,000 – $400,000',
+    amountMin: 25000, amountMax: 400000,
+    deadline: 'Solicitud continua (todo el año)',
+    deadlineOpen: true,
+    complexity: 3,
+    url: 'https://iaf.gov/apply-for-grant/',
+    description: 'La IAF es una agencia del gobierno de EE.UU. que financia organizaciones de base en América Latina y el Caribe. Ha otorgado $32.5M en 232 grants a Panamá desde 1972. Ideal para proyectos de desarrollo comunitario, educación y deporte juvenil con enfoque en comunidades vulnerables.',
+    tip: 'Este es el grant con mayor probabilidad de éxito para ADC. La IAF premia proyectos liderados por la comunidad con enfoque en sostenibilidad. Destacar el rol de ADC en Curundú y la alianza con Duke Engage.',
+    warning: 'Los overhead costs no pueden superar el 50% del presupuesto. Preparar un presupuesto detallado antes de aplicar.',
+    checklist: [
+      'Investigar convocatorias activas en iaf.gov/apply-for-grant',
+      'Preparar resumen organizacional de ADC (1 página en inglés)',
+      'Redactar narrativa del proyecto (problema → solución → impacto)',
+      'Preparar presupuesto detallado (overhead ≤50%)',
+      'Traducir materiales clave al inglés',
+      'Enviar propuesta completa',
+    ]
+  },
+  {
+    id: 'padf',
+    icon: '🌐',
+    name: 'Pan American Development Foundation (PADF)',
+    org: 'OEA — Organización de los Estados Americanos',
+    priority: 'high',
+    eligible: true,
+    amount: '$3,000 – $200,000',
+    amountMin: 3000, amountMax: 200000,
+    deadline: 'Solicitudes por convocatoria (RFA)',
+    deadlineOpen: true,
+    complexity: 2,
+    url: 'https://www.padf.org/grant-opportunities/',
+    description: 'La PADF distribuye $46.8M anuales en grants para América Latina y el Caribe. Trabaja con organizaciones de base en desarrollo comunitario, resiliencia y oportunidad económica. Tiene presencia activa en Panamá con programas de asistencia humanitaria.',
+    tip: 'La PADF publica Requests for Applications (RFAs) específicas. Monitorear la página de oportunidades mensualmente. Los proyectos que demuestren liderazgo local y participación comunitaria tienen ventaja.',
+    warning: 'Cada RFA tiene requisitos distintos. No aplicar a una RFA genérica — esperar una convocatoria que se alinee con el trabajo de ADC (juventud, deporte, comunidad vulnerable).',
+    checklist: [
+      'Registrar ADC en padf.org como organización elegible',
+      'Suscribirse a alertas de nuevas RFAs en la web de PADF',
+      'Revisar RFAs activas en padf.org/grant-opportunities cada mes',
+      'Cuando aparezca RFA relevante: preparar propuesta en 2 semanas',
+      'Conseguir carta de apoyo de FEPAFUT o Duke Engage',
+    ]
+  },
+  {
+    id: 'fifa',
+    icon: '⚽',
+    name: 'FIFA Foundation Community Programme',
+    org: 'FIFA / FEPAFUT',
+    priority: 'high',
+    eligible: true,
+    amount: 'Hasta $30,000',
+    amountMin: 0, amountMax: 30000,
+    deadline: 'Junio–Julio (ciclo 2025–26)',
+    deadlineOpen: false,
+    complexity: 3,
+    url: 'https://inside.fifa.com/news/applications-open-for-2025-26-edition-fifa-foundation-community-programme',
+    description: 'La FIFA Foundation distribuye fondos a través de sus federaciones nacionales (FEPAFUT en Panamá) para programas de fútbol base con impacto social. El programa financia hasta el 50% del presupuesto anual o $30,000 (el menor). FEPAFUT ya ha recibido fondos FIFA Forward para fútbol femenino y desarrollo de base.',
+    tip: 'El camino más directo es contactar a FEPAFUT primero. FEPAFUT distribuye fondos FIFA a clubes afiliados. Afiliarse a FEPAFUT como club de base y solicitar apoyo a través de ellos puede ser más rápido que aplicar directamente a la FIFA.',
+    warning: 'Requiere documentación de protección infantil y políticas financieras. Tener estos documentos listos antes de aplicar.',
+    checklist: [
+      'Verificar afiliación de ADC a FEPAFUT (o iniciar proceso)',
+      'Contactar FEPAFUT para conocer el proceso de distribución FIFA Forward',
+      'Preparar política de protección infantil documentada',
+      'Preparar estados financieros del año anterior',
+      'Enviar aplicación antes de julio (ciclo actual)',
+    ]
+  },
+  {
+    id: 'pandeportes',
+    icon: '🏟️',
+    name: 'PANDEPORTES — Apoyo Deportivo Nacional',
+    org: 'Instituto Panameño de Deportes (Gobierno de Panamá)',
+    priority: 'high',
+    eligible: true,
+    amount: 'Variable (proyectos de infraestructura y programas)',
+    amountMin: 0, amountMax: 100000,
+    deadline: 'Por convocatoria — contactar directamente',
+    deadlineOpen: true,
+    complexity: 3,
+    url: 'https://pandeportes.gob.pa',
+    description: 'PANDEPORTES es el organismo oficial de deporte en Panamá. Ya ha invertido en infraestructura en Curundú (proyecto de $773K en el sector Santa Cruz como parte de los Juegos Sudamericanos Juveniles 2026). ADC tiene posición estratégica por operar en Curundú para acercarse a este canal.',
+    tip: 'Hacer contacto directo con PANDEPORTES es clave. Llevar el historial de ADC, fotos de entrenamientos y datos de jugadores nacionales a una reunión presencial. El gobierno está invirtiendo en Curundú — ADC debe estar en ese radar.',
+    warning: 'Los fondos del gobierno panameño a veces tienen condiciones políticas implícitas. Documentar todo y mantener independencia organizacional en los acuerdos.',
+    checklist: [
+      'Registrar ADC ante PANDEPORTES como asociación deportiva activa',
+      'Solicitar reunión presencial con dirección de PANDEPORTES',
+      'Presentar portafolio de ADC (fotos, estadísticas, historia)',
+      'Preguntar por convocatorias activas de apoyo a clubes de base',
+      'Explorar apoyo para el contexto de Juegos Sudamericanos 2026',
+    ]
+  },
+  {
+    id: 'duke',
+    icon: '🎓',
+    name: 'Duke Engage — Alianza Estratégica',
+    org: 'Duke University',
+    priority: 'high',
+    eligible: true,
+    amount: 'Apoyo técnico + posible vínculo a fondos Duke',
+    amountMin: 0, amountMax: 50000,
+    deadline: 'Programa continuo — alianza activa',
+    deadlineOpen: true,
+    complexity: 1,
+    url: 'https://dukeengage.duke.edu/program/panama/',
+    description: 'ADC ya es partner activo del programa Duke Engage Panamá. Los estudiantes de Duke que trabajan con ADC ayudan con planificación estratégica, recaudación de fondos y desarrollo organizacional. Esta alianza es el activo más valioso de ADC en este momento — aprovecharla al máximo.',
+    tip: 'Pedir a los estudiantes de Duke que ayuden a redactar las aplicaciones de grant en inglés. También preguntar a los coordinadores de Duke Engage si hay fondos universitarios disponibles para organizaciones partner en Panamá.',
+    warning: 'La alianza con Duke es valiosa pero no permanente. Institucionalizar la relación con acuerdos escritos para que no dependa de una sola persona en Duke.',
+    checklist: [
+      'Renovar acuerdo formal con Duke Engage para el ciclo 2026–27',
+      'Solicitar a Duke Engage apoyo en redacción de aplicaciones a IAF y PADF',
+      'Preguntar a coordinadores de Duke si existen grants universitarios para partners internacionales',
+      'Pedir a ex-estudiantes de Duke Engage que actúen como embajadores/donantes',
+      'Crear base de datos de contactos Duke con ADC',
+    ]
+  },
+  {
+    id: 'laureus',
+    icon: '🏆',
+    name: 'Laureus Sport for Good Foundation',
+    org: 'Laureus Foundation',
+    priority: 'medium',
+    eligible: true,
+    amount: '$20,000–$50,000/año (estimado)',
+    amountMin: 20000, amountMax: 50000,
+    deadline: 'Solo por invitación — sin aplicación abierta',
+    deadlineOpen: false,
+    complexity: 5,
+    url: 'https://www.laureus.com/sport-for-good',
+    description: 'La Laureus Sport for Good Foundation financia programas que usan el deporte como herramienta de desarrollo social para jóvenes. Distribuye millones anualmente pero no acepta aplicaciones directas — selecciona organizaciones por invitación. El modelo de ADC es un ajuste perfecto, pero requiere construir visibilidad primero.',
+    tip: 'El camino para llegar a Laureus es a través de visibilidad en conferencias internacionales de "sport for development" y a través de referencias. Ganar un grant de IAF o FIFA primero construye el historial que Laureus busca.',
+    warning: 'No contactar directamente a Laureus sin una referencia — puede perjudicar la relación futura. Construir visibilidad primero.',
+    checklist: [
+      'Registrarse para alertas en laureus.com/sport-for-good/get-involved',
+      'Publicar el trabajo de ADC en inglés en LinkedIn y redes internacionales',
+      'Participar en conferencias de "sport for development" para visibilidad',
+      'Obtener referencia de un partner internacional (IAF, PADF, FIFA)',
+      'Esperar invitación o presentación por referencia',
+    ]
+  },
+  {
+    id: 'usaid',
+    icon: '🇺🇸',
+    name: 'USAID Panama — Pequeños Grants',
+    org: 'U.S. Agency for International Development',
+    priority: 'medium',
+    eligible: true,
+    amount: 'Variable por programa',
+    amountMin: 10000, amountMax: 100000,
+    deadline: 'Por convocatoria — revisar pa.usembassy.gov',
+    deadlineOpen: true,
+    complexity: 4,
+    url: 'https://pa.usembassy.gov/grants-and-funding-opportunities/',
+    description: 'USAID tiene presencia activa en Panamá con programas de seguridad, gobernanza y desarrollo comunitario. Tiene un programa de pequeños grants para organizaciones locales. El requisito de cumplimiento es alto pero el financiamiento puede ser transformador.',
+    tip: 'Para organizaciones pequeñas como ADC, los programas de Embajada de EE.UU. (Ambassador\'s Fund for Cultural Preservation, Democracy Commission Small Grants) son más accesibles que los grants directos de USAID.',
+    warning: 'Los grants de USAID requieren cumplimiento riguroso con regulaciones federales de EE.UU. (2 CFR 200). Considerar contratar apoyo de contabilidad si se recibe un grant USAID.',
+    checklist: [
+      'Revisar pa.usembassy.gov/grants-and-funding-opportunities mensualmente',
+      'Registrarse en SAM.gov (requerido para cualquier grant del gobierno de EE.UU.)',
+      'Preparar documentos de cumplimiento financiero (estados auditados de ADC)',
+      'Aplicar cuando aparezca convocatoria relevante de Embajada o USAID',
+    ]
+  },
+  {
+    id: 'undp',
+    icon: '🌍',
+    name: 'PNUD / GEF — Pequeños Grants',
+    org: 'Programa de las Naciones Unidas para el Desarrollo',
+    priority: 'medium',
+    eligible: true,
+    amount: '$25,000 – $75,000',
+    amountMin: 25000, amountMax: 75000,
+    deadline: 'Convocatoria continua (sgp.undp.org)',
+    deadlineOpen: true,
+    complexity: 2,
+    url: 'https://sgp.undp.org',
+    description: 'El Programa de Pequeños Grants del PNUD/GEF financia organizaciones comunitarias en Panamá con proyectos de $25K–$75K. El enfoque principal es ambiental/climático, pero proyectos que combinen desarrollo juvenil con componentes de sostenibilidad son elegibles.',
+    tip: 'Si ADC puede agregar un componente de "espacios verdes" o "huertos comunitarios" al programa de nutrición, calificaría mejor para este fondo. El proceso de aplicación es uno de los más accesibles del panorama internacional.',
+    warning: 'No es un ajuste perfecto para ADC tal como opera hoy — se necesita un componente ambiental genuino. No fabricar un componente falso solo para aplicar.',
+    checklist: [
+      'Revisar convocatoria activa en sgp.undp.org',
+      'Evaluar si existe componente ambiental real que ADC pueda desarrollar',
+      'Si procede: preparar propuesta con elemento de sostenibilidad ambiental',
+      'Contactar coordinador SGP de Panamá para orientación',
+    ]
+  },
+  {
+    id: 'mides',
+    icon: '🏛️',
+    name: 'MIDES / SENNIAF — Apoyo Social',
+    org: 'Ministerio de Desarrollo Social (Gobierno de Panamá)',
+    priority: 'medium',
+    eligible: true,
+    amount: 'Variable (apoyo en especie y pequeños fondos)',
+    amountMin: 0, amountMax: 30000,
+    deadline: 'Por convocatoria — contactar directamente',
+    deadlineOpen: true,
+    complexity: 3,
+    url: 'https://www.mides.gob.pa',
+    description: 'MIDES y su entidad SENNIAF apoyan organizaciones que trabajan con menores en comunidades vulnerables. Los presupuestos para 2026 están limitados (SENNIAF solo tiene $250K para inversiones). Mejor enfoque: inscribirse en el Registro de ONGs de MIDES para credibilidad y acceso a apoyo en especie (materiales, alimentos).',
+    tip: 'El valor real de MIDES para ADC no es el dinero — es el reconocimiento oficial y el acceso a programas de apoyo en especie. Inscribirse en el registro de ONGs abre puertas con otros donantes que exigen registro gubernamental.',
+    warning: 'SENNIAF tiene presupuesto muy limitado para 2026. No basar el plan financiero de ADC en fondos de MIDES o SENNIAF.',
+    checklist: [
+      'Inscribir ADC en el Registro Nacional de ONGs de MIDES (gratuito)',
+      'Solicitar reunión con SENNIAF para explorar apoyo a programas de ADC',
+      'Preguntar por programas de apoyo en especie (alimentos, materiales)',
+      'Obtener carta de reconocimiento de MIDES para incluir en otros grants',
+    ]
+  },
+  {
+    id: 'opensocy',
+    icon: '🌐',
+    name: 'Open Society Foundations — LAC',
+    org: 'Open Society Foundations',
+    priority: 'low',
+    eligible: true,
+    amount: 'No especificado (típico $50K–$300K)',
+    amountMin: 50000, amountMax: 300000,
+    deadline: 'Carta de interés en cualquier momento',
+    deadlineOpen: true,
+    complexity: 5,
+    url: 'https://www.opensocietyfoundations.org/what-we-do/regions/latin-america-and-the-caribbean',
+    description: 'La Open Society Foundations gasta $117M/año en América Latina. Financia organizaciones de sociedad civil, pero rara vez acepta propuestas no solicitadas. El enfoque es gobernanza, justicia y poblaciones marginadas. El deporte juvenil no es su prioridad central, pero el trabajo con jóvenes afro-panameños en Curundú podría encontrar resonancia.',
+    tip: 'Si ADC desarrolla una narrativa de derechos de comunidades afro-latinoamericanas (Curundú tiene alta población afropanameña), Open Society podría interesarse. El enfoque en derechos es clave para ellos.',
+    warning: 'Sin referencia directa, las propuestas no solicitadas a OSF rara vez avanzan. Construir relación primero.',
+    checklist: [
+      'Enviar carta de interés (Letter of Inquiry) si hay un componente de derechos o justicia',
+      'Buscar staff de OSF en LinkedIn que trabaje en Panamá o Centroamérica',
+      'Explorar si algún contacto de Duke tiene relación con OSF',
+    ]
+  },
+  {
+    id: 'righttoplay',
+    icon: '🎯',
+    name: 'Right to Play / Red SOMOS',
+    org: 'Right to Play International',
+    priority: 'low',
+    eligible: false,
+    amount: 'No acepta aplicaciones externas',
+    amountMin: 0, amountMax: 0,
+    deadline: 'Solo por alianza — no hay convocatoria abierta',
+    deadlineOpen: false,
+    complexity: 5,
+    url: 'https://righttoplay.com/en/',
+    description: 'Right to Play opera en Panamá a través de la red SOMOS (CAF). Ha entrenado coaches en El Chorrillo, San Miguelito, La Chorrera y Tocumen. No acepta aplicaciones directas — trabaja exclusivamente por alianzas con organizaciones ya conocidas.',
+    tip: 'El camino correcto es conectar con organizaciones ya en la red SOMOS/Right to Play en Panamá. Si ADC se convierte en partner de una organización de la red, puede acceder a formación de coaches y recursos.',
+    warning: 'No intentar aplicar directamente — no es el modelo de Right to Play.',
+    checklist: [
+      'Identificar organizaciones en la red SOMOS/Right to Play en Panamá',
+      'Solicitar formación de coaches de Right to Play a través de la red',
+      'Explorar membresía en redes regionales de "sport for development"',
+    ]
+  },
+  {
+    id: 'iyf',
+    icon: '👦',
+    name: 'International Youth Foundation (IYF)',
+    org: 'International Youth Foundation',
+    priority: 'low',
+    eligible: false,
+    amount: 'Solo para partners establecidos',
+    amountMin: 0, amountMax: 0,
+    deadline: 'Solo por invitación',
+    deadlineOpen: false,
+    complexity: 5,
+    url: 'https://iyfglobal.org/country/panama/',
+    description: 'La IYF tiene programas en Panamá (EquipYouth, Conectadas 4.0, entra21) pero solo trabaja con su red establecida de partners. No acepta propuestas no solicitadas. Su enfoque en Panamá es formación vocacional y digital, no deporte.',
+    tip: 'Conectar con organizaciones panameñas que ya son partners de IYF (Consejo del Sector Privado para la Asistencia Educacional) puede abrir puertas a recursos compartidos y networking.',
+    warning: 'No perder tiempo aplicando directamente — IYF no lo considerará sin referencia de su red.',
+    checklist: [
+      'Identificar partners locales de IYF en Panamá para networking',
+      'Explorar co-organización de actividades con organizaciones IYF',
+    ]
+  },
+];
+
+// ── STATE ──
+let currentFilter = 'all';
+let currentSort = 'priority';
+
+function loadGrantState() {
+  try { return JSON.parse(localStorage.getItem('adc-grants-state')) || {}; } catch { return {}; }
+}
+
+function saveGrantState() {
+  const state = {};
+  GRANTS.forEach(g => {
+    const notes  = document.getElementById('gnotes-' + g.id)?.value || '';
+    const status = document.getElementById('gstatus-' + g.id)?.value || 'todo';
+    const items  = [];
+    document.querySelectorAll('[data-grant="' + g.id + '"]').forEach(cb => items.push(cb.checked));
+    state[g.id] = { notes, status, items };
+  });
+  localStorage.setItem('adc-grants-state', JSON.stringify(state));
+  showToast();
+  updateSummary();
+}
+
+function showToast() {
+  const t = document.getElementById('save-toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// ── RENDER ──
+function render() {
+  const state = loadGrantState();
+  let grants = [...GRANTS];
+
+  // Filter
+  if (currentFilter === 'high') grants = grants.filter(g => g.priority === 'high');
+  if (currentFilter === 'eligible') grants = grants.filter(g => g.eligible);
+  if (currentFilter === 'open') grants = grants.filter(g => g.deadlineOpen);
+  if (currentFilter === 'applied') {
+    grants = grants.filter(g => ['applied','won','rejected'].includes(state[g.id]?.status));
+  }
+
+  // Sort
+  if (currentSort === 'priority') {
+    const ord = { high:0, medium:1, low:2 };
+    grants.sort((a,b) => ord[a.priority] - ord[b.priority]);
+  } else if (currentSort === 'amount') {
+    grants.sort((a,b) => b.amountMax - a.amountMax);
+  } else if (currentSort === 'complexity') {
+    grants.sort((a,b) => a.complexity - b.complexity);
+  }
+
+  const container = document.getElementById('road-container');
+  container.innerHTML = '';
+
+  grants.forEach((g, i) => {
+    const gs = state[g.id] || {};
+    const statusVal = gs.status || 'todo';
+    const items = gs.items || [];
+
+    const item = document.createElement('div');
+    item.className = 'road-item';
+    item.id = 'road-' + g.id;
+
+    const dotClass = statusVal === 'won' ? 'dot-done'
+                   : statusVal === 'applied' ? 'dot-applied'
+                   : g.priority === 'high'   ? 'dot-high'
+                   : g.priority === 'medium' ? 'dot-medium'
+                   : 'dot-low';
+
+    const priorityBadge = g.priority === 'high'   ? '<span class="meta-badge badge-priority-high">🔥 Alta prioridad</span>'
+                        : g.priority === 'medium' ? '<span class="meta-badge badge-priority-medium">📌 Prioridad media</span>'
+                        :                           '<span class="meta-badge" style="background:#f5f5f5;color:#888;">Relación a largo plazo</span>';
+
+    const deadlineBadge = `<span class="meta-badge badge-deadline ${g.deadlineOpen ? 'open' : ''}">${g.deadlineOpen ? '📬 ' : '🔒 '}${g.deadline}</span>`;
+    const complexityLabel = ['','Muy fácil','Fácil','Moderado','Difícil','Muy difícil'][g.complexity];
+    const complexityBadge = `<span class="meta-badge badge-complexity">Dificultad: ${complexityLabel}</span>`;
+
+    const statusLabel = { todo:'📋 Por hacer', applying:'🖊️ En proceso', applied:'✈️ Enviado', won:'🏆 Ganado!', rejected:'❌ Rechazado', skip:'⏭ Omitir' };
+
+    const checklistHTML = g.checklist.map((item, ci) => `
+      <li>
+        <input type="checkbox" data-grant="${g.id}" data-idx="${ci}"
+          ${items[ci] ? 'checked' : ''} onchange="saveGrantState()">
+        <span>${item}</span>
+      </li>`).join('');
+
+    const cardStatusClass = statusVal === 'applied' || statusVal === 'won' ? ' status-' + statusVal : statusVal === 'skip' ? ' status-skip' : '';
+
+    item.innerHTML = `
+      <div class="road-dot ${dotClass}">${g.icon}</div>
+      <div class="road-card${cardStatusClass}" id="gcard-${g.id}" onclick="toggleCard('${g.id}', event)">
+        <div class="card-top">
+          <div class="card-info">
+            <div class="card-name">${g.name}</div>
+            <div class="card-org">${g.org}</div>
+            <div class="meta-row">
+              ${priorityBadge}
+              <span class="meta-badge badge-amount">💰 ${g.amount}</span>
+              ${deadlineBadge}
+              ${complexityBadge}
+            </div>
+          </div>
+          <button class="expand-btn" id="gexpand-${g.id}">▼</button>
+        </div>
+        <div class="card-body">
+          <div class="body-section">
+            <div class="body-label">Descripción</div>
+            <div class="body-text">${g.description}</div>
+          </div>
+          <div class="tip-box">💡 <strong>Consejo:</strong> ${g.tip}</div>
+          <div class="warning-box">⚠️ <strong>Advertencia:</strong> ${g.warning}</div>
+          ${g.url ? `<div style="margin-top:0.5rem;"><a class="official-link" href="${g.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗 Ir al sitio oficial</a></div>` : ''}
+          <div class="body-section" style="margin-top:0.75rem;">
+            <div class="body-label">✅ Pasos para aplicar</div>
+            <ul class="grant-checklist">${checklistHTML}</ul>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Mis notas</div>
+            <textarea class="grant-notes" id="gnotes-${g.id}" placeholder="Notas específicas, contactos, próximos pasos..." onclick="event.stopPropagation()" oninput="saveGrantState()">${gs.notes || ''}</textarea>
+          </div>
+          <div class="status-row" onclick="event.stopPropagation()">
+            <span style="font-size:0.8rem;font-weight:600;color:#555;">Estado:</span>
+            <select class="status-sel" id="gstatus-${g.id}" onchange="saveGrantState(); updateCardStyle('${g.id}')">
+              ${Object.entries(statusLabel).map(([val, lbl]) =>
+                `<option value="${val}" ${statusVal===val?'selected':''}>${lbl}</option>`
+              ).join('')}
+            </select>
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(item);
+  });
+
+  updateSummary();
+}
+
+function toggleCard(id, event) {
+  // Don't toggle if clicking interactive elements
+  if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' ||
+      event.target.tagName === 'SELECT' || event.target.tagName === 'A' ||
+      event.target.tagName === 'BUTTON') return;
+  const card = document.getElementById('gcard-' + id);
+  card.classList.toggle('expanded');
+  const btn = document.getElementById('gexpand-' + id);
+  if (btn) btn.style.transform = card.classList.contains('expanded') ? 'rotate(180deg)' : '';
+}
+
+function updateCardStyle(id) {
+  const card = document.getElementById('gcard-' + id);
+  const sel = document.getElementById('gstatus-' + id);
+  card.classList.remove('status-applied', 'status-done', 'status-skip');
+  if (sel.value === 'applied' || sel.value === 'won') card.classList.add('status-' + sel.value);
+  if (sel.value === 'skip') card.classList.add('status-skip');
+  const dotId = 'road-' + id;
+  const dot = document.querySelector('#' + dotId + ' .road-dot');
+  if (dot) {
+    dot.className = 'road-dot ' + (sel.value === 'won' ? 'dot-done' : sel.value === 'applied' ? 'dot-applied' : GRANTS.find(g=>g.id===id).priority === 'high' ? 'dot-high' : GRANTS.find(g=>g.id===id).priority === 'medium' ? 'dot-medium' : 'dot-low');
+  }
+}
+
+function updateSummary() {
+  const state = loadGrantState();
+  const eligible = GRANTS.filter(g => g.eligible).length;
+  const applied  = GRANTS.filter(g => ['applied','won'].includes(state[g.id]?.status)).length;
+  const won      = GRANTS.filter(g => state[g.id]?.status === 'won').length;
+  const potential = GRANTS.filter(g => g.eligible && g.priority === 'high').reduce((s,g) => s + g.amountMax, 0);
+
+  document.getElementById('stat-total').textContent   = GRANTS.length;
+  document.getElementById('stat-eligible').textContent = eligible;
+  document.getElementById('stat-applied').textContent  = applied;
+  document.getElementById('stat-won').textContent      = won;
+  document.getElementById('stat-potential').textContent = '$' + (potential / 1000).toFixed(0) + 'K+';
+}
+
+function filter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function sortGrants(val) {
+  currentSort = val;
+  render();
+}
+
+// ── INIT ──
+render();
+</script>
+
+</body>
+</html>

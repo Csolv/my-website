@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Guía Legal — ADC Admin</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green:   #0a6e3c;
+      --green-d: #064d2a;
+      --green-l: #e8f5ee;
+      --red:     #c0392b;
+      --yellow:  #f39c12;
+      --blue:    #2980b9;
+      --gray:    #5a5a5a;
+      --border:  #e0e0e0;
+      --white:   #fff;
+      --bg:      #f4f6f4;
+      --radius:  10px;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: #222; }
+
+    /* ── Top bar ── */
+    header {
+      background: var(--green-d); color: var(--white);
+      padding: 0 1.5rem; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    header .brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; font-size: 1.05rem; }
+    header .badge { background: rgba(255,255,255,0.18); font-size: 0.72rem; padding: 0.2rem 0.55rem; border-radius: 20px; }
+    .back-btn {
+      background: rgba(255,255,255,0.15); border: none; color: #fff;
+      padding: 0.35rem 0.9rem; border-radius: 6px; font-size: 0.85rem;
+      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.25); }
+
+    .page-wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .page-title { font-size: 1.5rem; font-weight: 800; color: var(--green-d); margin-bottom: 0.3rem; }
+    .page-sub { font-size: 0.9rem; color: var(--gray); margin-bottom: 0.5rem; }
+
+    /* ── Mode toggle ── */
+    .mode-bar {
+      display: flex; gap: 0.5rem; margin-bottom: 1.5rem;
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.5rem; width: fit-content;
+    }
+    .mode-btn {
+      padding: 0.45rem 1rem; border: none; border-radius: 7px;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer;
+      background: none; color: var(--gray); transition: all 0.15s;
+    }
+    .mode-btn.active { background: var(--green); color: #fff; }
+
+    /* ── Filter bar ── */
+    .filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .filter-btn {
+      padding: 0.35rem 0.85rem; border-radius: 20px; border: 1.5px solid var(--border);
+      font-size: 0.82rem; font-weight: 600; cursor: pointer; background: var(--white);
+      color: var(--gray); transition: all 0.15s;
+    }
+    .filter-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+    /* ── Accordion ── */
+    .section-card {
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: var(--radius); margin-bottom: 1rem; overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .section-card.done { border-color: #27ae60; }
+    .section-card.pending { border-color: var(--yellow); }
+    .section-header {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 1rem 1.25rem; cursor: pointer; user-select: none;
+      transition: background 0.15s;
+    }
+    .section-header:hover { background: #fafafa; }
+    .section-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .section-title-wrap { flex: 1; }
+    .section-title { font-size: 1rem; font-weight: 700; color: var(--green-d); }
+    .section-desc { font-size: 0.8rem; color: var(--gray); margin-top: 0.15rem; }
+    .section-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.3rem; }
+    .tag {
+      font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 20px; font-weight: 600;
+    }
+    .tag-legal { background: #e8f0fe; color: #1a73e8; }
+    .tag-tax   { background: #fef8e0; color: #e67e22; }
+    .tag-bank  { background: #e8f5ee; color: var(--green-d); }
+    .tag-report { background: #fde8e8; color: var(--red); }
+    .tag-fund  { background: #f3e8fd; color: #7b2d8b; }
+    .tag-annual { background: #e0f7fa; color: #00838f; }
+
+    .status-badge {
+      font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.6rem;
+      border-radius: 20px; flex-shrink: 0;
+    }
+    .status-done    { background: #e8f5ee; color: #27ae60; }
+    .status-pending { background: #fff8e0; color: var(--yellow); }
+    .status-na      { background: #f0f0f0; color: #999; }
+    .chevron { font-size: 0.85rem; color: #bbb; transition: transform 0.2s; flex-shrink: 0; }
+    .section-card.open .chevron { transform: rotate(180deg); }
+
+    .section-body { display: none; padding: 0 1.25rem 1.25rem; border-top: 1px solid var(--border); }
+    .section-card.open .section-body { display: block; }
+
+    /* ── Content blocks ── */
+    .content-block { margin-top: 1rem; }
+    .block-label {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: #999; margin-bottom: 0.35rem;
+    }
+    .summary-text { font-size: 0.9rem; line-height: 1.65; color: #333; }
+
+    .tip-box {
+      background: #fffbea; border-left: 4px solid var(--yellow);
+      padding: 0.75rem 1rem; border-radius: 0 8px 8px 0;
+      font-size: 0.88rem; line-height: 1.6; margin-top: 0.75rem;
+    }
+    .tip-box strong { color: var(--yellow); }
+
+    .warning-box {
+      background: #fff0f0; border-left: 4px solid var(--red);
+      padding: 0.75rem 1rem; border-radius: 0 8px 8px 0;
+      font-size: 0.88rem; line-height: 1.6; margin-top: 0.75rem;
+    }
+    .warning-box strong { color: var(--red); }
+
+    .deadline-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: #fde8e8; color: var(--red); padding: 0.3rem 0.75rem;
+      border-radius: 20px; font-size: 0.82rem; font-weight: 600; margin-top: 0.5rem;
+    }
+
+    .official-link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      color: var(--blue); font-size: 0.85rem; text-decoration: none;
+      margin-top: 0.5rem; font-weight: 500;
+    }
+    .official-link:hover { text-decoration: underline; }
+
+    /* ── Checklist inside section ── */
+    .checklist { list-style: none; margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .checklist li { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.88rem; line-height: 1.5; }
+    .checklist li input[type="checkbox"] {
+      margin-top: 0.15rem; width: 16px; height: 16px;
+      accent-color: var(--green); flex-shrink: 0; cursor: pointer;
+    }
+
+    /* ── Notes field ── */
+    .notes-wrap { margin-top: 1rem; }
+    .notes-field {
+      width: 100%; min-height: 70px; padding: 0.65rem 0.85rem;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 0.88rem; font-family: inherit; resize: vertical;
+      transition: border 0.2s; background: #fafafa;
+    }
+    .notes-field:focus { outline: none; border-color: var(--green); background: #fff; }
+    .notes-save-note { font-size: 0.75rem; color: #aaa; margin-top: 0.3rem; }
+
+    /* ── Deadline Timeline ── */
+    .timeline-card {
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem;
+    }
+    .timeline-title { font-size: 1rem; font-weight: 700; color: var(--green-d); margin-bottom: 1.25rem; }
+    .timeline-list { display: flex; flex-direction: column; gap: 0; }
+    .tl-item {
+      display: flex; gap: 1rem; position: relative; padding-bottom: 1.25rem;
+    }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-left { display: flex; flex-direction: column; align-items: center; width: 36px; flex-shrink: 0; }
+    .tl-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 3px solid var(--border); background: var(--white); flex-shrink: 0;
+    }
+    .tl-dot.done    { background: #27ae60; border-color: #27ae60; }
+    .tl-dot.active  { background: var(--green); border-color: var(--green); width: 18px; height: 18px; }
+    .tl-dot.pending { background: var(--yellow); border-color: var(--yellow); }
+    .tl-line { flex: 1; width: 2px; background: var(--border); margin-top: 4px; }
+    .tl-item:last-child .tl-line { display: none; }
+    .tl-content { padding-top: 0; flex: 1; }
+    .tl-month { font-size: 0.78rem; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tl-text { font-size: 0.9rem; color: #333; margin-top: 0.1rem; font-weight: 500; }
+    .tl-sub { font-size: 0.8rem; color: var(--gray); margin-top: 0.15rem; }
+
+    .btn {
+      padding: 0.55rem 1.1rem; border: none; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-green { background: var(--green); color: var(--white); margin-top: 1rem; }
+    .btn-green:hover { background: var(--green-d); }
+    .btn-outline { background: none; border: 1.5px solid var(--border); color: var(--gray); margin-top: 1rem; }
+    .btn-outline:hover { border-color: var(--green); color: var(--green-d); }
+
+    .status-select {
+      padding: 0.3rem 0.6rem; border: 1.5px solid var(--border); border-radius: 6px;
+      font-size: 0.82rem; font-family: inherit; cursor: pointer; margin-top: 0.75rem;
+      background: var(--white);
+    }
+    .status-select:focus { outline: none; border-color: var(--green); }
+
+    .save-toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      background: var(--green-d); color: #fff; padding: 0.65rem 1.25rem;
+      border-radius: 8px; font-size: 0.88rem; font-weight: 600;
+      opacity: 0; transform: translateY(10px);
+      transition: all 0.3s; pointer-events: none; z-index: 999;
+    }
+    .save-toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span>⚽</span>
+    <span>ADC Admin</span>
+    <span class="badge">PRIVADO</span>
+  </div>
+  <a href="index.html" class="back-btn">← Panel principal</a>
+</header>
+
+<div class="page-wrap">
+  <div class="page-title">⚖️ Guía Legal y Administrativa — Panamá</div>
+  <div class="page-sub">Requisitos legales para operar una organización sin fines de lucro en Panamá. Marca cada sección como completada y agrega tus notas específicas.</div>
+
+  <div class="mode-bar">
+    <button class="mode-btn active" id="btn-guide" onclick="setMode('guide')">📖 Guía completa</button>
+    <button class="mode-btn" id="btn-checklist" onclick="setMode('checklist')">✅ Modo checklist</button>
+    <button class="mode-btn" id="btn-timeline" onclick="setMode('timeline')">📅 Calendario anual</button>
+  </div>
+
+  <!-- ── FILTER BAR ── -->
+  <div class="filter-bar" id="filter-bar">
+    <button class="filter-btn active" onclick="filterSections('all', this)">Todos</button>
+    <button class="filter-btn" onclick="filterSections('legal', this)">⚖️ Legal</button>
+    <button class="filter-btn" onclick="filterSections('tax', this)">💰 Impuestos</button>
+    <button class="filter-btn" onclick="filterSections('bank', this)">🏦 Bancario</button>
+    <button class="filter-btn" onclick="filterSections('report', this)">📋 Reportes</button>
+    <button class="filter-btn" onclick="filterSections('fund', this)">🌍 Fondos ext.</button>
+  </div>
+
+  <!-- ── GUIDE MODE ── -->
+  <div id="mode-guide">
+
+    <div id="sections-container">
+    <!-- Sections injected by JS -->
+    </div>
+
+  </div>
+
+  <!-- ── CHECKLIST MODE ── -->
+  <div id="mode-checklist" style="display:none;">
+    <div style="background:var(--white); border:1.5px solid var(--border); border-radius:var(--radius); padding:1.5rem; margin-bottom:1rem;">
+      <div style="font-size:1rem; font-weight:700; color:var(--green-d); margin-bottom:1rem;">Resumen de progreso</div>
+      <div id="progress-bar-wrap" style="height:12px; background:#e0e0e0; border-radius:10px; overflow:hidden; margin-bottom:0.5rem;">
+        <div id="progress-bar-fill" style="height:100%; background:var(--green); border-radius:10px; transition:width 0.4s; width:0%;"></div>
+      </div>
+      <div id="progress-text" style="font-size:0.85rem; color:var(--gray);">0 de 0 secciones completadas</div>
+    </div>
+    <div id="checklist-container"></div>
+  </div>
+
+  <!-- ── TIMELINE MODE ── -->
+  <div id="mode-timeline" style="display:none;">
+    <div class="timeline-card">
+      <div class="timeline-title">📅 Calendario de obligaciones anuales — ADC</div>
+      <div class="timeline-list" id="timeline-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="save-toast" id="save-toast">✅ Guardado</div>
+
+<script>
+// ── DATA ──
+const SECTIONS = [
+  {
+    id: 'registro',
+    icon: '🏛️',
+    title: 'Registro Legal y Personería Jurídica',
+    desc: 'Constitución y renovación ante el Ministerio de Gobierno',
+    tags: ['legal'],
+    summary: `Las organizaciones sin fines de lucro en Panamá pueden constituirse como <strong>Asociación</strong> o <strong>Fundación</strong>. ADC opera como una <strong>Asociación</strong> (Asociación Deportiva), lo cual es apropiado para organizaciones de base comunitaria sin patrimonio fundacional grande.<br><br>
+El registro se realiza ante el <strong>Ministerio de Gobierno, Dirección Nacional de Organizaciones sin Fines de Lucro</strong>. Se requiere escritura pública, lista de miembros fundadores, estatutos aprobados y pago de tasa de registro.`,
+    tip: 'Las Asociaciones son más simples y económicas de registrar que las Fundaciones. Para ADC, mantener la estructura de Asociación es correcto mientras no se reciba un capital fundacional mayor a $50,000.',
+    warning: 'La personería jurídica debe renovarse periódicamente. No renovar puede invalidar contratos y donaciones recibidas oficialmente. Verificar fecha de renovación de ADC con el Ministerio de Gobierno.',
+    deadline: 'Renovación anual — verificar fecha exacta en certificado',
+    deadline_color: 'red',
+    link: 'https://www.mingob.gob.pa',
+    link_text: 'Ministerio de Gobierno — Organizaciones sin fines de lucro',
+    items: [
+      'Escritura pública de constitución inscrita en el Registro Público',
+      'Estatutos vigentes con cláusula de no distribución de beneficios',
+      'Lista actualizada de junta directiva (al menos 3 miembros)',
+      'Certificado vigente de personería jurídica',
+      'Libro de actas actualizado con firma del secretario',
+      'Certificado de renovación anual al día',
+    ]
+  },
+  {
+    id: 'tax',
+    icon: '💰',
+    title: 'Exención de Impuestos (DGI)',
+    desc: 'Estado de exención del ITBMS y del impuesto sobre la renta',
+    tags: ['tax'],
+    summary: `Las asociaciones sin fines de lucro legalmente registradas en Panamá pueden solicitar <strong>exención del Impuesto sobre la Renta (ISR)</strong> ante la <strong>Dirección General de Ingresos (DGI)</strong>. Esto aplica a ingresos directamente relacionados con su misión social.<br><br>
+El <strong>ITBMS (IVA de Panamá, 7%)</strong> no se aplica automáticamente a organizaciones sin fines de lucro — aplica exención para actividades de la misión, aunque las compras de bienes sí pueden estar sujetas dependiendo del proveedor.`,
+    tip: 'Obtener la resolución de exención de la DGI abre puertas con donantes corporativos que necesitan el número de resolución para deducir sus donaciones. Es un trámite gratuito que vale mucho.',
+    warning: 'Si ADC genera ingresos de actividades comerciales secundarias (venta de uniformes, eventos con cobro de entrada), esos ingresos SÍ pueden estar sujetos a impuestos incluso con exención general.',
+    deadline: 'Trámite por única vez — verificar si ya fue solicitado',
+    link: 'https://dgi.mef.gob.pa',
+    link_text: 'DGI — Dirección General de Ingresos de Panamá',
+    items: [
+      'Solicitud formal de exención dirigida al Director General de Ingresos',
+      'Certificado de personería jurídica adjunto',
+      'Estatutos que demuestren objeto social sin fines de lucro',
+      'Resolución de exención emitida por DGI (guardar copia permanente)',
+      'Declaración anual de ingresos y gastos (aunque sea en cero)',
+    ]
+  },
+  {
+    id: 'banco',
+    icon: '🏦',
+    title: 'Cuenta Bancaria Institucional',
+    desc: 'Requisitos para mantener cuenta a nombre de ADC',
+    tags: ['bank'],
+    summary: `La cuenta bancaria de ADC debe estar a nombre de la organización, no de una persona física. Los bancos en Panamá aplican la <strong>Ley 23 de 2015 (AML/CFT)</strong> para todas las cuentas de personas jurídicas, incluyendo organizaciones sin fines de lucro.<br><br>
+Bancos recomendados para nonprofits en Panamá: <strong>Banistmo, Banco Nacional de Panamá (banco estatal)</strong>, o <strong>Global Bank</strong>. El Banco Nacional suele tener menores comisiones para organizaciones sin fines de lucro.`,
+    tip: 'Banco Nacional de Panamá tiene cuentas especiales para organizaciones sin fines de lucro con comisión mensual muy baja o $0. Preguntar por "Cuenta de Asociaciones sin Fines de Lucro".',
+    warning: 'Desde la Ley 23 de 2015 (AML), los bancos pueden cerrar cuentas de ONGs sin previo aviso si hay transacciones internacionales frecuentes sin documentación de origen. Siempre guardar copia de transferencias de donantes internacionales.',
+    deadline: 'Actualizar documentos del banco cada vez que cambie la junta directiva',
+    link: 'https://www.banconal.com.pa',
+    link_text: 'Banco Nacional de Panamá',
+    items: [
+      'Cuenta a nombre de "Asociación Deportiva Curundú" (no personas físicas)',
+      'Dos firmas autorizadas en la cuenta (mínimo recomendado)',
+      'Documentos de junta directiva actualizados en el banco',
+      'Política de manejo de fondos documentada internamente',
+      'Registro de donaciones internacionales con documentación de origen',
+    ]
+  },
+  {
+    id: 'reportes',
+    icon: '📋',
+    title: 'Reportes Anuales Obligatorios',
+    desc: 'Informes ante el Ministerio de Gobierno y la DGI',
+    tags: ['report', 'annual'],
+    summary: `Las organizaciones sin fines de lucro en Panamá deben presentar <strong>reportes anuales de actividades y financieros</strong> ante el Ministerio de Gobierno. El incumplimiento puede resultar en suspensión de la personería jurídica.<br><br>
+Adicionalmente, la DGI requiere <strong>declaración anual de rentas</strong> aunque la organización esté exenta de impuestos — se declara en cero si no hay actividad sujeta a impuesto.`,
+    tip: 'El informe anual del Ministerio de Gobierno es más sencillo de lo que parece — básicamente es un resumen de actividades del año y un estado de ingresos/egresos. No requiere contador certificado para la mayoría de asociaciones pequeñas.',
+    warning: 'El plazo límite para el informe anual suele ser 31 de marzo del año siguiente. No presentarlo puede invalidar la exención tributaria.',
+    deadline: 'Informe anual: 31 de marzo cada año',
+    link: 'https://www.mingob.gob.pa',
+    link_text: 'Ministerio de Gobierno — Portal de Organizaciones',
+    items: [
+      'Informe anual de actividades (resumen de programas del año)',
+      'Estado de ingresos y egresos del año fiscal',
+      'Lista actualizada de miembros activos',
+      'Acta de asamblea anual firmada',
+      'Declaración de rentas en DGI (aunque sea en cero)',
+      'Renovación de certificado de personería jurídica',
+    ]
+  },
+  {
+    id: 'donaciones',
+    icon: '🌍',
+    title: 'Fondos Internacionales y Cumplimiento AML',
+    desc: 'Regulaciones para recibir donaciones del exterior',
+    tags: ['fund', 'legal'],
+    summary: `Panamá aplica las regulaciones de <strong>GAFI/FATF</strong> sobre financiamiento de organizaciones sin fines de lucro. La <strong>Ley 23 de 2015</strong> y sus reformas establecen que las ONGs que reciben fondos internacionales deben registrarse como <strong>Sujetos Obligados</strong> ante la Unidad de Análisis Financiero (UAF) si sus transacciones superan ciertos umbrales.<br><br>
+Para donaciones internacionales, ADC debe mantener un <strong>expediente de cada donante</strong> con: nombre completo, origen de fondos, propósito declarado, y documentación de respaldo.`,
+    tip: 'Para donaciones de menos de $10,000 anuales de un mismo donante, los requisitos son mínimos. Simplemente guardar: nombre del donante, correo de confirmación, y descripción del propósito. Esto es suficiente para la mayoría del financiamiento de ADC.',
+    warning: 'Si ADC recibe un grant de más de $10,000 de una organización extranjera, el banco puede congelar los fondos hasta recibir documentación del origen. Enviar la carta de grant al banco ANTES de que lleguen los fondos.',
+    deadline: 'Registro UAF: solo si se superan los umbrales legales',
+    link: 'https://www.uaf.gob.pa',
+    link_text: 'UAF Panamá — Unidad de Análisis Financiero',
+    items: [
+      'Expediente de donantes internacionales con documentación de origen',
+      'Carta de aceptación de cada grant con propósito declarado',
+      'Notificación al banco antes de recibir transferencias grandes (>$10,000)',
+      'Evaluación anual de riesgo AML (si aplica por volumen)',
+      'Política interna de debida diligencia de donantes documentada',
+    ]
+  },
+  {
+    id: 'pandeportes',
+    icon: '⚽',
+    title: 'Registro ante PANDEPORTES',
+    desc: 'Afiliación al Instituto Panameño de Deportes',
+    tags: ['legal', 'fund'],
+    summary: `El <strong>Instituto Panameño de Deportes (PANDEPORTES)</strong> es la entidad gubernamental que regula y apoya el deporte en Panamá. Las organizaciones deportivas registradas ante PANDEPORTES pueden acceder a <strong>apoyo técnico, instalaciones y algunas líneas de financiamiento público</strong>.<br><br>
+La <strong>Federación Panameña de Fútbol (FEPAFUT)</strong> es el organismo rector del fútbol. Clubes registrados en FEPAFUT pueden participar en torneos oficiales y acceder a fondos FIFA Forward distribuidos a través de la federación.`,
+    tip: 'Registrarse en FEPAFUT como club afiliado abre acceso a los fondos FIFA Forward que FEPAFUT distribuye a clubes de base. El trámite es relativamente simple y puede ser el primer paso para obtener financiamiento deportivo oficial.',
+    warning: 'PANDEPORTES requiere que el club tenga instalaciones o acceso verificable a instalaciones para entrenar. Documentar el acuerdo de uso del campo de Curundú.',
+    deadline: 'Registro por única vez — renovación según cambios de junta',
+    link: 'https://www.pandeportes.gob.pa',
+    link_text: 'PANDEPORTES — Instituto Panameño de Deportes',
+    items: [
+      'Registro de ADC ante PANDEPORTES como asociación deportiva',
+      'Afiliación a FEPAFUT como club de fútbol base',
+      'Documentación de acceso a instalaciones de entrenamiento',
+      'Lista de entrenadores certificados o en proceso de certificación',
+      'Registro en torneos FEPAFUT para visibilidad y elegibilidad a fondos',
+    ]
+  },
+  {
+    id: 'contratos',
+    icon: '📄',
+    title: 'Contratos, Voluntarios y Recursos Humanos',
+    desc: 'Protección legal para entrenadores, voluntarios y atletas menores',
+    tags: ['legal'],
+    summary: `ADC trabaja con <strong>menores de edad</strong>, lo que implica obligaciones adicionales de protección. Todos los voluntarios y entrenadores que trabajan directamente con menores deben firmar formularios de consentimiento y seguir protocolos de salvaguarda.<br><br>
+Para voluntarios internacionales (como Duke Engage), la organización anfitriona (ADC) tiene responsabilidad legal de velar por la seguridad del voluntario y de los menores durante las actividades.`,
+    tip: 'Un formulario de consentimiento de 1 página firmado por los padres de cada atleta elimina la mayor parte del riesgo legal de ADC. Incluir: descripción del programa, riesgos físicos de la práctica deportiva, y autorización de uso de imagen para fotos/videos.',
+    warning: 'No publicar fotos de menores sin consentimiento escrito de los padres. Esto aplica a Instagram, el sitio web y materiales de grant. Mantener archivo físico o digital de los consentimientos firmados.',
+    deadline: 'Renovar consentimientos al inicio de cada temporada',
+    link: 'https://www.senniaf.gob.pa',
+    link_text: 'SENNIAF — Secretaría para Niñez, Adolescencia y Familia',
+    items: [
+      'Formulario de inscripción y consentimiento firmado por padres/tutores',
+      'Autorización de uso de imagen firmada para cada atleta',
+      'Protocolo de salvaguarda de menores documentado',
+      'Acuerdos de voluntariado firmados (especialmente para volunteers internacionales)',
+      'Seguro de accidentes para atletas (verificar cobertura)',
+      'Inventario de equipos y responsables',
+    ]
+  },
+  {
+    id: 'senniaf',
+    icon: '👶',
+    title: 'MIDES / SENNIAF — Bienestar Infantil',
+    desc: 'Requisitos del Ministerio de Desarrollo Social para trabajo con menores',
+    tags: ['legal', 'report'],
+    summary: `El <strong>Ministerio de Desarrollo Social (MIDES)</strong> y la <strong>Secretaría Nacional para la Niñez, Adolescencia y Familia (SENNIAF)</strong> supervisan las organizaciones que trabajan con menores en Panamá.<br><br>
+Las organizaciones que brindan servicios a menores en comunidades vulnerables pueden inscribirse en el <strong>Registro Nacional de ONGs de MIDES</strong>, lo que a su vez puede generar acceso a programas de cofinanciamiento y apoyo institucional.`,
+    tip: 'Inscribirse en el Registro de ONGs de MIDES es gratuito y aumenta la credibilidad de ADC ante donantes internacionales y entidades del gobierno panameño. También es un requisito para algunos grants del gobierno.',
+    warning: 'Si ADC alguna vez opera un programa residencial o de alimentación regular (no solo entrenamientos), aplican requisitos adicionales de MIDES que incluyen inspecciones de instalaciones.',
+    deadline: 'Registro inicial — renovación anual',
+    link: 'https://www.mides.gob.pa',
+    link_text: 'MIDES — Ministerio de Desarrollo Social',
+    items: [
+      'Inscripción en Registro Nacional de ONGs de MIDES',
+      'Declaración jurada de ausencia de antecedentes penales para todo el personal',
+      'Protocolo de atención a menores en riesgo',
+      'Contacto designado de enlace con MIDES o SENNIAF',
+    ]
+  }
+];
+
+const TIMELINE_ITEMS = [
+  { month: 'Enero', dot: 'pending', text: 'Declaración anual de ingresos — DGI', sub: 'Presentar antes del 31 de marzo' },
+  { month: 'Febrero', dot: 'pending', text: 'Preparar informe anual de actividades', sub: 'Para presentar al Ministerio de Gobierno en marzo' },
+  { month: 'Marzo', dot: 'active', text: 'Informe anual — Ministerio de Gobierno', sub: 'Fecha límite: 31 de marzo' },
+  { month: 'Marzo', dot: 'active', text: 'Declaración de rentas en DGI', sub: 'Fecha límite: 31 de marzo' },
+  { month: 'Abril', dot: 'pending', text: 'Renovar certificado de personería jurídica', sub: 'Si aplica según fecha de registro original' },
+  { month: 'Mayo', dot: 'pending', text: 'Asamblea anual de miembros', sub: 'Elegir o reconfirmar junta directiva' },
+  { month: 'Junio', dot: 'pending', text: 'Actualizar documentos en el banco', sub: 'Si hubo cambios en junta directiva' },
+  { month: 'Agosto', dot: 'pending', text: 'Renovar consentimientos de atletas', sub: 'Inicio de nueva temporada' },
+  { month: 'Octubre', dot: 'pending', text: 'Revisar estado de cumplimiento AML', sub: 'Documentar donaciones internacionales del año' },
+  { month: 'Diciembre', dot: 'pending', text: 'Preparar resumen financiero del año', sub: 'Para el informe de marzo siguiente' },
+];
+
+// ── STORAGE HELPERS ──
+function saveState() {
+  const state = {};
+  SECTIONS.forEach(s => {
+    const status = document.getElementById('status-' + s.id)?.value || 'pending';
+    const notes  = document.getElementById('notes-'  + s.id)?.value || '';
+    const items  = [];
+    const cbs = document.querySelectorAll('[data-section="' + s.id + '"]');
+    cbs.forEach(cb => items.push(cb.checked));
+    state[s.id] = { status, notes, items };
+  });
+  localStorage.setItem('adc-legal-state', JSON.stringify(state));
+  showToast();
+}
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem('adc-legal-state')) || {}; } catch { return {}; }
+}
+
+function showToast() {
+  const t = document.getElementById('save-toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// ── RENDER ──
+function renderSections(filter) {
+  const state = loadState();
+  const container = document.getElementById('sections-container');
+  container.innerHTML = '';
+
+  SECTIONS.forEach(s => {
+    if (filter && filter !== 'all' && !s.tags.includes(filter)) return;
+    const st = state[s.id] || {};
+    const statusVal = st.status || 'pending';
+    const items = st.items || [];
+
+    const card = document.createElement('div');
+    card.className = 'section-card' + (statusVal === 'done' ? ' done' : statusVal === 'na' ? '' : ' pending');
+    card.id = 'card-' + s.id;
+
+    const tagHTML = s.tags.map(t => `<span class="tag tag-${t}">${tagLabel(t)}</span>`).join('');
+    const statusBadge = statusVal === 'done' ? '<span class="status-badge status-done">✓ Completado</span>'
+                      : statusVal === 'na'   ? '<span class="status-badge status-na">N/A</span>'
+                      :                        '<span class="status-badge status-pending">Pendiente</span>';
+
+    card.innerHTML = `
+      <div class="section-header" onclick="toggleCard('${s.id}')">
+        <span class="section-icon">${s.icon}</span>
+        <div class="section-title-wrap">
+          <div class="section-title">${s.title}</div>
+          <div class="section-desc">${s.desc}</div>
+          <div class="section-tags">${tagHTML}</div>
+        </div>
+        ${statusBadge}
+        <span class="chevron">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="content-block">
+          <div class="block-label">Resumen</div>
+          <div class="summary-text">${s.summary}</div>
+        </div>
+        <div class="tip-box"><strong>💡 Consejo:</strong> ${s.tip}</div>
+        <div class="warning-box"><strong>⚠️ Error común:</strong> ${s.warning}</div>
+        ${s.deadline ? `<div><span class="deadline-badge">🗓 ${s.deadline}</span></div>` : ''}
+        ${s.link ? `<div><a class="official-link" href="${s.link}" target="_blank" rel="noopener">🔗 ${s.link_text}</a></div>` : ''}
+        <div class="content-block">
+          <div class="block-label">Checklist de esta sección</div>
+          <ul class="checklist">
+            ${s.items.map((item, i) => `
+              <li>
+                <input type="checkbox" data-section="${s.id}" data-index="${i}"
+                  ${items[i] ? 'checked' : ''} onchange="saveState()">
+                <span>${item}</span>
+              </li>`).join('')}
+          </ul>
+        </div>
+        <div class="notes-wrap">
+          <div class="block-label">Mis notas para ADC</div>
+          <textarea class="notes-field" id="notes-${s.id}" placeholder="Agrega notas específicas de ADC aquí..." oninput="saveState()">${st.notes || ''}</textarea>
+          <div class="notes-save-note">Las notas se guardan automáticamente en este navegador.</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+          <select class="status-select" id="status-${s.id}" onchange="updateStatus('${s.id}')">
+            <option value="pending" ${statusVal==='pending'?'selected':''}>⏳ Pendiente</option>
+            <option value="done"    ${statusVal==='done'   ?'selected':''}>✅ Completado</option>
+            <option value="na"      ${statusVal==='na'     ?'selected':''}>➖ No aplica</option>
+          </select>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function tagLabel(t) {
+  const map = { legal:'⚖️ Legal', tax:'💰 Impuestos', bank:'🏦 Bancario', report:'📋 Reportes', fund:'🌍 Fondos ext.', annual:'📅 Anual' };
+  return map[t] || t;
+}
+
+function toggleCard(id) {
+  const card = document.getElementById('card-' + id);
+  card.classList.toggle('open');
+}
+
+function updateStatus(id) {
+  saveState();
+  // Re-render card border color
+  const val = document.getElementById('status-' + id).value;
+  const card = document.getElementById('card-' + id);
+  card.classList.remove('done', 'pending');
+  if (val === 'done') card.classList.add('done');
+  else if (val === 'pending') card.classList.add('pending');
+  updateProgress();
+}
+
+function updateProgress() {
+  const state = loadState();
+  const done = SECTIONS.filter(s => (state[s.id]?.status || 'pending') === 'done').length;
+  const total = SECTIONS.length;
+  const pct = Math.round((done / total) * 100);
+  const bar = document.getElementById('progress-bar-fill');
+  const txt = document.getElementById('progress-text');
+  if (bar) bar.style.width = pct + '%';
+  if (txt) txt.textContent = `${done} de ${total} secciones completadas (${pct}%)`;
+}
+
+function renderChecklist() {
+  const state = loadState();
+  const container = document.getElementById('checklist-container');
+  container.innerHTML = '';
+  SECTIONS.forEach(s => {
+    const st = state[s.id] || {};
+    const statusVal = st.status || 'pending';
+    const div = document.createElement('div');
+    div.style.cssText = 'background:var(--white); border:1.5px solid var(--border); border-radius:var(--radius); padding:1rem 1.25rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:1rem;';
+    const badge = statusVal === 'done' ? '<span class="status-badge status-done">✓</span>'
+                : statusVal === 'na'   ? '<span class="status-badge status-na">N/A</span>'
+                :                        '<span class="status-badge status-pending">⏳</span>';
+    div.innerHTML = `
+      ${badge}
+      <div style="flex:1;">
+        <div style="font-weight:700; font-size:0.92rem; color:var(--green-d);">${s.icon} ${s.title}</div>
+        <div style="font-size:0.8rem; color:var(--gray);">${s.desc}</div>
+      </div>
+      <select class="status-select" id="cl-status-${s.id}" onchange="updateStatusChecklist('${s.id}', this)">
+        <option value="pending" ${statusVal==='pending'?'selected':''}>⏳ Pendiente</option>
+        <option value="done"    ${statusVal==='done'   ?'selected':''}>✅ Completado</option>
+        <option value="na"      ${statusVal==='na'     ?'selected':''}>➖ No aplica</option>
+      </select>
+    `;
+    container.appendChild(div);
+  });
+  updateProgress();
+}
+
+function updateStatusChecklist(id, sel) {
+  const state = loadState();
+  if (!state[id]) state[id] = {};
+  state[id].status = sel.value;
+  localStorage.setItem('adc-legal-state', JSON.stringify(state));
+  updateProgress();
+  showToast();
+}
+
+function renderTimeline() {
+  const container = document.getElementById('timeline-list');
+  container.innerHTML = TIMELINE_ITEMS.map(item => `
+    <div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-dot ${item.dot}"></div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-content">
+        <div class="tl-month">${item.month}</div>
+        <div class="tl-text">${item.text}</div>
+        <div class="tl-sub">${item.sub}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── FILTER & MODE ──
+function filterSections(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSections(filter);
+}
+
+function setMode(mode) {
+  ['guide','checklist','timeline'].forEach(m => {
+    document.getElementById('mode-' + m).style.display = m === mode ? 'block' : 'none';
+    document.getElementById('btn-' + m).classList.toggle('active', m === mode);
+  });
+  document.getElementById('filter-bar').style.display = mode === 'guide' ? 'flex' : 'none';
+  if (mode === 'checklist') renderChecklist();
+  if (mode === 'timeline')  renderTimeline();
+}
+
+// ── INIT ──
+renderSections('all');
+</script>
+
+</body>
+</html>

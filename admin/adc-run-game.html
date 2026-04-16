@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ADC Run — Juego Oficial de ADC</title>
+  <meta name="description" content="Juego de ADC — Asociación Deportiva Curundú. Corre, salta y esquiva con el jugador de ADC.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green:   #0a6e3c;
+      --green-d: #064d2a;
+      --green-l: #e8f5ee;
+      --gold:    #FFD700;
+      --bg:      #0d1117;
+    }
+    body {
+      background: var(--bg); color: #fff;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex; flex-direction: column; align-items: center;
+      min-height: 100vh; overflow-x: hidden;
+    }
+
+    header {
+      background: var(--green-d); width: 100%; padding: 0 1.5rem;
+      height: 48px; display: flex; align-items: center; justify-content: space-between;
+    }
+    header .brand { font-weight: 700; font-size: 0.95rem; color: #fff; letter-spacing: 0.05em; }
+    .back-btn {
+      color: rgba(255,255,255,0.8); font-size: 0.82rem;
+      text-decoration: none; background: rgba(255,255,255,0.12);
+      padding: 0.3rem 0.75rem; border-radius: 5px;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.2); }
+
+    .game-container {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 1.5rem 1rem; width: 100%; max-width: 700px;
+    }
+
+    .score-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      width: 100%; max-width: 640px; margin-bottom: 0.75rem;
+      background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+      padding: 0.5rem 1rem;
+    }
+    .score-item { text-align: center; }
+    .score-label { font-size: 0.65rem; color: #8b949e; letter-spacing: 0.06em; text-transform: uppercase; }
+    .score-val { font-size: 1.2rem; font-weight: 700; color: var(--gold); letter-spacing: 0.1em; }
+    .score-val.green { color: #3fb950; }
+
+    canvas {
+      border: 2px solid var(--green);
+      border-radius: 4px;
+      image-rendering: pixelated;
+      max-width: 100%;
+    }
+
+    .controls {
+      display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; justify-content: center;
+    }
+    .ctrl-btn {
+      background: var(--green); color: #fff; border: none; border-radius: 6px;
+      padding: 0.75rem 1.5rem; font-size: 1rem; font-family: 'Courier New', monospace;
+      font-weight: 700; cursor: pointer; letter-spacing: 0.05em; transition: background 0.15s;
+      user-select: none; -webkit-user-select: none;
+    }
+    .ctrl-btn:hover { background: var(--green-d); }
+    .ctrl-btn.secondary { background: #21262d; color: #8b949e; border: 1px solid #30363d; }
+    .ctrl-btn.secondary:hover { color: #fff; border-color: var(--green); }
+
+    .mobile-controls {
+      display: none; gap: 1rem; margin-top: 0.75rem;
+    }
+    .mobile-btn {
+      background: #21262d; border: 2px solid var(--green); color: #fff;
+      border-radius: 8px; padding: 1rem 1.5rem; font-size: 1.1rem;
+      cursor: pointer; font-family: 'Courier New', monospace;
+      user-select: none; -webkit-user-select: none; flex: 1; text-align: center;
+    }
+    .mobile-btn:active { background: var(--green); }
+
+    .how-to {
+      margin-top: 1.25rem; background: #161b22;
+      border: 1px solid #30363d; border-radius: 8px;
+      padding: 1rem 1.25rem; max-width: 640px; width: 100%;
+    }
+    .how-to h3 { font-size: 0.85rem; color: var(--gold); letter-spacing: 0.06em; margin-bottom: 0.75rem; }
+    .how-to-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+    .how-to-item { font-size: 0.8rem; color: #8b949e; display: flex; gap: 0.5rem; }
+    .how-to-item span:first-child { color: #fff; flex-shrink: 0; }
+
+    @media (max-width: 480px) { .mobile-controls { display: flex; } }
+    @media (min-width: 481px) { .mobile-controls { display: none; } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">⚽ ADC RUN</div>
+  <a href="index.html" class="back-btn">← Admin</a>
+</header>
+
+<div class="game-container">
+  <div class="score-bar">
+    <div class="score-item">
+      <div class="score-label">Puntos</div>
+      <div class="score-val" id="score-display">00000</div>
+    </div>
+    <div class="score-item">
+      <div class="score-label">Récord</div>
+      <div class="score-val green" id="hi-score-display">00000</div>
+    </div>
+    <div class="score-item">
+      <div class="score-label">Vidas</div>
+      <div class="score-val" id="lives-display">♥♥♥</div>
+    </div>
+    <div class="score-item">
+      <div class="score-label">Nivel</div>
+      <div class="score-val" id="level-display">1</div>
+    </div>
+  </div>
+
+  <canvas id="game-canvas" width="640" height="200"></canvas>
+
+  <div class="controls">
+    <button class="ctrl-btn" id="start-btn" onclick="handleStartBtn()">▶ JUGAR</button>
+    <button class="ctrl-btn secondary" onclick="toggleMute()">🔊</button>
+  </div>
+
+  <div class="mobile-controls">
+    <button class="mobile-btn" ontouchstart="handleJump()" onclick="handleJump()">↑ SALTAR</button>
+    <button class="mobile-btn" ontouchstart="handleDuck(true)" ontouchend="handleDuck(false)">↓ AGACHARSE</button>
+  </div>
+
+  <div class="how-to">
+    <h3>⌨️ CONTROLES</h3>
+    <div class="how-to-grid">
+      <div class="how-to-item"><span>ESPACIO / ↑</span><span>Saltar (tackle)</span></div>
+      <div class="how-to-item"><span>↓ / S</span><span>Agacharse (cabezazo)</span></div>
+      <div class="how-to-item"><span>🏆 Trofeo ADC</span><span>x2 puntos</span></div>
+      <div class="how-to-item"><span>🥗 Comida</span><span>Velocidad boost</span></div>
+      <div class="how-to-item"><span>👥 Compañero</span><span>Escudo de protección</span></div>
+      <div class="how-to-item"><span>🟥 Tarjeta roja</span><span>¡Esquívala!</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── GAME ENGINE ──
+const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+// Colors
+const C = {
+  sky:        '#0a1628',
+  groundTop:  '#0a6e3c',
+  ground:     '#064d2a',
+  groundLine: '#0d8048',
+  player:     '#1a1a1a',
+  jersey:     '#0a6e3c',
+  jerseyNum:  '#ffffff',
+  skin:       '#8B5E3C',
+  hair:       '#111111',
+  ball:       '#ffffff',
+  ballMark:   '#000000',
+  gold:       '#FFD700',
+  red:        '#c0392b',
+  white:      '#ffffff',
+  shadow:     'rgba(0,0,0,0.3)',
+};
+
+// Game state
+let state = 'idle'; // idle | running | dead | paused
+let score = 0;
+let hiScore = parseInt(localStorage.getItem('adc-run-hi') || '0');
+let lives = 3;
+let level = 1;
+let speed = 5;
+let frame = 0;
+let lastTime = 0;
+let animId = null;
+let muted = false;
+let multiplier = 1;
+let multiplierTimer = 0;
+let shield = false;
+let shieldTimer = 0;
+let speedBoost = false;
+let speedBoostTimer = 0;
+let invincible = 0;
+let gameOver = false;
+
+// Audio context
+let audioCtx = null;
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function beep(freq, dur, type = 'square', vol = 0.15) {
+  if (muted) return;
+  try {
+    const a = getAudio();
+    const osc = a.createOscillator();
+    const gain = a.createGain();
+    osc.connect(gain); gain.connect(a.destination);
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol, a.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, a.currentTime + dur);
+    osc.start(a.currentTime); osc.stop(a.currentTime + dur);
+  } catch(e) {}
+}
+function playJump()     { beep(440, 0.08); beep(660, 0.06); }
+function playDuck()     { beep(220, 0.05); }
+function playCoin()     { beep(880, 0.08); beep(1100, 0.06); }
+function playHit()      { beep(110, 0.2, 'sawtooth', 0.2); }
+function playDead()     { [440,330,220,110].forEach((f,i) => setTimeout(()=>beep(f,0.15,'sawtooth',0.15), i*120)); }
+function playLevelUp()  { [440,550,660,880].forEach((f,i) => setTimeout(()=>beep(f,0.08), i*80)); }
+
+// Player
+const player = {
+  x: 80, w: 32, h: 48,
+  y: 0, vy: 0,
+  jumping: false, ducking: false,
+  animFrame: 0, animTimer: 0,
+  groundY: 0,
+};
+
+function getGroundY() { return H - 40 - player.h; }
+
+// Obstacles
+let obstacles = [];
+let powerups = [];
+let particles = [];
+let clouds = [];
+let stars = [];
+
+// Ground tiles
+const groundScroll = { x: 0 };
+
+// ── INIT ──
+function initGame() {
+  score = 0;
+  lives = 3;
+  level = 1;
+  speed = 5;
+  frame = 0;
+  multiplier = 1;
+  multiplierTimer = 0;
+  shield = false;
+  shieldTimer = 0;
+  speedBoost = false;
+  speedBoostTimer = 0;
+  invincible = 0;
+  gameOver = false;
+
+  player.y = getGroundY();
+  player.vy = 0;
+  player.jumping = false;
+  player.ducking = false;
+  player.animFrame = 0;
+
+  obstacles = [];
+  powerups = [];
+  particles = [];
+  clouds = [
+    { x: 200, y: 20, w: 80, speed: 0.4 },
+    { x: 450, y: 35, w: 60, speed: 0.3 },
+    { x: 600, y: 15, w: 100, speed: 0.5 },
+  ];
+  stars = Array.from({ length: 30 }, () => ({
+    x: Math.random() * W, y: Math.random() * (H * 0.55),
+    r: Math.random() * 1.5 + 0.5, blink: Math.random()
+  }));
+
+  updateHUD();
+}
+
+// ── JUMP / DUCK ──
+function handleJump() {
+  if (state === 'idle' || state === 'dead') { startGame(); return; }
+  if (!player.jumping && !player.ducking) {
+    player.vy = -14;
+    player.jumping = true;
+    playJump();
+  }
+}
+function handleDuck(isDown) {
+  if (state === 'running') {
+    player.ducking = isDown;
+    if (isDown) playDuck();
+  }
+}
+
+// Keyboard
+window.addEventListener('keydown', e => {
+  if (e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+    e.preventDefault(); handleJump();
+  }
+  if (e.code === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+    handleDuck(true);
+  }
+  if (e.key === 'Escape') { if (state === 'running') pauseGame(); }
+});
+window.addEventListener('keyup', e => {
+  if (e.code === 'ArrowDown' || e.key === 's' || e.key === 'S') handleDuck(false);
+});
+canvas.addEventListener('click', () => handleJump());
+canvas.addEventListener('touchstart', e => { e.preventDefault(); handleJump(); }, { passive: false });
+
+function handleStartBtn() {
+  if (state === 'idle' || state === 'dead') startGame();
+  else if (state === 'running') pauseGame();
+  else if (state === 'paused') resumeGame();
+}
+
+function startGame() {
+  initGame();
+  state = 'running';
+  document.getElementById('start-btn').textContent = '⏸ PAUSA';
+  if (animId) cancelAnimationFrame(animId);
+  lastTime = performance.now();
+  animId = requestAnimationFrame(loop);
+}
+
+function pauseGame() {
+  state = 'paused';
+  document.getElementById('start-btn').textContent = '▶ CONTINUAR';
+}
+
+function resumeGame() {
+  state = 'running';
+  document.getElementById('start-btn').textContent = '⏸ PAUSA';
+  lastTime = performance.now();
+  animId = requestAnimationFrame(loop);
+}
+
+// ── SPAWN ──
+let nextObstacle = 90;
+let nextPowerup = 200;
+
+function spawnObstacle() {
+  const rand = Math.random();
+  if (rand < 0.45) {
+    // Sliding tackle — jump over
+    obstacles.push({ x: W + 20, type: 'tackle', w: 28, h: 22, y: getGroundY() + player.h - 22 + 8 });
+  } else if (rand < 0.75) {
+    // Header ball — duck under
+    obstacles.push({ x: W + 20, type: 'header', w: 22, h: 22, y: getGroundY() - 20 });
+  } else {
+    // Red card ref — dodge (either jump or duck)
+    obstacles.push({ x: W + 20, type: 'redcard', w: 26, h: 44, y: getGroundY() + player.h - 44 });
+  }
+}
+
+function spawnPowerup() {
+  const rand = Math.random();
+  const types = ['trophy', 'food', 'teammate'];
+  const type = types[Math.floor(rand * types.length)];
+  const yOptions = [getGroundY() - 30, getGroundY() - 15, getGroundY() + player.h - 24];
+  powerups.push({ x: W + 10, type, w: 24, h: 24, y: yOptions[Math.floor(Math.random() * yOptions.length)] });
+}
+
+function spawnParticle(x, y, color, count = 6) {
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 / count) * i + Math.random() * 0.5;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * (2 + Math.random() * 3),
+      vy: Math.sin(angle) * (2 + Math.random() * 3),
+      life: 30, color, r: 3 + Math.random() * 3
+    });
+  }
+}
+
+// ── MAIN LOOP ──
+function loop(ts) {
+  const dt = Math.min((ts - lastTime) / 16.67, 3);
+  lastTime = ts;
+
+  if (state !== 'running') {
+    render();
+    return;
+  }
+
+  update(dt);
+  render();
+
+  if (state === 'running') animId = requestAnimationFrame(loop);
+}
+
+function update(dt) {
+  frame++;
+
+  // Score
+  const pts = Math.floor(speed * 0.3 * multiplier * dt);
+  score += pts;
+  if (score > hiScore) { hiScore = score; localStorage.setItem('adc-run-hi', Math.floor(hiScore)); }
+
+  // Level up
+  const newLevel = Math.floor(score / 2000) + 1;
+  if (newLevel > level) { level = newLevel; speed = Math.min(5 + level * 1.2, 18); playLevelUp(); }
+
+  const effectiveSpeed = speedBoost ? speed * 1.5 : speed;
+
+  // Timers
+  if (invincible > 0) invincible -= dt;
+  if (multiplierTimer > 0) { multiplierTimer -= dt; if (multiplierTimer <= 0) multiplier = 1; }
+  if (shieldTimer > 0) { shieldTimer -= dt; if (shieldTimer <= 0) shield = false; }
+  if (speedBoostTimer > 0) { speedBoostTimer -= dt; if (speedBoostTimer <= 0) speedBoost = false; }
+
+  // Player physics
+  if (player.jumping || player.y < getGroundY()) {
+    player.vy += 0.7 * dt;
+    player.y += player.vy * dt;
+    if (player.y >= getGroundY()) {
+      player.y = getGroundY();
+      player.vy = 0;
+      player.jumping = false;
+    }
+  }
+
+  // Player animation
+  player.animTimer++;
+  if (player.animTimer > 8) { player.animTimer = 0; player.animFrame = (player.animFrame + 1) % 4; }
+
+  // Obstacles
+  nextObstacle -= dt;
+  if (nextObstacle <= 0) {
+    spawnObstacle();
+    nextObstacle = Math.max(40, 90 - level * 5) + Math.random() * 40;
+  }
+  obstacles = obstacles.filter(o => o.x + o.w > -10);
+  obstacles.forEach(o => { o.x -= effectiveSpeed * dt; });
+
+  // Powerups
+  nextPowerup -= dt;
+  if (nextPowerup <= 0) {
+    spawnPowerup();
+    nextPowerup = 150 + Math.random() * 80;
+  }
+  powerups = powerups.filter(p => p.x + p.w > -10);
+  powerups.forEach(p => { p.x -= effectiveSpeed * dt; });
+
+  // Clouds / stars
+  clouds.forEach(c => { c.x -= c.speed * dt; if (c.x + c.w < 0) c.x = W + 20; });
+
+  // Ground scroll
+  groundScroll.x = (groundScroll.x + effectiveSpeed * dt) % 32;
+
+  // Particles
+  particles = particles.filter(p => p.life > 0);
+  particles.forEach(p => {
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    p.vy += 0.2 * dt; p.life -= 1.5 * dt;
+  });
+
+  // Collisions
+  if (invincible <= 0) {
+    const ph = player.ducking ? player.h * 0.5 : player.h;
+    const py = player.ducking ? player.y + player.h * 0.5 : player.y;
+    const px = player.x + 6;
+
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+      const o = obstacles[i];
+      if (px < o.x + o.w - 4 && px + player.w - 12 > o.x + 4 && py < o.y + o.h - 4 && py + ph > o.y + 4) {
+        if (shield) {
+          shield = false; shieldTimer = 0;
+          obstacles.splice(i, 1);
+          spawnParticle(o.x + o.w / 2, o.y + o.h / 2, '#3fb950', 10);
+          beep(660, 0.1);
+        } else {
+          playHit();
+          spawnParticle(player.x + player.w / 2, player.y + ph / 2, '#ff4444', 8);
+          obstacles.splice(i, 1);
+          lives--;
+          invincible = 60;
+          updateHUD();
+          if (lives <= 0) { endGame(); return; }
+        }
+      }
+    }
+  }
+
+  // Powerup collisions
+  for (let i = powerups.length - 1; i >= 0; i--) {
+    const p = powerups[i];
+    const ph = player.ducking ? player.h * 0.5 : player.h;
+    const py = player.ducking ? player.y + player.h * 0.5 : player.y;
+    if (player.x + 4 < p.x + p.w && player.x + player.w - 4 > p.x && py < p.y + p.h && py + ph > p.y) {
+      playCoin();
+      spawnParticle(p.x + p.w / 2, p.y + p.h / 2, C.gold, 8);
+      if (p.type === 'trophy')   { multiplier = 2; multiplierTimer = 180; }
+      if (p.type === 'food')     { speedBoost = true; speedBoostTimer = 120; }
+      if (p.type === 'teammate') { shield = true; shieldTimer = 200; }
+      powerups.splice(i, 1);
+    }
+  }
+
+  updateHUD();
+}
+
+function endGame() {
+  state = 'dead';
+  gameOver = true;
+  playDead();
+  localStorage.setItem('adc-run-hi', Math.floor(hiScore));
+  document.getElementById('start-btn').textContent = '▶ JUGAR DE NUEVO';
+}
+
+function updateHUD() {
+  document.getElementById('score-display').textContent    = String(Math.floor(score)).padStart(5, '0');
+  document.getElementById('hi-score-display').textContent = String(Math.floor(hiScore)).padStart(5, '0');
+  document.getElementById('lives-display').textContent    = '♥'.repeat(Math.max(0, lives)) + '♡'.repeat(Math.max(0, 3 - lives));
+  document.getElementById('level-display').textContent    = level;
+}
+
+function toggleMute() {
+  muted = !muted;
+  document.querySelector('.ctrl-btn.secondary').textContent = muted ? '🔇' : '🔊';
+}
+
+// ── RENDER ──
+function render() {
+  ctx.clearRect(0, 0, W, H);
+
+  drawSky();
+  drawStars();
+  drawClouds();
+  drawGround();
+  drawObstacles();
+  drawPowerups();
+  drawParticles();
+  drawPlayer();
+  drawHUD();
+
+  if (state === 'idle') drawStartScreen();
+  if (state === 'paused') drawPauseScreen();
+  if (state === 'dead') drawDeadScreen();
+}
+
+function drawSky() {
+  const grad = ctx.createLinearGradient(0, 0, 0, H * 0.75);
+  grad.addColorStop(0, '#0a1628');
+  grad.addColorStop(1, '#0d2040');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+}
+
+function drawStars() {
+  stars.forEach(s => {
+    s.blink += 0.02;
+    const alpha = 0.4 + 0.4 * Math.sin(s.blink);
+    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+function drawClouds() {
+  clouds.forEach(c => {
+    ctx.fillStyle = 'rgba(255,255,255,0.07)';
+    ctx.beginPath();
+    ctx.ellipse(c.x, c.y, c.w * 0.5, 12, 0, 0, Math.PI * 2);
+    ctx.ellipse(c.x - c.w * 0.2, c.y + 4, c.w * 0.3, 10, 0, 0, Math.PI * 2);
+    ctx.ellipse(c.x + c.w * 0.2, c.y + 3, c.w * 0.3, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+function drawGround() {
+  // Ground gradient
+  const gy = H - 40;
+  const grad = ctx.createLinearGradient(0, gy, 0, H);
+  grad.addColorStop(0, '#0a6e3c');
+  grad.addColorStop(0.15, '#085c32');
+  grad.addColorStop(1, '#053d22');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, gy, W, H - gy);
+
+  // Grass line
+  ctx.strokeStyle = '#0d8048';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, gy);
+  ctx.lineTo(W, gy);
+  ctx.stroke();
+
+  // Ground pattern lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+  for (let x = (W - groundScroll.x) % 64; x < W; x += 64) {
+    ctx.beginPath(); ctx.moveTo(x, gy + 2); ctx.lineTo(x, H); ctx.stroke();
+  }
+}
+
+function drawPlayer() {
+  const x = player.x;
+  const baseY = player.y;
+  const sh = player.ducking ? 0.55 : 1;
+  const sy = player.ducking ? baseY + player.h * 0.45 : baseY;
+
+  ctx.save();
+  ctx.translate(x, sy);
+  ctx.scale(1, sh);
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.beginPath();
+  ctx.ellipse(player.w / 2, player.h + 2, player.w * 0.4, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Invincible flash
+  if (invincible > 0 && Math.floor(invincible / 4) % 2 === 0) {
+    ctx.globalAlpha = 0.4;
+  }
+
+  // Shield glow
+  if (shield) {
+    ctx.shadowColor = '#3fb950';
+    ctx.shadowBlur = 12;
+  }
+
+  const legAnim = [0, 6, 0, -6][player.animFrame] * (player.ducking ? 0 : 1);
+  const armAnim = [6, 0, -6, 0][player.animFrame] * (player.ducking ? 0 : 1);
+
+  // LEGS — pixel block style
+  const legH = player.h * 0.4;
+  const legW = 8;
+  const hipY = player.h * 0.55;
+
+  // Right leg
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(player.w * 0.5 - legW + 2, hipY + legAnim, legW, legH * 0.6);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(player.w * 0.5 - legW + 2, hipY + legAnim + legH * 0.6, legW, legH * 0.2); // sock
+  ctx.fillStyle = '#111';
+  ctx.fillRect(player.w * 0.5 - legW + 1, hipY + legAnim + legH * 0.8, legW + 2, legH * 0.2); // boot
+
+  // Left leg
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(player.w * 0.5 - 2, hipY - legAnim, legW, legH * 0.6);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(player.w * 0.5 - 2, hipY - legAnim + legH * 0.6, legW, legH * 0.2);
+  ctx.fillStyle = '#111';
+  ctx.fillRect(player.w * 0.5 - 3, hipY - legAnim + legH * 0.8, legW + 2, legH * 0.2);
+
+  // BODY — ADC green jersey
+  const torsoY = player.h * 0.22;
+  const torsoH = player.h * 0.35;
+  ctx.fillStyle = C.jersey;
+  ctx.fillRect(player.w * 0.15, torsoY, player.w * 0.7, torsoH);
+
+  // Jersey number "10" — pixel style
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 7px monospace';
+  ctx.fillText('10', player.w * 0.28, torsoY + torsoH * 0.65);
+
+  // Jersey collar
+  ctx.fillStyle = '#FFD700';
+  ctx.fillRect(player.w * 0.35, torsoY, player.w * 0.3, 4);
+
+  // ARMS
+  ctx.fillStyle = C.skin;
+  // Right arm
+  ctx.fillRect(player.w * 0.12 - 4, torsoY + 2 + armAnim, 8, player.h * 0.22);
+  // Left arm
+  ctx.fillRect(player.w * 0.85 - 4, torsoY + 2 - armAnim, 8, player.h * 0.22);
+
+  // NECK
+  ctx.fillStyle = C.skin;
+  ctx.fillRect(player.w * 0.4, torsoY - 8, player.w * 0.2, 10);
+
+  // HEAD — darker skin tone, afro Panamanian
+  const headR = player.w * 0.3;
+  const headCX = player.w * 0.5;
+  const headCY = torsoY - headR - 2;
+
+  ctx.fillStyle = C.skin;
+  ctx.beginPath();
+  ctx.arc(headCX, headCY, headR, 0, Math.PI * 2);
+  ctx.fill();
+
+  // AFRO
+  ctx.fillStyle = C.hair;
+  ctx.beginPath();
+  // Big afro arc
+  ctx.arc(headCX, headCY - 2, headR * 1.35, Math.PI, 0);
+  ctx.fill();
+  // Side puffs
+  ctx.beginPath();
+  ctx.arc(headCX - headR * 0.9, headCY, headR * 0.6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(headCX + headR * 0.9, headCY, headR * 0.6, 0, Math.PI * 2);
+  ctx.fill();
+
+  // EYES
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(headCX - 6, headCY - 2, 4, 4);
+  ctx.fillRect(headCX + 2, headCY - 2, 4, 4);
+  ctx.fillStyle = '#222';
+  ctx.fillRect(headCX - 5, headCY - 1, 2, 2);
+  ctx.fillRect(headCX + 3, headCY - 1, 2, 2);
+
+  // BALL (dribbling)
+  if (!player.jumping && !player.ducking) {
+    const ballX = player.w * 0.7 + (player.animFrame < 2 ? 4 : -2);
+    const ballY = player.h * 0.88 + (frame % 8 < 4 ? 0 : -3);
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(ballX, ballY, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#555';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(ballX - 3, ballY - 2); ctx.lineTo(ballX + 3, ballY - 2); ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(ballX, ballY, 6, 0.5, 2); ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+function drawObstacles(ts) {
+  obstacles.forEach(o => {
+    ctx.save();
+    ctx.translate(o.x, o.y);
+
+    if (o.type === 'tackle') {
+      // Sliding tackle — leg coming in low
+      ctx.fillStyle = '#e74c3c';
+      // Body horizontal
+      ctx.fillRect(0, 8, o.w, 12);
+      // Boot
+      ctx.fillStyle = '#111';
+      ctx.fillRect(o.w - 10, 4, 14, 14);
+      // Cleats
+      ctx.fillStyle = '#888';
+      ctx.fillRect(o.w - 8, 18, 3, 4);
+      ctx.fillRect(o.w - 4, 18, 3, 4);
+      ctx.fillRect(o.w,     18, 3, 4);
+      // Red shirt
+      ctx.fillStyle = '#c0392b';
+      ctx.fillRect(2, 0, 16, 10);
+      // Pixel text label
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '7px monospace';
+      ctx.fillText('FALTA', 0, -3);
+    }
+
+    if (o.type === 'header') {
+      // Ball coming at head height
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(o.w / 2, o.h / 2, o.w / 2, 0, Math.PI * 2);
+      ctx.fill();
+      // Ball marks
+      ctx.strokeStyle = '#555'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(2, o.h/2); ctx.lineTo(o.w-2, o.h/2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(o.w/2, o.h/2, o.w/2, 0.3, 2.8); ctx.stroke();
+      // Arrows
+      ctx.fillStyle = '#FFD700'; ctx.font = 'bold 9px monospace';
+      ctx.fillText('→→', -18, o.h/2 + 3);
+    }
+
+    if (o.type === 'redcard') {
+      // Referee with red card
+      // Body
+      ctx.fillStyle = '#2c3e50';
+      ctx.fillRect(3, 14, 20, 24);
+      // Ref shirt stripes
+      ctx.fillStyle = '#ecf0f1';
+      ctx.fillRect(3, 14, 5, 24);
+      // Head
+      ctx.fillStyle = '#f0c08a';
+      ctx.beginPath();
+      ctx.arc(13, 9, 8, 0, Math.PI * 2);
+      ctx.fill();
+      // Hat
+      ctx.fillStyle = '#2c3e50';
+      ctx.fillRect(5, 2, 16, 6);
+      // Arm holding card
+      ctx.fillStyle = '#2c3e50';
+      ctx.fillRect(20, 14, 8, 14);
+      // RED CARD
+      ctx.fillStyle = '#e74c3c';
+      ctx.fillRect(24, 4, 12, 18);
+      ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 1.5;
+      ctx.strokeRect(24, 4, 12, 18);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 7px monospace';
+      ctx.fillText('!', 28, 16);
+      // Legs
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(4, 38, 8, 6);
+      ctx.fillRect(14, 38, 8, 6);
+    }
+
+    ctx.restore();
+  });
+}
+
+function drawPowerups() {
+  powerups.forEach(p => {
+    const pulse = 0.9 + 0.1 * Math.sin(frame * 0.12);
+    ctx.save();
+    ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+    ctx.scale(pulse, pulse);
+
+    if (p.type === 'trophy') {
+      // Pixel trophy
+      ctx.fillStyle = C.gold;
+      ctx.fillRect(-8, -12, 16, 12); // cup body
+      ctx.fillRect(-10, -14, 4, 8);  // left handle
+      ctx.fillRect(6, -14, 4, 8);    // right handle
+      ctx.fillRect(-4, 0, 8, 4);     // stem
+      ctx.fillRect(-7, 4, 14, 4);    // base
+      ctx.fillStyle = '#fff8';
+      ctx.fillRect(-5, -10, 4, 6); // shine
+    }
+
+    if (p.type === 'food') {
+      // Meal / nutrition
+      ctx.fillStyle = '#27ae60';
+      ctx.beginPath();
+      ctx.arc(0, 0, 11, 0, Math.PI * 2);
+      ctx.fill();
+      // Plate
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(0, 2, 8, 0, Math.PI * 2);
+      ctx.fill();
+      // Food items
+      ctx.fillStyle = '#e74c3c';
+      ctx.fillRect(-5, -1, 4, 5);
+      ctx.fillStyle = '#f39c12';
+      ctx.fillRect(0, -1, 5, 5);
+      ctx.fillStyle = '#2ecc71';
+      ctx.fillRect(-3, -3, 6, 3);
+    }
+
+    if (p.type === 'teammate') {
+      // Teammate silhouette
+      ctx.fillStyle = '#3498db';
+      ctx.beginPath();
+      ctx.arc(0, -8, 6, 0, Math.PI * 2); // head
+      ctx.fill();
+      ctx.fillRect(-6, -2, 12, 12); // body
+      ctx.fillStyle = '#2980b9';
+      ctx.fillRect(-6, 10, 5, 6); // left leg
+      ctx.fillRect(1, 10, 5, 6);  // right leg
+      // Shield icon
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = '9px monospace';
+      ctx.fillText('⚡', -5, -1);
+    }
+
+    ctx.restore();
+
+    // Label
+    ctx.fillStyle = C.gold;
+    ctx.font = '7px monospace';
+    ctx.textAlign = 'center';
+    const labels = { trophy: 'x2', food: 'FAST', teammate: 'SHIELD' };
+    ctx.fillText(labels[p.type], p.x + p.w / 2, p.y - 4);
+    ctx.textAlign = 'left';
+  });
+}
+
+function drawParticles() {
+  particles.forEach(p => {
+    const alpha = p.life / 30;
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  });
+}
+
+function drawHUD() {
+  // Multiplier badge
+  if (multiplier > 1) {
+    ctx.fillStyle = 'rgba(255,215,0,0.9)';
+    ctx.beginPath(); ctx.roundRect(W - 80, 6, 70, 22, 4); ctx.fill();
+    ctx.fillStyle = '#111';
+    ctx.font = 'bold 12px monospace';
+    ctx.fillText(`x${multiplier} PUNTOS`, W - 75, 21);
+  }
+
+  // Shield indicator
+  if (shield) {
+    ctx.fillStyle = 'rgba(63,185,80,0.85)';
+    ctx.beginPath(); ctx.roundRect(W - 80, 32, 70, 20, 4); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 10px monospace';
+    ctx.fillText('⚡ SHIELD', W - 75, 46);
+  }
+
+  // Speed boost
+  if (speedBoost) {
+    ctx.fillStyle = 'rgba(41,182,246,0.85)';
+    ctx.beginPath(); ctx.roundRect(W - 80, 56, 70, 20, 4); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 10px monospace';
+    ctx.fillText('⚡ TURBO', W - 75, 70);
+  }
+
+  // Level indicator (bottom)
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.font = '10px monospace';
+  ctx.fillText(`Nivel ${level} — Vel. ${speed.toFixed(1)}`, 8, H - 6);
+}
+
+function drawStartScreen() {
+  ctx.fillStyle = 'rgba(0,0,0,0.65)';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = C.gold;
+  ctx.font = 'bold 32px monospace';
+  ctx.fillText('⚽ ADC RUN', W/2, H/2 - 38);
+
+  ctx.fillStyle = '#fff';
+  ctx.font = '14px monospace';
+  ctx.fillText('ASOCIACIÓN DEPORTIVA CURUNDÚ', W/2, H/2 - 14);
+
+  ctx.fillStyle = '#3fb950';
+  ctx.font = 'bold 14px monospace';
+  ctx.fillText('Presiona ESPACIO o toca la pantalla para jugar', W/2, H/2 + 16);
+
+  ctx.fillStyle = '#8b949e';
+  ctx.font = '11px monospace';
+  ctx.fillText(`RÉCORD: ${String(Math.floor(hiScore)).padStart(5,'0')}`, W/2, H/2 + 38);
+  ctx.textAlign = 'left';
+}
+
+function drawPauseScreen() {
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(0, 0, W, H);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = C.gold;
+  ctx.font = 'bold 28px monospace';
+  ctx.fillText('⏸ PAUSA', W/2, H/2 - 10);
+  ctx.fillStyle = '#8b949e';
+  ctx.font = '12px monospace';
+  ctx.fillText('Presiona ESPACIO para continuar', W/2, H/2 + 18);
+  ctx.textAlign = 'left';
+}
+
+function drawDeadScreen() {
+  ctx.fillStyle = 'rgba(0,0,0,0.72)';
+  ctx.fillRect(0, 0, W, H);
+  ctx.textAlign = 'center';
+
+  ctx.fillStyle = '#e74c3c';
+  ctx.font = 'bold 26px monospace';
+  ctx.fillText('TARJETA ROJA 🟥', W/2, H/2 - 36);
+
+  ctx.fillStyle = C.gold;
+  ctx.font = 'bold 18px monospace';
+  ctx.fillText(`Puntos: ${String(Math.floor(score)).padStart(5,'0')}`, W/2, H/2 - 8);
+
+  if (score >= hiScore - 5) {
+    ctx.fillStyle = '#3fb950';
+    ctx.font = 'bold 14px monospace';
+    ctx.fillText('🏆 ¡NUEVO RÉCORD!', W/2, H/2 + 16);
+  } else {
+    ctx.fillStyle = '#8b949e';
+    ctx.font = '12px monospace';
+    ctx.fillText(`Récord: ${String(Math.floor(hiScore)).padStart(5,'0')}`, W/2, H/2 + 16);
+  }
+
+  ctx.fillStyle = '#3fb950';
+  ctx.font = 'bold 13px monospace';
+  ctx.fillText('Presiona ESPACIO para jugar de nuevo', W/2, H/2 + 40);
+  ctx.textAlign = 'left';
+}
+
+// ── SERVICE WORKER (offline) ──
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('adc-game-sw.js').catch(() => {});
+}
+
+// ── INIT ──
+initGame();
+render();
+updateHUD();
+</script>
+</body>
+</html>

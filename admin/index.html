@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>ADC Admin — Panel de Control</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:   #0a6e3c;
+      --green-d: #064d2a;
+      --green-l: #e8f5ee;
+      --red:     #c0392b;
+      --gray:    #5a5a5a;
+      --border:  #e0e0e0;
+      --white:   #fff;
+      --bg:      #f4f6f4;
+      --radius:  10px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: #222;
+      min-height: 100vh;
+    }
+
+    /* ── Login overlay ── */
+    #login-overlay {
+      position: fixed; inset: 0;
+      background: var(--green-d);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    .login-box {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 2.5rem 2rem;
+      width: min(380px, 92vw);
+      text-align: center;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+    }
+    .login-box .logo { font-size: 2.2rem; margin-bottom: 0.5rem; }
+    .login-box h1 { font-size: 1.3rem; color: var(--green-d); margin-bottom: 0.25rem; }
+    .login-box p  { font-size: 0.88rem; color: var(--gray); margin-bottom: 1.5rem; }
+    .login-box input {
+      width: 100%; padding: 0.75rem 1rem;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 1rem; margin-bottom: 0.75rem;
+      outline: none; transition: border 0.2s;
+    }
+    .login-box input:focus { border-color: var(--green); }
+    .login-box button {
+      width: 100%; padding: 0.8rem;
+      background: var(--green); color: var(--white);
+      border: none; border-radius: 8px; font-size: 1rem;
+      font-weight: 600; cursor: pointer; transition: background 0.2s;
+    }
+    .login-box button:hover { background: var(--green-d); }
+    #login-error {
+      color: var(--red); font-size: 0.85rem;
+      margin-top: 0.5rem; display: none;
+    }
+
+    /* ── Top bar ── */
+    header {
+      background: var(--green-d);
+      color: var(--white);
+      padding: 0 1.5rem;
+      height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    header .brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; font-size: 1.05rem; }
+    header .badge {
+      background: rgba(255,255,255,0.18);
+      font-size: 0.72rem; padding: 0.2rem 0.55rem;
+      border-radius: 20px; letter-spacing: 0.03em;
+    }
+    header nav { display: flex; gap: 0.25rem; }
+    header nav a {
+      color: rgba(255,255,255,0.82); text-decoration: none;
+      padding: 0.35rem 0.8rem; border-radius: 6px;
+      font-size: 0.88rem; transition: background 0.15s;
+    }
+    header nav a:hover, header nav a.active { background: rgba(255,255,255,0.15); color: #fff; }
+    #logout-btn {
+      background: none; border: 1px solid rgba(255,255,255,0.35);
+      color: rgba(255,255,255,0.82); border-radius: 6px;
+      padding: 0.3rem 0.75rem; cursor: pointer; font-size: 0.82rem;
+      transition: all 0.15s;
+    }
+    #logout-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+    /* ── Layout ── */
+    .shell { display: flex; min-height: calc(100vh - 56px); }
+
+    aside {
+      width: 220px; flex-shrink: 0;
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+    }
+    .aside-section { margin-bottom: 1.5rem; }
+    .aside-label {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #999; margin-bottom: 0.5rem;
+      padding: 0 0.4rem;
+    }
+    .aside-link {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.55rem 0.6rem; border-radius: 7px;
+      text-decoration: none; color: var(--gray);
+      font-size: 0.9rem; transition: all 0.15s; cursor: pointer;
+    }
+    .aside-link:hover, .aside-link.active {
+      background: var(--green-l); color: var(--green-d); font-weight: 600;
+    }
+    .aside-link .icon { font-size: 1rem; width: 20px; text-align: center; }
+
+    main { flex: 1; padding: 1.75rem; overflow-y: auto; }
+
+    /* ── Section panels ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .page-title { font-size: 1.4rem; font-weight: 700; color: var(--green-d); margin-bottom: 0.25rem; }
+    .page-sub { font-size: 0.9rem; color: var(--gray); margin-bottom: 1.5rem; }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .card-title { font-size: 1rem; font-weight: 700; color: var(--green-d); margin-bottom: 0.75rem; }
+
+    /* ── Dashboard cards ── */
+    .dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .dash-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem;
+      display: flex; flex-direction: column; gap: 0.3rem;
+    }
+    .dash-card .d-icon { font-size: 1.5rem; }
+    .dash-card .d-num { font-size: 1.8rem; font-weight: 800; color: var(--green-d); }
+    .dash-card .d-label { font-size: 0.82rem; color: var(--gray); }
+    .dash-card a { font-size: 0.8rem; color: var(--green); text-decoration: none; margin-top: auto; }
+
+    /* ── Quick links ── */
+    .link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; }
+    .link-card {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.9rem 1rem;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      text-decoration: none; color: #222;
+      font-size: 0.9rem; font-weight: 600;
+      background: var(--white); transition: all 0.15s;
+    }
+    .link-card:hover { border-color: var(--green); background: var(--green-l); color: var(--green-d); }
+    .link-card .icon { font-size: 1.25rem; }
+
+    /* ── Grant writer ── */
+    .grant-form { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .grant-form .full { grid-column: 1 / -1; }
+    label { display: block; font-size: 0.85rem; font-weight: 600; color: #444; margin-bottom: 0.35rem; }
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%; padding: 0.65rem 0.85rem;
+      border: 1.5px solid var(--border); border-radius: 7px;
+      font-size: 0.92rem; font-family: inherit;
+      outline: none; transition: border 0.2s; background: #fafafa;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--green); background: var(--white); }
+    textarea { resize: vertical; min-height: 120px; }
+    .btn {
+      padding: 0.7rem 1.4rem; border: none; border-radius: 8px;
+      font-size: 0.95rem; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-green { background: var(--green); color: var(--white); }
+    .btn-green:hover { background: var(--green-d); }
+    .btn-outline { background: none; border: 1.5px solid var(--border); color: var(--gray); }
+    .btn-outline:hover { border-color: var(--green); color: var(--green-d); }
+
+    #grant-output-box {
+      display: none; margin-top: 1.25rem;
+      background: #f8fdf9; border: 1.5px solid #c3e6cb;
+      border-radius: var(--radius); padding: 1.25rem;
+    }
+    #grant-output-box .output-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    #grant-output-box .output-header h3 { font-size: 0.95rem; color: var(--green-d); }
+    #grant-output {
+      white-space: pre-wrap; font-size: 0.88rem; line-height: 1.7;
+      color: #222; max-height: 600px; overflow-y: auto;
+    }
+    .spinner {
+      display: inline-block; width: 18px; height: 18px;
+      border: 2.5px solid rgba(255,255,255,0.4);
+      border-top-color: var(--white);
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Analytics embed ── */
+    .analytics-iframe {
+      width: 100%; height: 650px; border: none;
+      border-radius: var(--radius); border: 1px solid var(--border);
+    }
+    .analytics-link-bar {
+      display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem;
+    }
+
+    /* ── Stats editor ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+    .stat-edit-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.1rem;
+    }
+    .stat-edit-card label { margin-bottom: 0.4rem; color: var(--green-d); }
+    .stat-edit-card input { font-size: 1.3rem; font-weight: 700; text-align: center; }
+    .stat-save-note { font-size: 0.8rem; color: var(--gray); margin-top: 0.4rem; }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
+      aside { display: none; }
+      .grant-form { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Login overlay ── -->
+<div id="login-overlay" role="dialog" aria-modal="true" aria-label="Inicio de sesión ADC Admin">
+  <div class="login-box">
+    <div class="logo">⚽</div>
+    <h1>ADC Admin</h1>
+    <p>Panel privado — solo para el equipo de ADC</p>
+    <label for="admin-password" style="text-align:left; display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.35rem;">Contraseña</label>
+    <input type="password" id="admin-password" placeholder="••••••••" autocomplete="current-password">
+    <button onclick="checkLogin()">Entrar</button>
+    <div id="login-error">Contraseña incorrecta. Intenta de nuevo.</div>
+  </div>
+</div>
+
+<!-- ── Top bar ── -->
+<header>
+  <div class="brand">
+    <span>⚽</span>
+    <span>ADC Admin</span>
+    <span class="badge">PRIVADO</span>
+  </div>
+  <button id="logout-btn" onclick="logout()">Cerrar sesión</button>
+</header>
+
+<!-- ── Shell ── -->
+<div class="shell">
+
+  <!-- Sidebar -->
+  <aside>
+    <div class="aside-section">
+      <div class="aside-label">Principal</div>
+      <div class="aside-link active" onclick="showPanel('dashboard')" id="nav-dashboard">
+        <span class="icon">🏠</span> Dashboard
+      </div>
+    </div>
+    <div class="aside-section">
+      <div class="aside-label">Herramientas IA</div>
+      <div class="aside-link" onclick="openTool('grant-roadmap.html')" id="nav-roadmap">
+        <span class="icon">🗺️</span> Mapa de Grants
+      </div>
+      <div class="aside-link" onclick="openTool('legal-guide.html')" id="nav-legal">
+        <span class="icon">⚖️</span> Guía Legal
+      </div>
+      <div class="aside-link" onclick="openTool('social-media-gen.html')" id="nav-social">
+        <span class="icon">📱</span> Generador Redes
+      </div>
+      <div class="aside-link" onclick="openTool('adc-run-game.html')" id="nav-game">
+        <span class="icon">⚽</span> ADC Run (Juego)
+      </div>
+    </div>
+    <div class="aside-section">
+      <div class="aside-label">Grants y Analytics</div>
+      <div class="aside-link" onclick="showPanel('grant')" id="nav-grant">
+        <span class="icon">📝</span> Redactor de Grants
+      </div>
+      <div class="aside-link" onclick="showPanel('stats')" id="nav-stats">
+        <span class="icon">📊</span> Estadísticas del Sitio
+      </div>
+      <div class="aside-link" onclick="showPanel('analytics')" id="nav-analytics">
+        <span class="icon">📈</span> Google Analytics
+      </div>
+    </div>
+    <div class="aside-section">
+      <div class="aside-label">Sitio web</div>
+      <div class="aside-link" onclick="showPanel('links')" id="nav-links">
+        <span class="icon">🔗</span> Accesos Rápidos
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main>
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="page-title">Panel de Control</div>
+      <div class="page-sub">Bienvenido al área privada de administración de ADC.</div>
+
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="d-icon">📝</div>
+          <div class="d-num">∞</div>
+          <div class="d-label">Propuestas de grant disponibles</div>
+          <a href="#" onclick="showPanel('grant'); return false;">Crear propuesta →</a>
+        </div>
+        <div class="dash-card">
+          <div class="d-icon">📈</div>
+          <div class="d-num">—</div>
+          <div class="d-label">Visitas al sitio (ver Analytics)</div>
+          <a href="#" onclick="showPanel('analytics'); return false;">Ver Analytics →</a>
+        </div>
+        <div class="dash-card">
+          <div class="d-icon">🌐</div>
+          <div class="d-num">14</div>
+          <div class="d-label">Páginas en el sitio público</div>
+          <a href="https://adcurundu.org" target="_blank" rel="noopener">Abrir sitio →</a>
+        </div>
+        <div class="dash-card">
+          <div class="d-icon">📋</div>
+          <div class="d-num">3</div>
+          <div class="d-label">Programas activos</div>
+          <a href="#" onclick="showPanel('links'); return false;">Gestionar →</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚡ Acciones rápidas</div>
+        <div class="link-grid">
+          <a class="link-card" href="grant-roadmap.html">
+            <span class="icon">🗺️</span> Mapa de Grants
+          </a>
+          <a class="link-card" href="legal-guide.html">
+            <span class="icon">⚖️</span> Guía Legal
+          </a>
+          <a class="link-card" href="social-media-gen.html">
+            <span class="icon">📱</span> Generador Redes
+          </a>
+          <a class="link-card" href="adc-run-game.html">
+            <span class="icon">⚽</span> ADC Run
+          </a>
+          <a class="link-card" href="#" onclick="showPanel('grant'); return false;">
+            <span class="icon">📝</span> Escribir Grant
+          </a>
+          <a class="link-card" href="#" onclick="showPanel('analytics'); return false;">
+            <span class="icon">📈</span> Ver Analytics
+          </a>
+          <a class="link-card" href="https://adcurundu.org" target="_blank" rel="noopener">
+            <span class="icon">🌐</span> Sitio Público
+          </a>
+          <a class="link-card" href="https://www.instagram.com/adcurundu/" target="_blank" rel="noopener">
+            <span class="icon">📸</span> Instagram ADC
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📌 Pendientes del sitio (requieren info de ADC)</div>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.6rem;">
+          <li style="display:flex; gap:0.5rem; align-items:flex-start;">
+            <span style="color:#e67e22; font-size:1rem;">⚠️</span>
+            <span><strong>Blog:</strong> Agregar historias reales de atletas (nombres, fotos, testimonios)</span>
+          </li>
+          <li style="display:flex; gap:0.5rem; align-items:flex-start;">
+            <span style="color:#e67e22; font-size:1rem;">⚠️</span>
+            <span><strong>FAQ:</strong> Completar horarios de entrenamiento, dirección, número de registro sin fines de lucro</span>
+          </li>
+          <li style="display:flex; gap:0.5rem; align-items:flex-start;">
+            <span style="color:#e67e22; font-size:1rem;">⚠️</span>
+            <span><strong>Contacto:</strong> Reemplazar número de WhatsApp de ejemplo (+507 6000-0000)</span>
+          </li>
+          <li style="display:flex; gap:0.5rem; align-items:flex-start;">
+            <span style="color:#e67e22; font-size:1rem;">⚠️</span>
+            <span><strong>Donaciones:</strong> Dirección de entrega de equipos deportivos</span>
+          </li>
+          <li style="display:flex; gap:0.5rem; align-items:flex-start;">
+            <span style="color:#e67e22; font-size:1rem;">⚠️</span>
+            <span><strong>Patrocinadores:</strong> URLs de BY y CR Enterprise</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- GRANT WRITER -->
+    <div class="panel" id="panel-grant">
+      <div class="page-title">📝 Redactor de Propuestas de Grant</div>
+      <div class="page-sub">Completa los datos de la convocatoria y ADC generará un borrador completo listo para revisar y enviar.</div>
+
+      <div class="card">
+        <div class="card-title">Datos de la convocatoria</div>
+        <div class="grant-form">
+
+          <div>
+            <label for="g-foundation">Nombre de la fundación / organismo</label>
+            <input type="text" id="g-foundation" placeholder="Ej: U.S. Soccer Foundation, UNICEF Panamá...">
+          </div>
+
+          <div>
+            <label for="g-amount">Monto solicitado (USD)</label>
+            <input type="text" id="g-amount" placeholder="Ej: $15,000">
+          </div>
+
+          <div>
+            <label for="g-focus">Área de enfoque del grant</label>
+            <select id="g-focus">
+              <option value="">Seleccionar...</option>
+              <option>Deporte juvenil</option>
+              <option>Educación</option>
+              <option>Nutrición</option>
+              <option>Desarrollo comunitario</option>
+              <option>Igualdad de género</option>
+              <option>Salud y bienestar</option>
+              <option>Otro</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="g-lang">Idioma de la propuesta</label>
+            <select id="g-lang">
+              <option value="es">Español</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="g-wordlimit">Límite de palabras (total)</label>
+            <input type="number" id="g-wordlimit" placeholder="Ej: 1000" min="200" max="5000">
+          </div>
+
+          <div>
+            <label for="g-deadline">Fecha límite de entrega</label>
+            <input type="date" id="g-deadline">
+          </div>
+
+          <div class="full">
+            <label for="g-questions">Preguntas específicas del grant <span style="color:#999; font-weight:400">(copia y pega las preguntas exactas de la convocatoria)</span></label>
+            <textarea id="g-questions" rows="5" placeholder="Ej:&#10;1. Describe the problem your project addresses (max 300 words)&#10;2. What is your theory of change?&#10;3. How will you measure impact?"></textarea>
+          </div>
+
+          <div class="full">
+            <label for="g-notes">Notas adicionales <span style="color:#999; font-weight:400">(opcional)</span></label>
+            <textarea id="g-notes" rows="3" placeholder="Ej: Enfocarse en el programa de nutrición, mencionar alianza con Duke Engage, no mencionar financiación de gobierno..."></textarea>
+          </div>
+        </div>
+
+        <div style="margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+          <button class="btn btn-green" id="grant-btn" onclick="generateGrant()">
+            <span id="grant-btn-inner">✨ Generar propuesta</span>
+          </button>
+          <button class="btn btn-outline" onclick="copyGrant()">📋 Copiar texto</button>
+          <button class="btn btn-outline" onclick="clearGrant()">🗑 Limpiar</button>
+        </div>
+
+        <div id="grant-output-box">
+          <div class="output-header">
+            <h3>✅ Borrador generado — revisa y personaliza antes de enviar</h3>
+            <button class="btn btn-outline" style="padding:0.4rem 0.8rem; font-size:0.8rem;" onclick="copyGrant()">Copiar</button>
+          </div>
+          <div id="grant-output"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">ℹ️ Contexto de ADC que se usa en cada propuesta</div>
+        <div style="font-size:0.88rem; color:var(--gray); line-height:1.7;">
+          <strong>Misión:</strong> Asociación Deportiva Curundú (ADC) promueve el desarrollo integral de jóvenes en Curundú, Ciudad de Panamá, a través del fútbol, la educación y la nutrición desde 2014.<br>
+          <strong>Impacto:</strong> 70+ jóvenes en programas, 60+ atletas activos, 5+ jugadores en selección nacional, 11 años de servicio.<br>
+          <strong>Comunidad:</strong> Curundú es uno de los barrios más vulnerables de Panamá, con altas tasas de desempleo y deserción escolar.<br>
+          <strong>Aliados:</strong> Duke Engage, Afrolatinx Travel, Cristalina, CR Enterprise, BY.
+        </div>
+      </div>
+    </div>
+
+    <!-- SITE STATS -->
+    <div class="panel" id="panel-stats">
+      <div class="page-title">📊 Estadísticas del Sitio Público</div>
+      <div class="page-sub">Actualiza los números que aparecen en la página principal y en Donar. Los cambios se aplican directamente al código.</div>
+
+      <div class="card">
+        <div class="card-title">Números de impacto actuales (index.html)</div>
+        <div class="stats-grid">
+          <div class="stat-edit-card">
+            <label for="s-jovenes">Jóvenes en programas</label>
+            <input type="text" id="s-jovenes" value="70+">
+            <div class="stat-save-note">Editar en index.html línea ~411</div>
+          </div>
+          <div class="stat-edit-card">
+            <label for="s-atletas">Atletas activos</label>
+            <input type="text" id="s-atletas" value="60+">
+            <div class="stat-save-note">Editar en index.html línea ~416</div>
+          </div>
+          <div class="stat-edit-card">
+            <label for="s-seleccion">Jugadores en selección</label>
+            <input type="text" id="s-seleccion" value="5+">
+            <div class="stat-save-note">Editar en index.html línea ~422</div>
+          </div>
+          <div class="stat-edit-card">
+            <label for="s-anos">Años sirviendo</label>
+            <input type="text" id="s-anos" value="11">
+            <div class="stat-save-note">Editar en index.html línea ~426 y donar.html</div>
+          </div>
+        </div>
+        <p style="margin-top:1rem; font-size:0.83rem; color:#888; background:#fff8e8; padding:0.75rem; border-radius:7px; border:1px solid #f0e0a0;">
+          💡 <strong>Nota:</strong> Esta pantalla muestra los valores actuales como referencia. Para actualizar el sitio, edita los archivos HTML directamente en GitHub o pídele a Connor que aplique los cambios.
+        </p>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="panel" id="panel-analytics">
+      <div class="page-title">📈 Google Analytics</div>
+      <div class="page-sub">Accede a los datos de visitas del sitio de ADC. Inicia sesión con la cuenta de Google de ADC.</div>
+
+      <div class="analytics-link-bar">
+        <a class="btn btn-green" href="https://analytics.google.com" target="_blank" rel="noopener">
+          📊 Abrir Google Analytics
+        </a>
+        <a class="btn btn-outline" href="https://analytics.google.com/analytics/web/#/p000000000/reports/intelligenthome" target="_blank" rel="noopener">
+          📋 Dashboard de ADC
+        </a>
+        <a class="btn btn-outline" href="https://search.google.com/search-console" target="_blank" rel="noopener">
+          🔍 Search Console
+        </a>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Métricas clave a revisar</div>
+        <div class="link-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+          <a class="link-card" href="https://analytics.google.com/analytics/web/#/report/visitors-overview" target="_blank" rel="noopener">
+            <span class="icon">👥</span> Usuarios activos
+          </a>
+          <a class="link-card" href="https://analytics.google.com/analytics/web/#/report/trafficsources-overview" target="_blank" rel="noopener">
+            <span class="icon">🌐</span> Fuentes de tráfico
+          </a>
+          <a class="link-card" href="https://analytics.google.com/analytics/web/#/report/content-pages" target="_blank" rel="noopener">
+            <span class="icon">📄</span> Páginas más vistas
+          </a>
+          <a class="link-card" href="https://analytics.google.com/analytics/web/#/report/visitors-geo" target="_blank" rel="noopener">
+            <span class="icon">🗺️</span> Ubicación de visitas
+          </a>
+        </div>
+        <p style="margin-top:1rem; font-size:0.85rem; color:var(--gray);">
+          Inicia sesión con la cuenta de Google de ADC para ver los datos reales. El ID de la propiedad es <strong>G-5VQJH72CD2</strong>.
+        </p>
+      </div>
+    </div>
+
+    <!-- LINKS -->
+    <div class="panel" id="panel-links">
+      <div class="page-title">🔗 Accesos Rápidos</div>
+      <div class="page-sub">Todos los sistemas y cuentas de ADC en un solo lugar.</div>
+
+      <div class="card">
+        <div class="card-title">Sitio web</div>
+        <div class="link-grid">
+          <a class="link-card" href="https://adcurundu.org" target="_blank" rel="noopener"><span class="icon">🌐</span> Sitio público</a>
+          <a class="link-card" href="https://github.com" target="_blank" rel="noopener"><span class="icon">💻</span> GitHub (código)</a>
+          <a class="link-card" href="https://analytics.google.com" target="_blank" rel="noopener"><span class="icon">📈</span> Google Analytics</a>
+          <a class="link-card" href="https://search.google.com/search-console" target="_blank" rel="noopener"><span class="icon">🔍</span> Search Console</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Redes sociales</div>
+        <div class="link-grid">
+          <a class="link-card" href="https://www.instagram.com/adcurundu/" target="_blank" rel="noopener"><span class="icon">📸</span> Instagram ADC</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Recursos de grants</div>
+        <div class="link-grid">
+          <a class="link-card" href="https://www.ussoccerfoundation.org/grants/" target="_blank" rel="noopener"><span class="icon">⚽</span> US Soccer Foundation</a>
+          <a class="link-card" href="https://www.guidestar.org" target="_blank" rel="noopener"><span class="icon">🔍</span> Candid / GuideStar</a>
+          <a class="link-card" href="https://www.grantsplus.com" target="_blank" rel="noopener"><span class="icon">💰</span> GrantsPlus</a>
+          <a class="link-card" href="https://www.unicef.org/partnerships/grants" target="_blank" rel="noopener"><span class="icon">🌍</span> UNICEF Grants</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── Auth (client-side password gate — backend integration point) ──
+const PASSWORD = 'adcadmin2025';  // Change this — move to Cloudflare Worker for production
+
+function checkLogin() {
+  const val = document.getElementById('admin-password').value;
+  if (val === PASSWORD) {
+    document.getElementById('login-overlay').style.display = 'none';
+    sessionStorage.setItem('adc-auth', '1');
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('admin-password').value = '';
+    document.getElementById('admin-password').focus();
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('adc-auth');
+  document.getElementById('login-overlay').style.display = 'flex';
+  document.getElementById('admin-password').value = '';
+}
+
+// Auto-login if session is active
+if (sessionStorage.getItem('adc-auth') === '1') {
+  document.getElementById('login-overlay').style.display = 'none';
+}
+
+// Enter key on password field
+document.getElementById('admin-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkLogin();
+});
+
+// ── Open standalone tool pages ──
+function openTool(page) {
+  window.location.href = page;
+}
+
+// ── Navigation ──
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.aside-link').forEach(a => a.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── Grant writer ──
+const ADC_CONTEXT = `Asociación Deportiva Curundú (ADC) es una organización sin fines de lucro fundada en 2014 en el barrio de Curundú, Ciudad de Panamá — una de las comunidades urbanas más vulnerables de Centroamérica.
+
+MISIÓN: Promover el desarrollo integral de niños y jóvenes a través del fútbol, la educación y la nutrición.
+
+IMPACTO ACTUAL:
+- Más de 70 jóvenes en programas activos
+- Más de 60 atletas en entrenamiento continuo
+- 5+ jugadores que han llegado a selecciones nacionales juveniles de Panamá
+- 11 años de servicio ininterrumpido a la comunidad
+
+PROGRAMAS:
+1. Fútbol: Entrenamiento estructurado por categorías, disciplina deportiva, participación en torneos nacionales
+2. Educación: Apoyo académico, prevención de deserción escolar, habilidades de vida
+3. Nutrición: Alimentación para atletas, educación nutricional para familias
+
+COMUNIDAD: Curundú es un barrio urbano de Panamá con alta densidad poblacional, bajos ingresos y limitado acceso a infraestructura deportiva y educativa. ADC es una de las pocas organizaciones que opera directamente en esta comunidad.
+
+ALIADOS: Duke Engage (EE.UU.), Afrolatinx Travel, Cristalina, CR Enterprise, BY.
+
+ORGANIZACIÓN: 100% sin fines de lucro. Todo el financiamiento va directamente a programas para los jóvenes. Dirigida por voluntarios comprometidos con la comunidad.`;
+
+async function generateGrant() {
+  const foundation = document.getElementById('g-foundation').value.trim();
+  const amount     = document.getElementById('g-amount').value.trim();
+  const focus      = document.getElementById('g-focus').value;
+  const lang       = document.getElementById('g-lang').value;
+  const wordlimit  = document.getElementById('g-wordlimit').value;
+  const questions  = document.getElementById('g-questions').value.trim();
+  const notes      = document.getElementById('g-notes').value.trim();
+
+  if (!foundation || !questions) {
+    alert('Por favor completa al menos el nombre de la fundación y las preguntas del grant.');
+    return;
+  }
+
+  const btn = document.getElementById('grant-btn');
+  const inner = document.getElementById('grant-btn-inner');
+  btn.disabled = true;
+  inner.innerHTML = '<span class="spinner"></span> Generando...';
+
+  const langInstruction = lang === 'en'
+    ? 'Write the entire proposal in English.'
+    : 'Escribe toda la propuesta en español.';
+
+  const prompt = `${langInstruction}
+
+Write a grant proposal on behalf of Asociación Deportiva Curundú (ADC) using the organization context provided in your system instructions.
+
+---
+GRANT DETAILS:
+- Foundation / Grantor: ${foundation}
+- Amount requested: ${amount || 'not specified'}
+- Focus area: ${focus || 'general'}
+- Word limit: ${wordlimit ? wordlimit + ' words total' : 'no limit specified'}
+- Additional instructions: ${notes || 'none'}
+
+GRANT QUESTIONS TO ANSWER:
+${questions}
+
+---
+Write a complete, professional grant proposal that:
+1. Answers each question clearly and completely
+2. Is written in ADC's voice — genuine, community-focused, hopeful
+3. Uses specific numbers and examples from ADC's real impact data
+4. Connects ADC's work directly to the funder's stated priorities
+5. Stays within the word limit if specified
+6. Does NOT use generic nonprofit filler language
+
+Format each question as a clearly labeled section. The proposal should be ready to submit after light editing.`;
+
+  // Call the Cloudflare Worker proxy (replace URL with your deployed worker)
+  const WORKER_URL = 'https://adc-grant-proxy.adcurundu.workers.dev';
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: ADC_CONTEXT, prompt })
+    });
+
+    if (!res.ok) throw new Error(`Error ${res.status}`);
+    const data = await res.json();
+    const text = data.text || data.content?.[0]?.text || JSON.stringify(data);
+
+    document.getElementById('grant-output').textContent = text;
+    document.getElementById('grant-output-box').style.display = 'block';
+    document.getElementById('grant-output-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch (err) {
+    // Demo mode — show a sample if no worker is deployed yet
+    document.getElementById('grant-output').textContent =
+      '⚠️ Worker no configurado todavía.\n\n' +
+      'Para activar la generación de propuestas, despliega el Cloudflare Worker incluido en worker.js ' +
+      'y reemplaza WORKER_URL en este archivo con tu URL de worker.\n\n' +
+      'Una vez configurado, verás la propuesta completa aquí en segundos.\n\n' +
+      '--- DEMO (sin API) ---\n' +
+      `Fundación: ${foundation}\nMonto: ${amount}\nIdioma: ${lang === 'en' ? 'English' : 'Español'}\n\n` +
+      'El sistema usará el contexto completo de ADC para redactar una propuesta profesional respondiendo cada pregunta de la convocatoria.';
+    document.getElementById('grant-output-box').style.display = 'block';
+  }
+
+  btn.disabled = false;
+  inner.innerHTML = '✨ Generar propuesta';
+}
+
+function copyGrant() {
+  const text = document.getElementById('grant-output').textContent;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Texto copiado al portapapeles.');
+  });
+}
+
+function clearGrant() {
+  document.getElementById('grant-output-box').style.display = 'none';
+  document.getElementById('grant-output').textContent = '';
+  ['g-foundation','g-amount','g-wordlimit','g-questions','g-notes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('g-focus').selectedIndex = 0;
+  document.getElementById('g-lang').selectedIndex = 0;
+}
+</script>
+
+</body>
+</html>

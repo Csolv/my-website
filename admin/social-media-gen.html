@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Generador de Redes Sociales — ADC Admin</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green:   #0a6e3c;
+      --green-d: #064d2a;
+      --green-l: #e8f5ee;
+      --gray:    #5a5a5a;
+      --border:  #e0e0e0;
+      --white:   #fff;
+      --bg:      #f4f6f4;
+      --radius:  10px;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: #222; }
+
+    header {
+      background: var(--green-d); color: var(--white);
+      padding: 0 1.5rem; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    header .brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; font-size: 1.05rem; }
+    header .badge { background: rgba(255,255,255,0.18); font-size: 0.72rem; padding: 0.2rem 0.55rem; border-radius: 20px; }
+    .back-btn {
+      background: rgba(255,255,255,0.15); border: none; color: #fff;
+      padding: 0.35rem 0.9rem; border-radius: 6px; font-size: 0.85rem;
+      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.25); }
+
+    .layout { display: grid; grid-template-columns: 280px 1fr 280px; gap: 1.25rem; padding: 1.25rem; min-height: calc(100vh - 56px); }
+
+    /* ── LEFT PANEL ── */
+    .panel-left { display: flex; flex-direction: column; gap: 1rem; }
+    .card { background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 1rem; }
+    .card-title { font-size: 0.88rem; font-weight: 700; color: var(--green-d); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+
+    /* Template gallery */
+    .template-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .tpl-btn {
+      border: 2px solid var(--border); border-radius: 8px; padding: 0.5rem 0.4rem;
+      cursor: pointer; text-align: center; background: var(--white); transition: all 0.15s;
+      font-size: 0.75rem; font-weight: 600; color: var(--gray); line-height: 1.3;
+    }
+    .tpl-btn:hover { border-color: var(--green); color: var(--green-d); background: var(--green-l); }
+    .tpl-btn.active { border-color: var(--green); background: var(--green-l); color: var(--green-d); }
+    .tpl-icon { font-size: 1.4rem; display: block; margin-bottom: 0.25rem; }
+
+    /* Size toggle */
+    .size-group { display: flex; gap: 0.4rem; }
+    .size-btn {
+      flex: 1; padding: 0.4rem 0; border: 1.5px solid var(--border); border-radius: 6px;
+      font-size: 0.78rem; font-weight: 600; cursor: pointer; background: var(--white);
+      color: var(--gray); text-align: center; transition: all 0.15s;
+    }
+    .size-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+    /* ── CANVAS CENTER ── */
+    .panel-center { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+    .canvas-wrap {
+      background: #fff; border: 1.5px solid var(--border); border-radius: 10px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08); overflow: hidden; position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #main-canvas { display: block; }
+
+    .canvas-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+    .btn {
+      padding: 0.55rem 1.1rem; border: none; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.15s;
+    }
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-green:hover { background: var(--green-d); }
+    .btn-outline { background: var(--white); border: 1.5px solid var(--border); color: var(--gray); }
+    .btn-outline:hover { border-color: var(--green); color: var(--green-d); }
+    .btn-red { background: #fde8e8; color: #c0392b; border: none; }
+    .btn-red:hover { background: #fbd0d0; }
+
+    /* ── RIGHT PANEL ── */
+    .panel-right { display: flex; flex-direction: column; gap: 1rem; }
+
+    label { display: block; font-size: 0.8rem; font-weight: 600; color: #555; margin-bottom: 0.3rem; }
+    input[type="text"], textarea, input[type="color"], select {
+      width: 100%; padding: 0.55rem 0.75rem;
+      border: 1.5px solid var(--border); border-radius: 7px;
+      font-size: 0.88rem; font-family: inherit; background: #fafafa;
+      outline: none; transition: border 0.2s;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--green); background: #fff; }
+    textarea { resize: vertical; min-height: 70px; }
+    input[type="color"] { height: 38px; padding: 0.2rem 0.4rem; cursor: pointer; }
+
+    .form-row { margin-bottom: 0.75rem; }
+    .color-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+
+    /* ── History ── */
+    .history-grid { display: flex; flex-direction: column; gap: 0.5rem; max-height: 280px; overflow-y: auto; }
+    .history-item {
+      display: flex; align-items: center; gap: 0.6rem;
+      border: 1.5px solid var(--border); border-radius: 7px;
+      padding: 0.5rem; cursor: pointer; transition: all 0.15s; background: var(--white);
+    }
+    .history-item:hover { border-color: var(--green); background: var(--green-l); }
+    .history-thumb {
+      width: 48px; height: 48px; border-radius: 5px; object-fit: cover;
+      flex-shrink: 0; border: 1px solid var(--border);
+    }
+    .history-info { flex: 1; min-width: 0; }
+    .history-name { font-size: 0.8rem; font-weight: 700; color: var(--green-d); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .history-date { font-size: 0.72rem; color: #aaa; }
+    .history-del { background: none; border: none; color: #ccc; cursor: pointer; font-size: 1rem; flex-shrink: 0; }
+    .history-del:hover { color: #c0392b; }
+    .empty-state { font-size: 0.82rem; color: #aaa; text-align: center; padding: 1.5rem 0; }
+
+    /* ── Upload zone ── */
+    .upload-zone {
+      border: 2px dashed var(--border); border-radius: 8px;
+      padding: 1rem; text-align: center; cursor: pointer; transition: all 0.15s;
+      font-size: 0.82rem; color: #aaa;
+    }
+    .upload-zone:hover { border-color: var(--green); color: var(--green); }
+
+    .save-toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      background: var(--green-d); color: #fff; padding: 0.65rem 1.25rem;
+      border-radius: 8px; font-size: 0.88rem; font-weight: 600;
+      opacity: 0; transform: translateY(10px); transition: all 0.3s;
+      pointer-events: none; z-index: 999;
+    }
+    .save-toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .panel-center { order: -1; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><span>⚽</span><span>ADC Admin</span><span class="badge">PRIVADO</span></div>
+  <a href="index.html" class="back-btn">← Panel principal</a>
+</header>
+
+<div class="layout">
+
+  <!-- ── LEFT PANEL ── -->
+  <div class="panel-left">
+
+    <div class="card">
+      <div class="card-title">📐 Plantillas</div>
+      <div class="template-grid" id="template-grid">
+        <button class="tpl-btn active" onclick="loadTemplate('match')" id="tpl-match">
+          <span class="tpl-icon">⚽</span>Día de partido
+        </button>
+        <button class="tpl-btn" onclick="loadTemplate('fundraise')" id="tpl-fundraise">
+          <span class="tpl-icon">💚</span>Recaudación
+        </button>
+        <button class="tpl-btn" onclick="loadTemplate('milestone')" id="tpl-milestone">
+          <span class="tpl-icon">🏆</span>Logro / Hito
+        </button>
+        <button class="tpl-btn" onclick="loadTemplate('player')" id="tpl-player">
+          <span class="tpl-icon">⭐</span>Jugador del mes
+        </button>
+        <button class="tpl-btn" onclick="loadTemplate('event')" id="tpl-event">
+          <span class="tpl-icon">📅</span>Evento / Torneo
+        </button>
+        <button class="tpl-btn" onclick="loadTemplate('sponsor')" id="tpl-sponsor">
+          <span class="tpl-icon">🤝</span>Gracias patrocinador
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📏 Formato</div>
+      <div class="size-group">
+        <button class="size-btn active" id="sz-sq"  onclick="setSize('square')">Cuadrado<br><span style="font-weight:400; font-size:0.7rem;">1080×1080</span></button>
+        <button class="size-btn" id="sz-st" onclick="setSize('story')">Historia<br><span style="font-weight:400; font-size:0.7rem;">1080×1920</span></button>
+        <button class="size-btn" id="sz-ld" onclick="setSize('landscape')">Horizontal<br><span style="font-weight:400; font-size:0.7rem;">1080×566</span></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🖼 Agregar foto</div>
+      <div class="upload-zone" onclick="document.getElementById('photo-input').click()">
+        &#x2B;  Subir foto desde el dispositivo
+        <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="addPhoto(event)">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔤 Agregar texto</div>
+      <div class="form-row">
+        <input type="text" id="add-text-input" placeholder="Escribe aquí...">
+      </div>
+      <button class="btn btn-green" style="width:100%" onclick="addTextToCanvas()">+ Agregar al diseño</button>
+    </div>
+
+  </div>
+
+  <!-- ── CANVAS CENTER ── -->
+  <div class="panel-center">
+    <div class="canvas-wrap" id="canvas-wrap">
+      <canvas id="main-canvas"></canvas>
+    </div>
+    <div class="canvas-actions">
+      <button class="btn btn-green" onclick="exportImage()">⬇️ Descargar PNG</button>
+      <button class="btn btn-outline" onclick="saveToHistory()">💾 Guardar en historial</button>
+      <button class="btn btn-outline" onclick="duplicateSelected()">📋 Duplicar</button>
+      <button class="btn btn-red" onclick="deleteSelected()">🗑 Eliminar selección</button>
+    </div>
+    <div style="font-size:0.78rem; color:#aaa; text-align:center;">
+      Haz clic en cualquier elemento para editarlo. Arrastra para mover. Usa las esquinas para redimensionar.
+    </div>
+  </div>
+
+  <!-- ── RIGHT PANEL ── -->
+  <div class="panel-right">
+
+    <div class="card">
+      <div class="card-title">🎨 Colores del fondo</div>
+      <div class="color-row">
+        <div class="form-row">
+          <label>Color 1</label>
+          <input type="color" id="bg-color1" value="#0a6e3c" oninput="updateBackground()">
+        </div>
+        <div class="form-row">
+          <label>Color 2</label>
+          <input type="color" id="bg-color2" value="#064d2a" oninput="updateBackground()">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Dirección del degradado</label>
+        <select id="bg-direction" onchange="updateBackground()">
+          <option value="vertical">Vertical (↓)</option>
+          <option value="horizontal">Horizontal (→)</option>
+          <option value="diagonal">Diagonal (↘)</option>
+          <option value="solid">Color sólido</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">✏️ Editar texto seleccionado</div>
+      <div class="form-row">
+        <label>Texto</label>
+        <textarea id="sel-text" rows="3" placeholder="Selecciona un texto en el canvas..." oninput="updateSelectedText()"></textarea>
+      </div>
+      <div class="form-row">
+        <label>Tamaño de fuente</label>
+        <input type="text" id="sel-fontsize" placeholder="Ej: 48" oninput="updateSelectedFont()">
+      </div>
+      <div class="color-row">
+        <div class="form-row">
+          <label>Color texto</label>
+          <input type="color" id="sel-color" value="#ffffff" oninput="updateSelectedColor()">
+        </div>
+        <div class="form-row">
+          <label>Peso</label>
+          <select id="sel-weight" onchange="updateSelectedWeight()">
+            <option value="normal">Normal</option>
+            <option value="bold" selected>Negrita</option>
+            <option value="800">Extra negrita</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📚 Historial de diseños</div>
+      <div class="history-grid" id="history-grid">
+        <div class="empty-state">Aún no hay diseños guardados.<br>Crea uno y haz clic en "Guardar".</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="save-toast" id="save-toast">✅ Guardado en historial</div>
+
+<script>
+// ── FABRIC SETUP ──
+const CANVAS_SIZE = { square: [1080,1080], story: [1080,1920], landscape: [1080,566] };
+let currentSize = 'square';
+let fabricCanvas;
+let currentTemplate = 'match';
+
+const SCALE = 0.42; // display scale
+
+function initCanvas(w, h) {
+  if (fabricCanvas) fabricCanvas.dispose();
+  const wrap = document.getElementById('canvas-wrap');
+  const cvs = document.getElementById('main-canvas');
+
+  fabricCanvas = new fabric.Canvas('main-canvas', {
+    width: w, height: h,
+    selection: true,
+    preserveObjectStacking: true
+  });
+
+  wrap.style.width  = Math.round(w * SCALE) + 'px';
+  wrap.style.height = Math.round(h * SCALE) + 'px';
+  fabricCanvas.setZoom(SCALE);
+  fabricCanvas.setWidth(Math.round(w * SCALE));
+  fabricCanvas.setHeight(Math.round(h * SCALE));
+
+  fabricCanvas.on('selection:created', syncRightPanel);
+  fabricCanvas.on('selection:updated', syncRightPanel);
+  fabricCanvas.on('selection:cleared', clearRightPanel);
+  fabricCanvas.on('object:modified', syncRightPanel);
+}
+
+function setSize(size) {
+  currentSize = size;
+  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sz-' + size.slice(0,2)).classList.add('active');
+  loadTemplate(currentTemplate);
+}
+
+// ── TEMPLATES ──
+const TEMPLATES = {
+  match: {
+    bg1: '#0a6e3c', bg2: '#064d2a',
+    layers: [
+      { type: 'text', text: '⚽ HOY JUGAMOS', x: 0.5, y: 0.18, size: 72, color: '#FFD700', weight: '800', align: 'center', shadow: true },
+      { type: 'text', text: 'ADC vs RIVAL', x: 0.5, y: 0.38, size: 96, color: '#FFFFFF', weight: '800', align: 'center', shadow: true },
+      { type: 'text', text: '📅 Domingo 27 de abril · 3:00 PM', x: 0.5, y: 0.55, size: 48, color: '#e8f5ee', weight: 'normal', align: 'center' },
+      { type: 'text', text: '📍 Campo Curundú', x: 0.5, y: 0.64, size: 44, color: '#e8f5ee', weight: 'normal', align: 'center' },
+      { type: 'text', text: '#ADCurundu  #FuerzaADC', x: 0.5, y: 0.82, size: 40, color: 'rgba(255,255,255,0.6)', weight: 'normal', align: 'center' },
+      { type: 'logo', x: 0.5, y: 0.92, size: 36, color: '#fff' },
+    ]
+  },
+  fundraise: {
+    bg1: '#1a5276', bg2: '#0d3349',
+    layers: [
+      { type: 'text', text: 'AYÚDANOS A CRECER 💚', x: 0.5, y: 0.15, size: 64, color: '#FFD700', weight: '800', align: 'center', shadow: true },
+      { type: 'text', text: 'Cada donación cambia\nuna vida en Curundú', x: 0.5, y: 0.38, size: 58, color: '#FFFFFF', weight: 'bold', align: 'center', shadow: true },
+      { type: 'text', text: '70+ jóvenes · 11 años · 100% sin fines de lucro', x: 0.5, y: 0.60, size: 40, color: '#aed6f1', weight: 'normal', align: 'center' },
+      { type: 'text', text: '👉 adcurundu.org/donar', x: 0.5, y: 0.72, size: 48, color: '#FFD700', weight: '800', align: 'center' },
+      { type: 'text', text: '#ADCurundu  #DonaPanamá', x: 0.5, y: 0.87, size: 38, color: 'rgba(255,255,255,0.55)', weight: 'normal', align: 'center' },
+      { type: 'logo', x: 0.5, y: 0.94, size: 34, color: '#aed6f1' },
+    ]
+  },
+  milestone: {
+    bg1: '#7d6608', bg2: '#4a3e04',
+    layers: [
+      { type: 'text', text: '🏆 CAMPEONES', x: 0.5, y: 0.14, size: 80, color: '#FFD700', weight: '800', align: 'center', shadow: true },
+      { type: 'text', text: 'Escribe el hito aquí', x: 0.5, y: 0.36, size: 70, color: '#FFFFFF', weight: '800', align: 'center', shadow: true },
+      { type: 'text', text: 'Gracias a todos los que creyeron\nen nuestros jugadores desde el día 1.', x: 0.5, y: 0.60, size: 44, color: '#fde68a', weight: 'normal', align: 'center' },
+      { type: 'text', text: '#ADCurundu  #OrgulloNacional', x: 0.5, y: 0.83, size: 38, color: 'rgba(255,255,255,0.55)', weight: 'normal', align: 'center' },
+      { type: 'logo', x: 0.5, y: 0.92, size: 34, color: '#FFD700' },
+    ]
+  },
+  player: {
+    bg1: '#1c2833', bg2: '#0a6e3c',
+    layers: [
+      { type: 'text', text: '⭐ JUGADOR DEL MES', x: 0.5, y: 0.12, size: 58, color: '#FFD700', weight: '800', align: 'center', shadow: true },
+      { type: 'text', text: 'NOMBRE DEL JUGADOR', x: 0.5, y: 0.32, size: 82, color: '#FFFFFF', weight: '800', align: 'center', shadow: true },
+      { type: 'text', text: 'Posición · Categoría', x: 0.5, y: 0.48, size: 50, color: '#e8f5ee', weight: 'normal', align: 'center' },
+      { type: 'text', text: '"Frase inspiracional del jugador\no descripción de su logro"', x: 0.5, y: 0.65, size: 42, color: 'rgba(255,255,255,0.75)', weight: 'normal', align: 'center' },
+      { type: 'text', text: '#ADCurundu  #FútbolPanamá', x: 0.5, y: 0.86, size: 36, color: 'rgba(255,255,255,0.5)', weight: 'normal', align: 'center' },
+      { type: 'logo', x: 0.5, y: 0.93, size: 32, color: '#FFD700' },
+    ]
+  },
+  event: {
+    bg1: '#6c3483', bg2: '#3b1a6b',
+    layers: [
+      { type: 'text', text: '📅 PRÓXIMO EVENTO', x: 0.5, y: 0.12, size: 58, color: '#f8c8ff', weight: '800', align: 'center', shadow: true },
+      { type: 'text', text: 'NOMBRE DEL TORNEO', x: 0.5, y: 0.30, size: 76, color: '#FFFFFF', weight: '800', align: 'center', shadow: true },
+      { type: 'text', text: '📅 Fecha · Hora', x: 0.5, y: 0.50, size: 50, color: '#e8d5ff', weight: 'normal', align: 'center' },
+      { type: 'text', text: '📍 Lugar del evento', x: 0.5, y: 0.60, size: 46, color: '#e8d5ff', weight: 'normal', align: 'center' },
+      { type: 'text', text: 'Entrada libre · Todos bienvenidos', x: 0.5, y: 0.73, size: 44, color: '#FFD700', weight: 'bold', align: 'center' },
+      { type: 'text', text: '#ADCurundu  #TorneoADC', x: 0.5, y: 0.88, size: 36, color: 'rgba(255,255,255,0.5)', weight: 'normal', align: 'center' },
+      { type: 'logo', x: 0.5, y: 0.94, size: 32, color: '#e8d5ff' },
+    ]
+  },
+  sponsor: {
+    bg1: '#1b2631', bg2: '#0a6e3c',
+    layers: [
+      { type: 'text', text: '🤝 GRACIAS', x: 0.5, y: 0.12, size: 64, color: '#FFD700', weight: '800', align: 'center', shadow: true },
+      { type: 'text', text: 'NOMBRE DEL PATROCINADOR', x: 0.5, y: 0.30, size: 68, color: '#FFFFFF', weight: '800', align: 'center', shadow: true },
+      { type: 'text', text: 'Tu apoyo hace posible que\nmás jóvenes de Curundú\njuguen, estudien y crezcan.', x: 0.5, y: 0.56, size: 46, color: '#e8f5ee', weight: 'normal', align: 'center' },
+      { type: 'text', text: '💚 ¡Juntos somos más fuertes!', x: 0.5, y: 0.78, size: 46, color: '#FFD700', weight: 'bold', align: 'center' },
+      { type: 'text', text: '#ADCurundu  #Patrocinadores', x: 0.5, y: 0.89, size: 36, color: 'rgba(255,255,255,0.5)', weight: 'normal', align: 'center' },
+      { type: 'logo', x: 0.5, y: 0.95, size: 32, color: '#e8f5ee' },
+    ]
+  }
+};
+
+function loadTemplate(name) {
+  currentTemplate = name;
+  document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tpl-' + name)?.classList.add('active');
+
+  const [w, h] = CANVAS_SIZE[currentSize];
+  initCanvas(w, h);
+
+  const tpl = TEMPLATES[name];
+  document.getElementById('bg-color1').value = tpl.bg1;
+  document.getElementById('bg-color2').value = tpl.bg2;
+  document.getElementById('bg-direction').value = 'vertical';
+  updateBackground(tpl.bg1, tpl.bg2, 'vertical');
+
+  tpl.layers.forEach(layer => {
+    if (layer.type === 'text') {
+      addTemplateText(layer, w, h);
+    } else if (layer.type === 'logo') {
+      addLogoText(layer, w, h);
+    }
+  });
+}
+
+function addTemplateText(layer, w, h) {
+  const obj = new fabric.Textbox(layer.text, {
+    left: w * layer.x,
+    top: h * layer.y,
+    originX: 'center',
+    originY: 'center',
+    fontSize: layer.size,
+    fill: layer.color,
+    fontWeight: layer.weight || 'normal',
+    fontFamily: 'Arial Black, Arial, sans-serif',
+    textAlign: layer.align || 'center',
+    width: w * 0.9,
+    shadow: layer.shadow ? new fabric.Shadow({ color: 'rgba(0,0,0,0.6)', blur: 12, offsetX: 2, offsetY: 2 }) : null,
+    editable: true,
+  });
+  fabricCanvas.add(obj);
+}
+
+function addLogoText(layer, w, h) {
+  const obj = new fabric.Textbox('ASOCIACIÓN DEPORTIVA CURUNDÚ', {
+    left: w * layer.x,
+    top: h * layer.y,
+    originX: 'center', originY: 'center',
+    fontSize: layer.size,
+    fill: layer.color,
+    fontWeight: '700',
+    fontFamily: 'Arial, sans-serif',
+    textAlign: 'center',
+    width: w * 0.8,
+    charSpacing: 120,
+    editable: true,
+  });
+  fabricCanvas.add(obj);
+}
+
+function updateBackground(c1, c2, dir) {
+  const color1 = c1 || document.getElementById('bg-color1').value;
+  const color2 = c2 || document.getElementById('bg-color2').value;
+  const direction = dir || document.getElementById('bg-direction').value;
+  const [w, h] = CANVAS_SIZE[currentSize];
+
+  if (direction === 'solid') {
+    fabricCanvas.setBackgroundColor(color1, fabricCanvas.renderAll.bind(fabricCanvas));
+    return;
+  }
+
+  const coords = {
+    vertical:   { x1: 0, y1: 0, x2: 0,  y2: h },
+    horizontal: { x1: 0, y1: 0, x2: w,  y2: 0 },
+    diagonal:   { x1: 0, y1: 0, x2: w,  y2: h },
+  };
+  const c = coords[direction] || coords.vertical;
+
+  const grad = new fabric.Gradient({
+    type: 'linear',
+    gradientUnits: 'pixels',
+    coords: c,
+    colorStops: [
+      { offset: 0,   color: color1 },
+      { offset: 1,   color: color2 },
+    ]
+  });
+  fabricCanvas.setBackgroundColor(grad, fabricCanvas.renderAll.bind(fabricCanvas));
+}
+
+// ── PHOTO ADD ──
+function addPhoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    fabric.Image.fromURL(e.target.result, function(img) {
+      const [w, h] = CANVAS_SIZE[currentSize];
+      img.scaleToWidth(w * 0.7);
+      img.set({ left: w * 0.5, top: h * 0.5, originX: 'center', originY: 'center' });
+      fabricCanvas.add(img);
+      fabricCanvas.setActiveObject(img);
+      fabricCanvas.renderAll();
+    });
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+// ── TEXT ADD ──
+function addTextToCanvas() {
+  const val = document.getElementById('add-text-input').value.trim();
+  if (!val) return;
+  const [w, h] = CANVAS_SIZE[currentSize];
+  const obj = new fabric.Textbox(val, {
+    left: w * 0.5, top: h * 0.5,
+    originX: 'center', originY: 'center',
+    fontSize: 64, fill: '#FFFFFF',
+    fontWeight: 'bold', fontFamily: 'Arial Black, Arial, sans-serif',
+    textAlign: 'center', width: w * 0.85, editable: true,
+  });
+  fabricCanvas.add(obj);
+  fabricCanvas.setActiveObject(obj);
+  fabricCanvas.renderAll();
+  document.getElementById('add-text-input').value = '';
+}
+
+// ── RIGHT PANEL SYNC ──
+function syncRightPanel() {
+  const obj = fabricCanvas.getActiveObject();
+  if (!obj) return;
+  if (obj.type === 'textbox' || obj.type === 'i-text') {
+    document.getElementById('sel-text').value = obj.text || '';
+    document.getElementById('sel-fontsize').value = obj.fontSize || '';
+    document.getElementById('sel-color').value = colorToHex(obj.fill) || '#ffffff';
+    document.getElementById('sel-weight').value = obj.fontWeight || 'normal';
+  }
+}
+
+function clearRightPanel() {
+  document.getElementById('sel-text').value = '';
+  document.getElementById('sel-fontsize').value = '';
+}
+
+function colorToHex(color) {
+  if (!color || !color.startsWith('#')) return '#ffffff';
+  if (color.length === 7) return color;
+  return '#ffffff';
+}
+
+function updateSelectedText() {
+  const obj = fabricCanvas.getActiveObject();
+  if (obj && (obj.type === 'textbox' || obj.type === 'i-text')) {
+    obj.set('text', document.getElementById('sel-text').value);
+    fabricCanvas.renderAll();
+  }
+}
+
+function updateSelectedFont() {
+  const obj = fabricCanvas.getActiveObject();
+  const size = parseInt(document.getElementById('sel-fontsize').value);
+  if (obj && !isNaN(size) && size > 0) {
+    obj.set('fontSize', size);
+    fabricCanvas.renderAll();
+  }
+}
+
+function updateSelectedColor() {
+  const obj = fabricCanvas.getActiveObject();
+  if (obj) {
+    obj.set('fill', document.getElementById('sel-color').value);
+    fabricCanvas.renderAll();
+  }
+}
+
+function updateSelectedWeight() {
+  const obj = fabricCanvas.getActiveObject();
+  if (obj && (obj.type === 'textbox' || obj.type === 'i-text')) {
+    obj.set('fontWeight', document.getElementById('sel-weight').value);
+    fabricCanvas.renderAll();
+  }
+}
+
+// ── ACTIONS ──
+function deleteSelected() {
+  const obj = fabricCanvas.getActiveObject();
+  if (obj) { fabricCanvas.remove(obj); fabricCanvas.renderAll(); }
+}
+
+function duplicateSelected() {
+  const obj = fabricCanvas.getActiveObject();
+  if (!obj) return;
+  obj.clone(function(cloned) {
+    cloned.set({ left: obj.left + 30, top: obj.top + 30 });
+    fabricCanvas.add(cloned);
+    fabricCanvas.setActiveObject(cloned);
+    fabricCanvas.renderAll();
+  });
+}
+
+function exportImage() {
+  const zoom = fabricCanvas.getZoom();
+  fabricCanvas.setZoom(1);
+  const [w, h] = CANVAS_SIZE[currentSize];
+  fabricCanvas.setWidth(w);
+  fabricCanvas.setHeight(h);
+
+  const dataURL = fabricCanvas.toDataURL({ format: 'png', quality: 1, multiplier: 1 });
+
+  fabricCanvas.setZoom(SCALE);
+  fabricCanvas.setWidth(Math.round(w * SCALE));
+  fabricCanvas.setHeight(Math.round(h * SCALE));
+  fabricCanvas.renderAll();
+
+  const a = document.createElement('a');
+  a.href = dataURL;
+  a.download = 'adc-post-' + currentTemplate + '-' + Date.now() + '.png';
+  a.click();
+}
+
+// ── HISTORY ──
+function saveToHistory() {
+  const zoom = fabricCanvas.getZoom();
+  fabricCanvas.setZoom(1);
+  const [w, h] = CANVAS_SIZE[currentSize];
+  fabricCanvas.setWidth(w);
+  fabricCanvas.setHeight(h);
+
+  const thumb = fabricCanvas.toDataURL({ format: 'jpeg', quality: 0.4, multiplier: 0.2 });
+  const json  = JSON.stringify(fabricCanvas.toJSON());
+
+  fabricCanvas.setZoom(SCALE);
+  fabricCanvas.setWidth(Math.round(w * SCALE));
+  fabricCanvas.setHeight(Math.round(h * SCALE));
+  fabricCanvas.renderAll();
+
+  const history = loadHistory();
+  const item = {
+    id: Date.now(),
+    name: templateName(currentTemplate),
+    size: currentSize,
+    template: currentTemplate,
+    date: new Date().toLocaleDateString('es-PA', { month: 'short', day: 'numeric', year: 'numeric' }),
+    thumb,
+    json,
+  };
+  history.unshift(item);
+  if (history.length > 20) history.pop();
+  localStorage.setItem('adc-social-history', JSON.stringify(history));
+  renderHistory();
+  showToast();
+}
+
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem('adc-social-history')) || []; } catch { return []; }
+}
+
+function templateName(t) {
+  const map = { match:'Día de partido', fundraise:'Recaudación', milestone:'Logro', player:'Jugador del mes', event:'Evento', sponsor:'Agradecimiento' };
+  return map[t] || t;
+}
+
+function renderHistory() {
+  const container = document.getElementById('history-grid');
+  const history = loadHistory();
+  if (!history.length) {
+    container.innerHTML = '<div class="empty-state">Aún no hay diseños guardados.<br>Crea uno y haz clic en "Guardar".</div>';
+    return;
+  }
+  container.innerHTML = history.map(item => `
+    <div class="history-item" onclick="loadFromHistory(${item.id})">
+      <img class="history-thumb" src="${item.thumb}" alt="${item.name}">
+      <div class="history-info">
+        <div class="history-name">${item.name}</div>
+        <div class="history-date">${item.date} · ${item.size}</div>
+      </div>
+      <button class="history-del" onclick="event.stopPropagation(); deleteHistory(${item.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+function loadFromHistory(id) {
+  const history = loadHistory();
+  const item = history.find(h => h.id === id);
+  if (!item) return;
+  currentTemplate = item.template;
+  currentSize = item.size;
+  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  const sizeId = { square: 'sq', story: 'st', landscape: 'ld' }[item.size];
+  document.getElementById('sz-' + sizeId)?.classList.add('active');
+  const [w, h] = CANVAS_SIZE[item.size];
+  initCanvas(w, h);
+  fabricCanvas.loadFromJSON(item.json, () => {
+    fabricCanvas.renderAll();
+  });
+}
+
+function deleteHistory(id) {
+  let history = loadHistory();
+  history = history.filter(h => h.id !== id);
+  localStorage.setItem('adc-social-history', JSON.stringify(history));
+  renderHistory();
+}
+
+function showToast() {
+  const t = document.getElementById('save-toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── INIT ──
+loadTemplate('match');
+renderHistory();
+</script>
+</body>
+</html>
