@@ -594,19 +594,8 @@ function duplicateSelected() {
 }
 
 function exportImage() {
-  const zoom = fabricCanvas.getZoom();
-  fabricCanvas.setZoom(1);
-  const [w, h] = CANVAS_SIZE[currentSize];
-  fabricCanvas.setWidth(w);
-  fabricCanvas.setHeight(h);
-
-  const dataURL = fabricCanvas.toDataURL({ format: 'png', quality: 1, multiplier: 1 });
-
-  fabricCanvas.setZoom(SCALE);
-  fabricCanvas.setWidth(Math.round(w * SCALE));
-  fabricCanvas.setHeight(Math.round(h * SCALE));
-  fabricCanvas.renderAll();
-
+  // Use multiplier to export at full resolution without resizing the visible canvas
+  const dataURL = fabricCanvas.toDataURL({ format: 'png', quality: 1, multiplier: 1 / SCALE });
   const a = document.createElement('a');
   a.href = dataURL;
   a.download = 'adc-post-' + currentTemplate + '-' + Date.now() + '.png';
@@ -615,19 +604,9 @@ function exportImage() {
 
 // ── HISTORY ──
 function saveToHistory() {
-  const zoom = fabricCanvas.getZoom();
-  fabricCanvas.setZoom(1);
-  const [w, h] = CANVAS_SIZE[currentSize];
-  fabricCanvas.setWidth(w);
-  fabricCanvas.setHeight(h);
-
-  const thumb = fabricCanvas.toDataURL({ format: 'jpeg', quality: 0.4, multiplier: 0.2 });
+  // Thumbnail at small size, JSON for restore — no canvas resize needed
+  const thumb = fabricCanvas.toDataURL({ format: 'jpeg', quality: 0.5, multiplier: 0.1 });
   const json  = JSON.stringify(fabricCanvas.toJSON());
-
-  fabricCanvas.setZoom(SCALE);
-  fabricCanvas.setWidth(Math.round(w * SCALE));
-  fabricCanvas.setHeight(Math.round(h * SCALE));
-  fabricCanvas.renderAll();
 
   const history = loadHistory();
   const item = {
