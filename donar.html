@@ -111,6 +111,23 @@
       </div>
     </div>
 
+    <!-- Campaign goal + thermometer (B2) — sample figures, replace with real data -->
+    <section class="section section--light" style="padding:2.5rem 4vw;">
+      <div class="section-inner" style="max-width:720px; margin:0 auto; text-align:center;">
+        <p class="section-label reveal" style="justify-content:center;">Campaña Temporada 2026</p>
+        <div class="section-divider reveal" style="margin-left:auto; margin-right:auto;"></div>
+        <p class="reveal" style="font-family:var(--font-h); font-size:1rem; font-weight:600; margin:1rem 0 1.25rem; color:var(--black);">
+          Meta: <span class="placeholder-tag">$5,000</span>
+          · Recaudado: <span class="placeholder-tag">$3,200</span>
+          · Faltan <span class="placeholder-tag">28 días</span>
+        </p>
+        <div class="t-bar-wrap reveal" style="height:14px; border-radius:100px; max-width:520px; margin:0 auto;">
+          <div class="t-bar" style="width:64%; height:14px; border-radius:100px;"></div>
+        </div>
+        <p class="reveal" style="font-size:0.78rem; color:var(--gray); margin-top:0.75rem;">64% alcanzado · ¡Ayúdanos a cerrar la temporada!</p>
+      </div>
+    </section>
+
     <!-- Main donate section -->
     <section class="section">
       <div class="section-inner">
@@ -125,32 +142,43 @@
 
             <div class="impact-cards">
               <div class="impact-card">
-                <div class="impact-card__amount">$10</div>
+                <div class="impact-card__amount">$10<span style="font-size:0.85rem; font-weight:500; color:var(--gray);">/mes</span></div>
                 <div class="impact-card__desc">
                   <h4>Meriendas nutritivas</h4>
-                  <p>Una semana de alimentación saludable para un atleta ADC durante los entrenamientos.</p>
+                  <p>Una semana de alimentación saludable cada mes para un atleta ADC durante los entrenamientos.</p>
                 </div>
               </div>
               <div class="impact-card">
-                <div class="impact-card__amount">$25</div>
+                <div class="impact-card__amount">$25<span style="font-size:0.85rem; font-weight:500; color:var(--gray);">/mes</span></div>
                 <div class="impact-card__desc">
                   <h4>Material educativo</h4>
                   <p>Un mes de materiales escolares y tutorías para un campeón ADC.</p>
                 </div>
               </div>
               <div class="impact-card">
-                <div class="impact-card__amount">$50</div>
+                <div class="impact-card__amount">$50<span style="font-size:0.85rem; font-weight:500; color:var(--gray);">/mes</span></div>
                 <div class="impact-card__desc">
                   <h4>Equipamiento deportivo</h4>
-                  <p>Un uniforme completo para que un niño participe con orgullo en torneos.</p>
+                  <p>Un uniforme completo cada temporada para que un niño participe con orgullo en torneos.</p>
                 </div>
               </div>
               <div class="impact-card">
-                <div class="impact-card__amount">$100</div>
+                <div class="impact-card__amount">$100<span style="font-size:0.85rem; font-weight:500; color:var(--gray);">/mes</span></div>
                 <div class="impact-card__desc">
                   <h4>Programa mensual integral</h4>
                   <p>Un mes completo de deporte, educación y nutrición para un atleta de ADC.</p>
                 </div>
+              </div>
+            </div>
+
+            <!-- Testimonial card (B3) — placeholder content -->
+            <div class="impact-card" style="margin-top:1.5rem; align-items:flex-start; gap:1.25rem; padding:1.5rem;">
+              <div style="width:72px; height:72px; flex-shrink:0; background:var(--light); border:1px dashed var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--gray); font-family:var(--font-h); font-size:0.7rem; text-align:center;">Foto</div>
+              <div class="impact-card__desc">
+                <blockquote style="margin:0 0 0.6rem; font-family:var(--font-h); font-style:italic; font-size:0.95rem; line-height:1.55; color:var(--black);">
+                  "<span class="placeholder-tag">Cita testimonial breve de un atleta o familia sobre el impacto de ADC.</span>"
+                </blockquote>
+                <p style="font-size:0.85rem; color:var(--gray); margin:0;">— <span class="placeholder-tag">Nombre, Sub-XX</span></p>
               </div>
             </div>
           </div>
@@ -188,11 +216,12 @@
               <div class="form-group">
                 <label for="d-tipo">Tipo de donación</label>
                 <select id="d-tipo">
+                  <option selected>Mensual</option>
                   <option>Donación única</option>
-                  <option>Mensual</option>
                   <option>Trimestral</option>
                   <option>Anual</option>
                 </select>
+                <p style="font-size:0.78rem; color:var(--green-dark); margin-top:0.4rem; line-height:1.5;">💚 Las donaciones mensuales son las que más ayudan: dan estabilidad a los programas durante todo el año.</p>
               </div>
               <button type="submit" class="btn btn--primary" style="width:100%; border:none; cursor:pointer; margin-top:0.5rem; font-size:1rem; padding:1rem;">
                 Donar ahora
@@ -202,6 +231,18 @@
             <p style="font-size:0.78rem; color:var(--gray); text-align:center; margin-top:1rem; line-height:1.6;">
               🔒 Transacción segura · El 100% de tu donación apoya directamente a los jóvenes de Curundú.
             </p>
+
+            <!-- B5: Yappy block (optional — delete this block if Yappy isn't used) -->
+            <div style="margin-top:1.75rem; padding-top:1.5rem; border-top:1px solid var(--border);">
+              <h4 style="font-family:var(--font-h); font-size:0.95rem; font-weight:700; margin-bottom:0.75rem; text-align:center;">También puedes donar por Yappy</h4>
+              <div style="display:flex; gap:1.25rem; align-items:center; justify-content:center; flex-wrap:wrap;">
+                <div style="width:160px; height:160px; border:2px dashed var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--gray); font-family:var(--font-h); font-size:0.72rem; font-weight:700; letter-spacing:0.06em; text-align:center; padding:0.5rem;">QR — PENDIENTE</div>
+                <div style="text-align:left;">
+                  <p style="font-size:0.78rem; color:var(--gray); margin-bottom:0.35rem; font-family:var(--font-h); font-weight:600; letter-spacing:0.06em; text-transform:uppercase;">Número Yappy</p>
+                  <p style="font-family:var(--font-h); font-size:1.1rem; font-weight:700; margin:0;"><span class="placeholder-tag">6XXX-XXXX</span></p>
+                </div>
+              </div>
+            </div>
           </div>
 
         </div>
@@ -237,6 +278,44 @@
             <span class="t-pct">10%</span>
           </li>
         </ul>
+      </div>
+    </section>
+
+    <!-- Sponsorship tiers (B4) -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="section-label reveal">Para empresas y aliados</p>
+        <div class="section-divider reveal"></div>
+        <h2 class="sub-heading reveal" style="margin-bottom:0.75rem;">Apoyo corporativo y alianzas</h2>
+        <p class="body-text reveal" style="margin-bottom:2.5rem;">Empresas y aliados pueden multiplicar su impacto patrocinando un equipo, un torneo o todos nuestros pilares durante el año.</p>
+
+        <div class="impact-cards reveal" style="grid-template-columns:repeat(3,1fr); gap:1.25rem;">
+          <div class="impact-card" style="flex-direction:column; align-items:flex-start; gap:0.75rem;">
+            <div class="impact-card__amount" style="min-width:auto; text-align:left;"><span class="placeholder-tag">$___/año</span></div>
+            <div class="impact-card__desc">
+              <h4>Patrocina un equipo</h4>
+              <p>Equipa y acompaña a un equipo completo de una categoría durante la temporada.</p>
+            </div>
+          </div>
+          <div class="impact-card" style="flex-direction:column; align-items:flex-start; gap:0.75rem;">
+            <div class="impact-card__amount" style="min-width:auto; text-align:left;"><span class="placeholder-tag">$___</span></div>
+            <div class="impact-card__desc">
+              <h4>Patrocina un torneo</h4>
+              <p>Cubre la participación de ADC en un torneo: transporte, inscripción e hidratación.</p>
+            </div>
+          </div>
+          <div class="impact-card" style="flex-direction:column; align-items:flex-start; gap:0.75rem;">
+            <div class="impact-card__amount" style="min-width:auto; text-align:left;"><span class="placeholder-tag">$_____/año</span></div>
+            <div class="impact-card__desc">
+              <h4>Aliado anual</h4>
+              <p>Apoyo integral a los tres pilares: deporte, educación y nutrición.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal" style="text-align:center; margin-top:2.5rem;">
+          <a href="contactanos.html" class="btn btn--primary">Proponer alianza</a>
+        </div>
       </div>
     </section>
 
@@ -323,10 +402,8 @@
     });
     function handleDonate(e) {
       e.preventDefault();
-      const btn = e.target.querySelector('button[type="submit"]');
-      btn.textContent = '✓ ¡Gracias por tu apoyo!';
-      btn.style.background = '#1a8f4e';
-      btn.disabled = true;
+      // Mock submission — redirect to thank-you page (no real payment processing)
+      window.location.href = 'gracias.html';
     }
   </script>
   <script>

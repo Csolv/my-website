@@ -786,3 +786,18 @@ body { animation: pageFadeIn 0.45s ease; }
   color: var(--white);
   border-color: var(--green);
 }
+
+/* ═══════════════════════════════════════════
+   PLACEHOLDER TAG (shared, site-wide)
+   ═══════════════════════════════════════════ */
+.placeholder-tag {
+  display: inline-block;
+  background: #fff3cd;
+  color: #856404;
+  font-family: var(--font-h);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
