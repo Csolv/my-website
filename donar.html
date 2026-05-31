@@ -74,7 +74,50 @@
     @media(max-width:900px){
       .donate-layout { grid-template-columns:1fr; gap:3rem; }
     }
-  </style>||
+
+    /* Multi-step donate flow */
+    .donate-progress { display:flex; align-items:center; gap:0.4rem; margin-bottom:1.5rem; justify-content:center; }
+    .donate-step-dot { width:28px; height:28px; border-radius:50%; background:var(--border); color:var(--gray); font-family:var(--font-h); font-size:0.78rem; font-weight:700; display:flex; align-items:center; justify-content:center; transition:all var(--t); flex-shrink:0; }
+    .donate-step-dot.active { background:var(--green); color:var(--white); transform:scale(1.08); }
+    .donate-step-dot.done { background:var(--green-dark); color:var(--white); }
+    .donate-step-line { flex:1; max-width:40px; height:2px; background:var(--border); transition:background var(--t); }
+    .donate-step-line.done { background:var(--green); }
+    .donate-step h3 { margin-bottom:0.4rem; }
+    .donate-summary { background:var(--green-pale); border-left:3px solid var(--green); border-radius:6px; padding:0.65rem 0.95rem; margin-bottom:1.25rem; font-family:var(--font-h); font-size:0.88rem; font-weight:600; color:var(--green-dark); }
+
+    /* Inline toggles for dedicate + comment + newsletter */
+    .toggle-row { display:flex; align-items:flex-start; gap:0.7rem; padding:0.9rem 0; border-top:1px solid var(--border); cursor:pointer; margin:0; }
+    .toggle-row input[type=checkbox] { margin-top:0.2rem; width:18px; height:18px; flex-shrink:0; accent-color:var(--green); cursor:pointer; }
+    .toggle-label { font-family:var(--font-h); font-size:0.92rem; font-weight:600; color:var(--black); display:block; }
+    .toggle-desc { font-size:0.8rem; color:var(--gray); margin-top:0.15rem; font-family:var(--font-b); line-height:1.45; }
+    .toggle-content { padding:0.4rem 0 0.6rem 1.6rem; }
+    .toggle-content[hidden] { display:none; }
+    textarea { width:100%; padding:0.75rem 1rem; border:1.5px solid var(--border); border-radius:6px; font-family:var(--font-b); font-size:0.95rem; color:var(--black); background:var(--white); outline:none; resize:vertical; min-height:80px; transition:border-color var(--t); }
+    textarea:focus { border-color:var(--green); }
+
+    /* Payment method cards */
+    .pay-method-grid { display:flex; flex-direction:column; gap:0.55rem; margin-bottom:0.5rem; }
+    .pay-method { display:flex; align-items:center; gap:0.85rem; padding:0.85rem 1rem; border:1.5px solid var(--border); border-radius:8px; background:var(--white); cursor:pointer; transition:border-color var(--t), background var(--t); font-family:var(--font-h); font-weight:600; font-size:0.92rem; color:var(--black); text-align:left; width:100%; }
+    .pay-method:hover { border-color:var(--green); }
+    .pay-method.selected { border-color:var(--green); background:var(--green-pale); }
+    .pay-method__logo { width:48px; height:30px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem; border-radius:4px; flex-shrink:0; letter-spacing:0; }
+    .pay-method__logo--apple  { background:#000; color:#fff; }
+    .pay-method__logo--google { background:#fff; color:#444; border:1px solid var(--border); font-size:0.74rem; }
+    .pay-method__logo--zelle  { background:#6D1ED4; color:#fff; font-size:0.74rem; }
+    .pay-method__logo--yappy  { background:#E30613; color:#fff; font-size:0.74rem; }
+    .pay-method__logo--card   { background:var(--light); color:var(--gray); font-size:1rem; }
+    .pay-method__caret { margin-left:auto; color:var(--gray); transition:transform var(--t); font-size:1.1rem; }
+    .pay-method.selected .pay-method__caret { transform:rotate(90deg); color:var(--green); }
+    .pay-method-details { padding:0.95rem 1rem; background:var(--light); border-radius:6px; margin:-0.15rem 0 0.4rem; font-size:0.88rem; color:var(--gray); line-height:1.6; }
+    .pay-method-details[hidden] { display:none; }
+    .pay-alias { font-family:var(--font-h); font-size:1rem; font-weight:700; color:var(--black); }
+
+    /* Step navigation buttons */
+    .step-nav { display:flex; gap:0.6rem; margin-top:1.25rem; }
+    .step-nav .btn-back { background:var(--white); color:var(--gray); border:1.5px solid var(--border); flex-shrink:0; padding:0.85rem 1.1rem; cursor:pointer; }
+    .step-nav .btn-back:hover { border-color:var(--gray); color:var(--black); background:var(--white); }
+    .step-nav .btn-next { flex:1; border:none; cursor:pointer; font-size:1rem; padding:0.95rem 1rem; }
+  </style>
 </head>
 <body>
   <a href="#main" class="skip-link">Saltar al contenido</a>
@@ -111,7 +154,10 @@
       </div>
     </div>
 
-    <!-- Campaign goal + thermometer (B2) — sample figures, replace with real data -->
+    <!-- Campaign goal + thermometer (B2) — combined total: website + GoFundMe.
+         Implementation: admin dashboard stores a 'gofundme_raised' number that ADC
+         updates manually (or via Cloudflare Worker scraping the public GoFundMe
+         page). Site renders the sum of website-direct + GoFundMe portions. -->
     <section class="section section--light" style="padding:2.5rem 4vw;">
       <div class="section-inner" style="max-width:720px; margin:0 auto; text-align:center;">
         <p class="section-label reveal" style="justify-content:center;">Campaña Temporada 2026</p>
@@ -125,6 +171,24 @@
           <div class="t-bar" style="width:64%; height:14px; border-radius:100px;"></div>
         </div>
         <p class="reveal" style="font-size:0.78rem; color:var(--gray); margin-top:0.75rem;">64% alcanzado · ¡Ayúdanos a cerrar la temporada!</p>
+
+        <!-- Combined total breakdown + GoFundMe parallel channel -->
+        <div class="reveal" style="margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--border); display:flex; gap:1rem; justify-content:center; align-items:center; flex-wrap:wrap;">
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap; justify-content:center;">
+            <span style="display:inline-flex; align-items:center; gap:0.4rem; background:var(--white); border:1px solid var(--border); border-radius:100px; padding:0.3rem 0.75rem; font-family:var(--font-h); font-size:0.78rem; font-weight:600; color:var(--gray);">
+              <span style="width:8px; height:8px; border-radius:50%; background:var(--green);"></span>
+              Sitio web: <span class="placeholder-tag">$1,800</span>
+            </span>
+            <span style="display:inline-flex; align-items:center; gap:0.4rem; background:var(--white); border:1px solid var(--border); border-radius:100px; padding:0.3rem 0.75rem; font-family:var(--font-h); font-size:0.78rem; font-weight:600; color:var(--gray);">
+              <span style="width:8px; height:8px; border-radius:50%; background:#00B964;"></span>
+              GoFundMe: <span class="placeholder-tag">$1,400</span>
+            </span>
+          </div>
+        </div>
+        <p class="reveal" style="font-size:0.75rem; color:var(--gray); margin-top:0.6rem; font-style:italic;">Total combinado del sitio web y la campaña GoFundMe.</p>
+        <p class="reveal" style="margin-top:1rem;">
+          <a href="https://www.gofundme.com/f/asociacion-deportiva-curundu" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:0.4rem; padding:0.55rem 1.1rem; background:#00B964; color:var(--white); border-radius:6px; font-family:var(--font-h); font-size:0.85rem; font-weight:700; text-decoration:none;">Ver campaña en GoFundMe →</a>
+        </p>
       </div>
     </section>
 
@@ -183,66 +247,226 @@
             </div>
           </div>
 
-          <!-- Donate form -->
-          <div class="donate-form-card reveal">
-            <h3>Hacer una donación</h3>
-            <p style="font-size:0.9rem; color:var(--gray); margin-bottom:1.5rem;">Selecciona un monto o ingresa el tuyo:</p>
-
-            <div class="amount-selector" id="amountSelector">
-              <button class="amount-btn" data-amount="10">$10</button>
-              <button class="amount-btn selected" data-amount="25">$25</button>
-              <button class="amount-btn" data-amount="50">$50</button>
-              <button class="amount-btn" data-amount="100">$100</button>
+          <!-- Donate form — 3-step wizard -->
+          <div class="donate-form-card reveal" id="donate-flow">
+            <!-- Progress indicator -->
+            <div class="donate-progress" aria-label="Progreso de la donación">
+              <span class="donate-step-dot active" data-dot="1">1</span>
+              <span class="donate-step-line" data-line="1"></span>
+              <span class="donate-step-dot" data-dot="2">2</span>
+              <span class="donate-step-line" data-line="2"></span>
+              <span class="donate-step-dot" data-dot="3">3</span>
             </div>
 
-            <div class="form-group">
-              <label for="custom-amount">O ingresa un monto personalizado</label>
-              <div class="custom-amount">
-                <span>$</span>
-                <label for="custom-amount" class="sr-only">Cantidad personalizada en USD</label>
-              <input type="number" id="custom-amount" placeholder="Otro monto" min="1" step="1">
-              </div>
-            </div>
+            <!-- STEP 1: amount + dedication + comment -->
+            <section class="donate-step" data-step="1">
+              <h3>Hacer una donación</h3>
+              <p style="font-size:0.9rem; color:var(--gray); margin-bottom:1.25rem;">Selecciona un monto. El 100% va a los jóvenes de Curundú.</p>
 
-            <form onsubmit="handleDonate(event)" style="margin-top:1.5rem;">
-              <div class="form-group">
-                <label for="d-nombre">Nombre completo</label>
-                <input type="text" id="d-nombre" placeholder="Tu nombre" required>
+              <div class="amount-selector" id="amountSelector">
+                <button type="button" class="amount-btn" data-amount="10">$10</button>
+                <button type="button" class="amount-btn selected" data-amount="25">$25</button>
+                <button type="button" class="amount-btn" data-amount="50">$50</button>
+                <button type="button" class="amount-btn" data-amount="100">$100</button>
               </div>
+
               <div class="form-group">
-                <label for="d-email">Correo electrónico</label>
-                <input type="email" id="d-email" placeholder="tu@correo.com" required>
+                <label for="custom-amount">O ingresa un monto personalizado</label>
+                <div class="custom-amount">
+                  <span>$</span>
+                  <input type="number" id="custom-amount" placeholder="Otro monto" min="1" step="1" aria-label="Monto personalizado en USD">
+                </div>
               </div>
+
               <div class="form-group">
-                <label for="d-tipo">Tipo de donación</label>
+                <label for="d-tipo">Frecuencia</label>
                 <select id="d-tipo">
                   <option selected>Mensual</option>
                   <option>Donación única</option>
                   <option>Trimestral</option>
                   <option>Anual</option>
                 </select>
-                <p style="font-size:0.78rem; color:var(--green-dark); margin-top:0.4rem; line-height:1.5;">💚 Las donaciones mensuales son las que más ayudan: dan estabilidad a los programas durante todo el año.</p>
+                <p style="font-size:0.78rem; color:var(--green-dark); margin-top:0.4rem; line-height:1.5;">💚 Las donaciones mensuales dan estabilidad a los programas durante todo el año.</p>
               </div>
-              <button type="submit" class="btn btn--primary" style="width:100%; border:none; cursor:pointer; margin-top:0.5rem; font-size:1rem; padding:1rem;">
-                Donar ahora
-              </button>
-            </form>
 
-            <p style="font-size:0.78rem; color:var(--gray); text-align:center; margin-top:1rem; line-height:1.6;">
-              🔒 Transacción segura · El 100% de tu donación apoya directamente a los jóvenes de Curundú.
-            </p>
+              <!-- Dedicate this gift -->
+              <label class="toggle-row" for="dedicate-check">
+                <input type="checkbox" id="dedicate-check">
+                <span>
+                  <span class="toggle-label">🎁 Dedicar esta donación en honor a alguien</span>
+                  <span class="toggle-desc">Opcionalmente envía una tarjeta digital al destinatario.</span>
+                </span>
+              </label>
+              <div class="toggle-content" id="dedicate-content" hidden>
+                <div class="form-group">
+                  <label for="d-honoree">En honor a <span style="color:var(--green-dark);">*</span></label>
+                  <input type="text" id="d-honoree" placeholder="Nombre del homenajeado/a">
+                </div>
+                <p style="font-family:var(--font-h); font-size:0.72rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--gray); margin:0.6rem 0 0.5rem;">Notificar al destinatario (opcional)</p>
+                <div class="form-group">
+                  <label for="d-recip-name">Nombre del destinatario</label>
+                  <input type="text" id="d-recip-name" placeholder="A quién enviar la tarjeta">
+                </div>
+                <div class="form-group">
+                  <label for="d-recip-email">Correo del destinatario</label>
+                  <input type="email" id="d-recip-email" placeholder="destinatario@correo.com">
+                </div>
+                <div class="form-group">
+                  <label for="d-recip-msg">Mensaje personal</label>
+                  <textarea id="d-recip-msg" placeholder="Quería compartir contigo que doné a AD Curundú en tu honor..."></textarea>
+                </div>
+                <p style="font-size:0.75rem; color:var(--gray); margin:0.2rem 0 0;">ADC enviará la tarjeta al destinatario en tu nombre.</p>
+              </div>
 
-            <!-- B5: Yappy block (optional — delete this block if Yappy isn't used) -->
-            <div style="margin-top:1.75rem; padding-top:1.5rem; border-top:1px solid var(--border);">
-              <h4 style="font-family:var(--font-h); font-size:0.95rem; font-weight:700; margin-bottom:0.75rem; text-align:center;">También puedes donar por Yappy</h4>
-              <div style="display:flex; gap:1.25rem; align-items:center; justify-content:center; flex-wrap:wrap;">
-                <div style="width:160px; height:160px; border:2px dashed var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--gray); font-family:var(--font-h); font-size:0.72rem; font-weight:700; letter-spacing:0.06em; text-align:center; padding:0.5rem;">QR — PENDIENTE</div>
-                <div style="text-align:left;">
-                  <p style="font-size:0.78rem; color:var(--gray); margin-bottom:0.35rem; font-family:var(--font-h); font-weight:600; letter-spacing:0.06em; text-transform:uppercase;">Número Yappy</p>
-                  <p style="font-family:var(--font-h); font-size:1.1rem; font-weight:700; margin:0;"><span class="placeholder-tag">6XXX-XXXX</span></p>
+              <!-- Comment to org -->
+              <label class="toggle-row" for="comment-check">
+                <input type="checkbox" id="comment-check">
+                <span>
+                  <span class="toggle-label">💬 Dejar un mensaje a ADC</span>
+                  <span class="toggle-desc">Cuéntanos por qué te une la causa. Solo lo verá el equipo de ADC.</span>
+                </span>
+              </label>
+              <div class="toggle-content" id="comment-content" hidden>
+                <div class="form-group">
+                  <label for="d-comment" class="sr-only">Tu mensaje a ADC</label>
+                  <textarea id="d-comment" placeholder="Comparte por qué decidiste apoyar a los jóvenes de Curundú..."></textarea>
                 </div>
               </div>
-            </div>
+
+              <button type="button" class="btn btn--primary" style="width:100%; border:none; cursor:pointer; margin-top:1.25rem; font-size:1rem; padding:1rem;" data-next="2">
+                Continuar →
+              </button>
+            </section>
+
+            <!-- STEP 2: payment method -->
+            <section class="donate-step" data-step="2" hidden>
+              <h3>¿Cómo deseas donar?</h3>
+              <div class="donate-summary" id="summary-2">Donación mensual de $25</div>
+
+              <div class="pay-method-grid">
+                <button type="button" class="pay-method" data-pay="apple">
+                  <span class="pay-method__logo pay-method__logo--apple"> Pay</span>
+                  <span>Apple Pay <span style="color:var(--green-dark); font-weight:500; font-size:0.78rem;">· Sin escribir datos</span></span>
+                  <span class="pay-method__caret">›</span>
+                </button>
+                <div class="pay-method-details" data-detail="apple" hidden>
+                  Toca el botón de Apple Pay para confirmar la donación con tu Apple ID. <span class="placeholder-tag">Mock</span>
+                </div>
+
+                <button type="button" class="pay-method" data-pay="google">
+                  <span class="pay-method__logo pay-method__logo--google">G Pay</span>
+                  <span>Google Pay <span style="color:var(--green-dark); font-weight:500; font-size:0.78rem;">· Sin escribir datos</span></span>
+                  <span class="pay-method__caret">›</span>
+                </button>
+                <div class="pay-method-details" data-detail="google" hidden>
+                  Toca el botón de Google Pay para confirmar la donación. <span class="placeholder-tag">Mock</span>
+                </div>
+
+                <button type="button" class="pay-method" data-pay="zelle">
+                  <span class="pay-method__logo pay-method__logo--zelle">Zelle</span>
+                  <span>Zelle <span style="color:var(--gray); font-weight:400;">(donantes en EE. UU.)</span></span>
+                  <span class="pay-method__caret">›</span>
+                </button>
+                <div class="pay-method-details" data-detail="zelle" hidden>
+                  Envía tu donación a:<br>
+                  <span class="pay-alias placeholder-tag">donar@adcurundu.org</span><br>
+                  Incluye tu nombre en la nota y te enviaremos el recibo.
+                </div>
+
+                <button type="button" class="pay-method" data-pay="yappy">
+                  <span class="pay-method__logo pay-method__logo--yappy">Yappy</span>
+                  <span>Yappy <span style="color:var(--gray); font-weight:400;">(Panamá)</span></span>
+                  <span class="pay-method__caret">›</span>
+                </button>
+                <div class="pay-method-details" data-detail="yappy" hidden>
+                  <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+                    <div style="width:120px; height:120px; border:2px dashed var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; background:var(--white); color:var(--gray); font-family:var(--font-h); font-size:0.7rem; font-weight:700; letter-spacing:0.06em; text-align:center;">QR — PENDIENTE</div>
+                    <div>
+                      <p style="font-size:0.7rem; color:var(--gray); margin:0 0 0.2rem; font-family:var(--font-h); font-weight:600; letter-spacing:0.06em; text-transform:uppercase;">Número Yappy</p>
+                      <p style="font-family:var(--font-h); font-size:1.05rem; font-weight:700; margin:0 0 0.4rem; color:var(--black);"><span class="placeholder-tag">6XXX-XXXX</span></p>
+                      <p style="font-size:0.78rem; color:var(--gray); margin:0;">Escanea el QR o envía al número.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="button" class="pay-method" data-pay="card">
+                  <span class="pay-method__logo pay-method__logo--card">💳</span>
+                  <span>Tarjeta de débito o crédito</span>
+                  <span class="pay-method__caret">›</span>
+                </button>
+                <div class="pay-method-details" data-detail="card" hidden style="background:var(--white); border:1.5px solid var(--green-pale); padding:1.1rem 1rem;">
+                  <p style="font-size:0.78rem; color:var(--green-dark); margin:0 0 0.85rem; display:flex; align-items:center; gap:0.4rem;">
+                    <span aria-hidden="true">💡</span> Tu navegador puede llenar estos campos si tienes una tarjeta guardada.
+                  </p>
+                  <div class="form-group">
+                    <label for="card-num">Número de tarjeta</label>
+                    <input type="text" id="card-num" placeholder="1234 5678 9012 3456" inputmode="numeric" autocomplete="cc-number">
+                  </div>
+                  <div class="form-group">
+                    <label for="card-name">Nombre en la tarjeta</label>
+                    <input type="text" id="card-name" placeholder="Como aparece en la tarjeta" autocomplete="cc-name">
+                  </div>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                    <div class="form-group">
+                      <label for="card-exp">Vencimiento</label>
+                      <input type="text" id="card-exp" placeholder="MM/AA" autocomplete="cc-exp">
+                    </div>
+                    <div class="form-group">
+                      <label for="card-cvv">CVV</label>
+                      <input type="text" id="card-cvv" placeholder="123" inputmode="numeric" autocomplete="cc-csc">
+                    </div>
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label for="card-zip">Código postal</label>
+                    <input type="text" id="card-zip" placeholder="0801" autocomplete="postal-code">
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-nav">
+                <button type="button" class="btn btn-back" data-back="1">← Atrás</button>
+                <button type="button" class="btn btn--primary btn-next" data-next="3">Continuar →</button>
+              </div>
+            </section>
+
+            <!-- STEP 3: contact info -->
+            <section class="donate-step" data-step="3" hidden>
+              <h3>Tus datos</h3>
+              <div class="donate-summary" id="summary-3">Donación mensual de $25</div>
+              <p style="font-size:0.9rem; color:var(--gray); margin-bottom:1.25rem;">Para enviarte el recibo y mantenerte al tanto del impacto.</p>
+
+              <form id="contact-form" onsubmit="handleDonate(event)">
+                <div class="form-group">
+                  <label for="d-email">Correo electrónico</label>
+                  <input type="email" id="d-email" placeholder="tu@correo.com" required>
+                </div>
+                <div class="form-group">
+                  <label for="d-nombre">Nombre completo</label>
+                  <input type="text" id="d-nombre" placeholder="Tu nombre" required>
+                </div>
+                <div class="form-group">
+                  <label for="d-phone">Teléfono <span style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--gray);">(opcional)</span></label>
+                  <input type="tel" id="d-phone" placeholder="+507 6XXX-XXXX">
+                </div>
+
+                <label class="toggle-row" for="newsletter-check">
+                  <input type="checkbox" id="newsletter-check" checked>
+                  <span>
+                    <span class="toggle-label">Únete al boletín de ADC</span>
+                    <span class="toggle-desc">Recibe historias de los atletas de Curundú y novedades de la temporada.</span>
+                  </span>
+                </label>
+
+                <div class="step-nav">
+                  <button type="button" class="btn btn-back" data-back="2">← Atrás</button>
+                  <button type="submit" class="btn btn--primary btn-next">Confirmar donación</button>
+                </div>
+              </form>
+            </section>
+
+            <p style="font-size:0.78rem; color:var(--gray); text-align:center; margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border); line-height:1.6;">
+              🔒 Transacción segura · El 100% de tu donación apoya directamente a los jóvenes de Curundú.
+            </p>
           </div>
 
         </div>
@@ -389,20 +613,120 @@
   </script>
   <script src="nav.js"></script>
   <script>
-    // Amount selector
-    document.querySelectorAll('.amount-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        document.getElementById('custom-amount').value = '';
+    // Multi-step donate flow
+    (function () {
+      const flow = document.getElementById('donate-flow');
+      if (!flow) return;
+
+      const steps = flow.querySelectorAll('.donate-step');
+      const dots = flow.querySelectorAll('.donate-step-dot');
+      const lines = flow.querySelectorAll('.donate-step-line');
+
+      const labels = { apple: 'Apple Pay', google: 'Google Pay', zelle: 'Zelle', yappy: 'Yappy', card: 'Tarjeta' };
+
+      function getAmount() {
+        const custom = document.getElementById('custom-amount').value;
+        if (custom) return parseInt(custom, 10);
+        const selected = flow.querySelector('.amount-btn.selected');
+        return selected ? parseInt(selected.dataset.amount, 10) : 25;
+      }
+
+      function getFrequency() {
+        return document.getElementById('d-tipo').value;
+      }
+
+      function getPayLabel() {
+        const sel = flow.querySelector('.pay-method.selected');
+        return sel ? (labels[sel.dataset.pay] || '') : '';
+      }
+
+      function updateSummaries() {
+        const freq = getFrequency().toLowerCase();
+        const amount = getAmount();
+        const s2 = document.getElementById('summary-2');
+        if (s2) s2.textContent = `Donación ${freq} de $${amount}`;
+        const s3 = document.getElementById('summary-3');
+        if (s3) {
+          const method = getPayLabel();
+          s3.textContent = `Donación ${freq} de $${amount}` + (method ? ` · ${method}` : '');
+        }
+      }
+
+      function setStep(n) {
+        steps.forEach(s => { s.hidden = (parseInt(s.dataset.step, 10) !== n); });
+        dots.forEach(d => {
+          const i = parseInt(d.dataset.dot, 10);
+          d.classList.toggle('active', i === n);
+          d.classList.toggle('done', i < n);
+        });
+        lines.forEach(l => {
+          const i = parseInt(l.dataset.line, 10);
+          l.classList.toggle('done', i < n);
+        });
+        updateSummaries();
+        flow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      // Amount selector
+      flow.querySelectorAll('.amount-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          flow.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          document.getElementById('custom-amount').value = '';
+        });
       });
-    });
-    document.getElementById('custom-amount').addEventListener('input', () => {
-      document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
-    });
+      document.getElementById('custom-amount').addEventListener('input', () => {
+        flow.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+      });
+
+      // Dedicate + comment toggles
+      document.getElementById('dedicate-check').addEventListener('change', e => {
+        document.getElementById('dedicate-content').hidden = !e.target.checked;
+      });
+      document.getElementById('comment-check').addEventListener('change', e => {
+        document.getElementById('comment-content').hidden = !e.target.checked;
+      });
+
+      // Payment method selection — single-select, expand details inline
+      flow.querySelectorAll('.pay-method').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const wasSelected = btn.classList.contains('selected');
+          flow.querySelectorAll('.pay-method').forEach(b => b.classList.remove('selected'));
+          flow.querySelectorAll('.pay-method-details').forEach(d => d.hidden = true);
+          if (!wasSelected) {
+            btn.classList.add('selected');
+            const detail = flow.querySelector('.pay-method-details[data-detail="' + btn.dataset.pay + '"]');
+            if (detail) detail.hidden = false;
+          }
+        });
+      });
+
+      // Step navigation
+      flow.querySelectorAll('[data-next]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const n = parseInt(btn.dataset.next, 10);
+          if (n === 2) {
+            if (getAmount() < 1) { alert('Selecciona o ingresa un monto.'); return; }
+            if (document.getElementById('dedicate-check').checked && !document.getElementById('d-honoree').value.trim()) {
+              alert('Ingresa el nombre del homenajeado/a.');
+              document.getElementById('d-honoree').focus();
+              return;
+            }
+          }
+          if (n === 3) {
+            if (!flow.querySelector('.pay-method.selected')) { alert('Selecciona un método de pago.'); return; }
+          }
+          setStep(n);
+        });
+      });
+      flow.querySelectorAll('[data-back]').forEach(btn => {
+        btn.addEventListener('click', () => setStep(parseInt(btn.dataset.back, 10)));
+      });
+    })();
+
+    // Final mock submit — redirect to thank-you page
     function handleDonate(e) {
       e.preventDefault();
-      // Mock submission — redirect to thank-you page (no real payment processing)
       window.location.href = 'gracias.html';
     }
   </script>
