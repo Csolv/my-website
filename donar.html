@@ -47,22 +47,58 @@
     .donate-hero .page-hero__label { color:rgba(255,255,255,0.7); }
     .donate-hero .page-hero__title { color:var(--white); }
 
-    /* Donate layout & impact */
-    .donate-layout { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:start; }
-    .donate-form-card { background:var(--white); border-radius:var(--radius); box-shadow:0 6px 32px rgba(0,0,0,0.1); padding:0; overflow:hidden; }
-    .impact-cards { display:grid; grid-template-columns:1fr; gap:1rem; }
-    .impact-card { display:flex; gap:1.25rem; align-items:center; padding:1.25rem; background:var(--white); border-radius:10px; box-shadow:0 2px 12px rgba(0,0,0,0.06); }
-    .impact-card__amount { font-family:var(--font-h); font-size:1.6rem; font-weight:700; color:var(--green); min-width:80px; text-align:center; }
+    /* ── Campaign status card (goal + progress + countdown) ── */
+    .campaign-card {
+      background:var(--white); border:1px solid var(--border); border-radius:18px;
+      box-shadow:0 8px 36px rgba(0,0,0,0.08);
+      padding:2.25rem 2.5rem; max-width:980px; margin:0 auto;
+      display:grid; grid-template-columns:1.45fr 1fr; gap:3rem; align-items:center;
+    }
+    .campaign-goal { font-family:var(--font-h); font-size:clamp(2.2rem,4.5vw,3rem); font-weight:700; color:var(--green-dark); line-height:1; }
+    .campaign-goal span { display:block; font-size:0.72rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gray); margin-bottom:0.45rem; }
+    .campaign-bar-track { background:var(--green-pale); border-radius:100px; height:14px; overflow:hidden; margin:1.25rem 0 0.7rem; }
+    .campaign-bar-fill { height:100%; width:0; border-radius:100px; background:linear-gradient(90deg,var(--green) 0%,#3ed98a 100%); transition:width 1.2s cubic-bezier(.2,.8,.2,1); }
+    .campaign-caption { font-size:0.85rem; color:var(--gray); line-height:1.6; margin:0; }
+    .countdown-title { text-align:center; font-family:var(--font-h); font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--gray); margin-bottom:0.8rem; }
+    .countdown { display:flex; gap:0.55rem; justify-content:center; }
+    .countdown__unit { background:var(--green-dark); color:var(--white); border-radius:12px; padding:0.75rem 0; min-width:60px; text-align:center; box-shadow:0 4px 14px rgba(31,144,89,0.25); }
+    .countdown__num { font-family:var(--font-h); font-size:1.75rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; }
+    .countdown__label { font-size:0.6rem; text-transform:uppercase; letter-spacing:0.08em; opacity:0.85; margin-top:0.35rem; }
+
+    /* ── Donate layout: impact + embedded Donorbox ── */
+    .donate-layout { display:grid; grid-template-columns:1.05fr 0.95fr; gap:3.5rem; align-items:start; }
+    .impact-cards { display:grid; grid-template-columns:1fr; gap:0.85rem; }
+    .impact-card { display:flex; gap:1.1rem; align-items:center; padding:1.1rem 1.25rem; background:var(--white); border:1px solid var(--border); border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.05); transition:transform var(--t), box-shadow var(--t); }
+    .impact-card:hover { transform:translateY(-2px); box-shadow:0 10px 26px rgba(0,0,0,0.09); }
+    .impact-card__amount { font-family:var(--font-h); font-size:1.5rem; font-weight:700; color:var(--green); min-width:86px; text-align:center; line-height:1.05; }
+    .impact-card__amount small { display:block; font-size:0.68rem; font-weight:500; color:var(--gray); }
     .impact-card__desc h4 { font-family:var(--font-h); font-size:0.95rem; font-weight:700; margin-bottom:0.2rem; }
-    .impact-card__desc p  { font-size:0.88rem; color:var(--gray); line-height:1.55; }
+    .impact-card__desc p  { font-size:0.85rem; color:var(--gray); line-height:1.5; }
+
+    /* Embedded Donorbox widget — single donation interface */
+    .donate-widget { position:sticky; top:calc(var(--header-h) + 1rem); background:var(--white); border:1px solid var(--border); border-radius:16px; box-shadow:0 12px 44px rgba(0,0,0,0.11); padding:1.75rem 1.5rem 1.25rem; }
+    .donate-widget__head { text-align:center; margin-bottom:1.1rem; }
+    .donate-widget__head h3 { font-family:var(--font-h); font-size:1.3rem; font-weight:700; margin:0; }
+    .donate-widget__head p { font-size:0.85rem; color:var(--gray); margin:0.3rem 0 0; }
+    .donate-widget iframe { display:block; margin:0 auto; }
+    .donate-trust { font-size:0.74rem; color:var(--gray); text-align:center; margin:0.85rem 0 0; padding-top:0.85rem; border-top:1px solid var(--border); line-height:1.55; }
+
+    /* Donor testimonial */
+    .donor-testimonial { margin-top:1.5rem; background:var(--green-pale); border-radius:14px; padding:1.5rem; display:flex; gap:1.15rem; align-items:flex-start; }
+    .donor-testimonial__photo { width:64px; height:64px; flex-shrink:0; background:var(--white); border:1px dashed var(--green); border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--green); font-family:var(--font-h); font-size:0.62rem; text-align:center; }
+
+    /* Fund usage (transparency) */
     .transparency-list { list-style:none; display:flex; flex-direction:column; gap:1rem; }
     .transparency-list li { display:flex; gap:1rem; align-items:center; }
     .t-bar-wrap { flex:1; background:var(--border); border-radius:100px; height:8px; }
     .t-bar { height:8px; background:var(--green); border-radius:100px; transition:width 0.8s ease; }
     .t-label { font-family:var(--font-h); font-size:0.78rem; font-weight:600; min-width:130px; }
     .t-pct { font-family:var(--font-h); font-size:0.85rem; font-weight:700; color:var(--green); min-width:36px; text-align:right; }
+
     @media(max-width:900px){
-      .donate-layout { grid-template-columns:1fr; gap:3rem; }
+      .campaign-card { grid-template-columns:1fr; gap:1.75rem; padding:1.75rem 1.5rem; }
+      .donate-layout { grid-template-columns:1fr; gap:2.5rem; }
+      .donate-widget { position:static; }
     }
   </style>
 </head>
@@ -101,54 +137,68 @@
       </div>
     </div>
 
-    <!-- GoFundMe campaign widget — live progress -->
-    <section class="section section--light" style="padding:2.5rem 4vw;">
-      <div class="section-inner" style="max-width:860px; margin:0 auto; text-align:center;">
-        <p class="section-label reveal" style="justify-content:center;">Campaña Temporada 2026</p>
-        <div class="section-divider reveal" style="margin-left:auto; margin-right:auto;"></div>
-        <p class="body-text reveal" style="margin-bottom:2rem; max-width:55ch; margin-left:auto; margin-right:auto;">Estamos recaudando $30,000 antes del 19 de julio para apoyar una temporada completa de deporte, educación y nutrición en Curundú.</p>
-        <div class="reveal" style="max-width:780px; margin:0 auto;">
-          <div class="gfm-embed" data-url="https://www.gofundme.com/f/asociacion-deportiva-curundu/widget/large?attribution_id=sl%3A695ff1a0-7d7e-487d-a977-c242be89155a"></div><script defer src="https://www.gofundme.com/static/js/embed.js"></script>
+    <!-- Campaign status: goal + progress + live countdown -->
+    <section class="section section--light" style="padding:3rem 4vw;">
+      <div class="section-inner">
+        <p class="section-label reveal" style="justify-content:center;">Campaña Temporada 2026 · Scoring for Success</p>
+        <div class="section-divider reveal" style="margin:0 auto 2rem;"></div>
+        <div class="campaign-card reveal">
+          <div>
+            <div class="campaign-goal"><span>Nuestra meta</span>$30,000</div>
+            <!-- Progress bar — fill controlled by PROGRESS_PCT in the script below.
+                 ADC: set that value (0–100) to reflect real progress. -->
+            <div class="campaign-bar-track"><div class="campaign-bar-fill" id="campaignBar"></div></div>
+            <p class="campaign-caption">Reúne el apoyo de toda una temporada de deporte, educación y nutrición para los jóvenes de Curundú. Cada aporte nos acerca a la meta antes del 19 de julio.</p>
+          </div>
+          <div>
+            <p class="countdown-title">Tiempo restante</p>
+            <div class="countdown" id="countdown" role="timer" aria-label="Cuenta regresiva hasta el 19 de julio">
+              <div class="countdown__unit"><div class="countdown__num" data-cd="days">--</div><div class="countdown__label">Días</div></div>
+              <div class="countdown__unit"><div class="countdown__num" data-cd="hours">--</div><div class="countdown__label">Horas</div></div>
+              <div class="countdown__unit"><div class="countdown__num" data-cd="mins">--</div><div class="countdown__label">Min</div></div>
+              <div class="countdown__unit"><div class="countdown__num" data-cd="secs">--</div><div class="countdown__label">Seg</div></div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Main donate section -->
+    <!-- Donate: impact tiers (left) + embedded Donorbox form (right) -->
     <section class="section">
       <div class="section-inner">
         <div class="donate-layout">
 
-          <!-- Impact info -->
+          <!-- Impact info + testimonial -->
           <div class="reveal">
             <p class="section-label">Tu impacto</p>
             <div class="section-divider"></div>
-            <h2 style="font-size:clamp(1.6rem,3vw,2.4rem); font-weight:700; margin-bottom:1rem;">Cada dólar cambia una vida en Curundú</h2>
-            <p style="color:var(--gray); font-size:1rem; line-height:1.78; margin-bottom:2rem;">ADC es una organización 100% sin fines de lucro. Cada donación va directamente a financiar entrenamientos, materiales educativos y programas de nutrición para más de 60 niños en Curundú.</p>
+            <h2 style="font-size:clamp(1.6rem,3vw,2.3rem); font-weight:700; margin-bottom:0.85rem;">Cada dólar cambia una vida en Curundú</h2>
+            <p style="color:var(--gray); font-size:1rem; line-height:1.75; margin-bottom:1.75rem;">ADC es una organización 100% sin fines de lucro. Tu donación va directamente a entrenamientos, materiales educativos y nutrición para más de 60 niños.</p>
 
             <div class="impact-cards">
               <div class="impact-card">
-                <div class="impact-card__amount">$10<span style="font-size:0.85rem; font-weight:500; color:var(--gray);">/mes</span></div>
+                <div class="impact-card__amount">$10<small>/mes</small></div>
                 <div class="impact-card__desc">
                   <h4>Primer paso</h4>
                   <p>Cada dólar suma. Tu apoyo mensual ayuda a mantener los programas de ADC activos en Curundú.</p>
                 </div>
               </div>
               <div class="impact-card">
-                <div class="impact-card__amount">$37<span style="font-size:0.85rem; font-weight:500; color:var(--gray);">/mes</span></div>
+                <div class="impact-card__amount">$37<small>/mes</small></div>
                 <div class="impact-card__desc">
                   <h4>Un niño en el campo</h4>
                   <p>Mantiene a un niño activo cubriendo entrenamiento, transporte, inscripción en la liga y equipamiento esencial.</p>
                 </div>
               </div>
               <div class="impact-card">
-                <div class="impact-card__amount" style="font-size:1.3rem;">$441</div>
+                <div class="impact-card__amount">$441</div>
                 <div class="impact-card__desc">
                   <h4>Patrocina una temporada completa</h4>
                   <p>Garantiza el acceso de un niño a entrenamientos, competencias y mentoría durante todo un año.</p>
                 </div>
               </div>
               <div class="impact-card">
-                <div class="impact-card__amount" style="font-size:1.3rem;">$914</div>
+                <div class="impact-card__amount">$914</div>
                 <div class="impact-card__desc">
                   <h4>Apoyo integral por 12 meses</h4>
                   <p>Cubre un año completo de programas de fútbol, apoyo educativo y alimentación para un atleta ADC.</p>
@@ -156,22 +206,27 @@
               </div>
             </div>
 
-            <!-- Testimonial card (B3) — placeholder content -->
-            <div class="impact-card" style="margin-top:1.5rem; align-items:flex-start; gap:1.25rem; padding:1.5rem;">
-              <div style="width:72px; height:72px; flex-shrink:0; background:var(--light); border:1px dashed var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--gray); font-family:var(--font-h); font-size:0.7rem; text-align:center;">Foto</div>
-              <div class="impact-card__desc">
-                <blockquote style="margin:0 0 0.6rem; font-family:var(--font-h); font-style:italic; font-size:0.95rem; line-height:1.55; color:var(--black);">
-                  "<span class="placeholder-tag">Cita testimonial breve de un atleta o familia sobre el impacto de ADC.</span>"
-                </blockquote>
-                <p style="font-size:0.85rem; color:var(--gray); margin:0;">— <span class="placeholder-tag">Nombre, Sub-XX</span></p>
+            <!-- Testimonial — placeholder content -->
+            <figure class="donor-testimonial">
+              <div class="donor-testimonial__photo">Foto</div>
+              <div>
+                <blockquote style="margin:0 0 0.5rem; font-family:var(--font-h); font-style:italic; font-size:0.98rem; line-height:1.55; color:var(--black);">"<span class="placeholder-tag">Cita testimonial breve de un atleta o familia sobre el impacto de ADC.</span>"</blockquote>
+                <figcaption style="font-size:0.82rem; color:var(--gray); margin:0; font-weight:600;">— <span class="placeholder-tag">Nombre, Sub-XX</span></figcaption>
               </div>
-            </div>
+            </figure>
           </div>
 
-          <!-- Donorbox — embedded donation form, users stay on site -->
-          <div class="donate-form-card reveal">
-            <script src="https://donorbox.org/widget.js" paypalExpress="false"></script>
-            <iframe src="https://donorbox.org/embed/asociacion-deportiva-curundu-scoring-for-success?default_interval=m" name="donorbox" allowpaymentrequest="allowpaymentrequest" seamless="seamless" frameborder="0" scrolling="no" height="900px" width="100%" style="max-width:500px; min-width:250px; max-height:none!important; display:block; margin:0 auto;" allow="payment"></iframe>
+          <!-- Embedded Donorbox — donors complete everything here, on-site -->
+          <div class="reveal">
+            <div class="donate-widget">
+              <div class="donate-widget__head">
+                <h3>Dona de forma segura</h3>
+                <p>Completa tu donación aquí mismo — mensual o única.</p>
+              </div>
+              <script src="https://donorbox.org/widget.js" paypalExpress="false"></script>
+              <iframe src="https://donorbox.org/embed/asociacion-deportiva-curundu-scoring-for-success?default_interval=m" name="donorbox" allowpaymentrequest="allowpaymentrequest" seamless="seamless" frameborder="0" scrolling="no" height="900px" width="100%" style="max-width:460px; min-width:250px; max-height:none!important;" allow="payment"></iframe>
+              <p class="donate-trust">🔒 Procesado de forma segura por Donorbox · El 100% de tu donación apoya a los jóvenes de Curundú.</p>
+            </div>
           </div>
 
         </div>
@@ -290,6 +345,46 @@
       document.getElementById('donar-sub-msg').style.display = 'block';
     }
   </script>
+  <script>
+    // ── Campaign progress bar + live countdown ──
+    (function () {
+      // Campaign deadline: July 19, 2026, end of day, Panama time (UTC-5, no DST).
+      var DEADLINE = new Date('2026-07-19T23:59:59-05:00').getTime();
+
+      // ADC: set this to your current progress toward the $30,000 goal (0–100).
+      // 0 = bar starts empty (campaign just launched). No dollar amount is shown.
+      var PROGRESS_PCT = 0;
+
+      var bar = document.getElementById('campaignBar');
+      if (bar) {
+        requestAnimationFrame(function () {
+          bar.style.width = Math.max(0, Math.min(100, PROGRESS_PCT)) + '%';
+        });
+      }
+
+      var cd = document.getElementById('countdown');
+      if (!cd) return;
+      function set(key, val) {
+        var el = cd.querySelector('[data-cd="' + key + '"]');
+        if (el) el.textContent = String(val).padStart(2, '0');
+      }
+      var timer;
+      function tick() {
+        var diff = DEADLINE - Date.now();
+        if (diff <= 0) {
+          set('days', 0); set('hours', 0); set('mins', 0); set('secs', 0);
+          clearInterval(timer);
+          return;
+        }
+        set('days',  Math.floor(diff / 86400000));
+        set('hours', Math.floor((diff % 86400000) / 3600000));
+        set('mins',  Math.floor((diff % 3600000) / 60000));
+        set('secs',  Math.floor((diff % 60000) / 1000));
+      }
+      tick();
+      timer = setInterval(tick, 1000);
+    })();
+  </script>
   <script src="nav.js"></script>
   <script>
     // GA4 click tracking for donations and volunteer actions
@@ -307,6 +402,5 @@
     });
   </script>
   <script src="chatbot.js"></script>
-  <script src="admin.js"></script>
 </body>
 </html>
