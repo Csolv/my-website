@@ -1,2 +1,7 @@
+# Asociación Deportiva Curundú — robots.txt
+# Search engines and AI crawlers are welcome. Internal admin tooling is excluded.
 User-agent: *
-Disallow: /
+Allow: /
+Disallow: /admin/
+
+Sitemap: https://adcurundu.org/sitemap.xml
