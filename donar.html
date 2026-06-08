@@ -146,9 +146,10 @@
           <div>
             <div class="campaign-goal"><span>Nuestra meta</span>$30,000</div>
             <!-- Progress bar — fill controlled by PROGRESS_PCT in the script below.
-                 ADC: set that value (0–100) to reflect real progress. -->
+                 ADC: update PROGRESS_PCT and RAISED_LABEL when the total changes. -->
             <div class="campaign-bar-track"><div class="campaign-bar-fill" id="campaignBar"></div></div>
-            <p class="campaign-caption">Reúne el apoyo de toda una temporada de deporte, educación y nutrición para los jóvenes de Curundú. Cada aporte nos acerca a la meta antes del 19 de julio.</p>
+            <p style="font-family:var(--font-h); font-size:0.82rem; font-weight:700; color:var(--green-dark); margin:0 0 0.9rem;" id="raisedLabel"></p>
+            <p class="campaign-caption">Detrás de cada dólar hay un niño que entrena con hambre de superarse. Tu apoyo paga el transporte que lo trae al campo, los libros que lo mantienen en la escuela, y el plato de comida que lo sostiene. Juntos, podemos completar una temporada entera antes del 19 de julio.</p>
           </div>
           <div>
             <p class="countdown-title">Tiempo restante</p>
@@ -224,7 +225,7 @@
                 <p>Completa tu donación aquí mismo — mensual o única.</p>
               </div>
               <script src="https://donorbox.org/widget.js" paypalExpress="false"></script>
-              <iframe src="https://donorbox.org/embed/asociacion-deportiva-curundu-scoring-for-success?default_interval=m" name="donorbox" allowpaymentrequest="allowpaymentrequest" seamless="seamless" frameborder="0" scrolling="no" height="900px" width="100%" style="max-width:460px; min-width:250px; max-height:none!important;" allow="payment"></iframe>
+              <iframe src="https://donorbox.org/embed/asociacion-deportiva-curundu-scoring-for-success?default_interval=m&color=%231f9059" name="donorbox" allowpaymentrequest="allowpaymentrequest" seamless="seamless" frameborder="0" scrolling="no" height="900px" width="100%" style="max-width:460px; min-width:250px; max-height:none!important;" allow="payment"></iframe>
               <p class="donate-trust">🔒 Procesado de forma segura por Donorbox · El 100% de tu donación apoya a los jóvenes de Curundú.</p>
             </div>
           </div>
@@ -351,15 +352,20 @@
       // Campaign deadline: July 19, 2026, end of day, Panama time (UTC-5, no DST).
       var DEADLINE = new Date('2026-07-19T23:59:59-05:00').getTime();
 
-      // ADC: set this to your current progress toward the $30,000 goal (0–100).
-      // 0 = bar starts empty (campaign just launched). No dollar amount is shown.
-      var PROGRESS_PCT = 0;
+      // ADC: update these two values when the total changes.
+      var RAISED       = 2540;   // dollars raised so far
+      var GOAL         = 30000;  // campaign goal
+      var PROGRESS_PCT = Math.round(RAISED / GOAL * 100);
 
       var bar = document.getElementById('campaignBar');
       if (bar) {
         requestAnimationFrame(function () {
           bar.style.width = Math.max(0, Math.min(100, PROGRESS_PCT)) + '%';
         });
+      }
+      var label = document.getElementById('raisedLabel');
+      if (label) {
+        label.textContent = '$' + RAISED.toLocaleString('en-US') + ' recaudados de $' + GOAL.toLocaleString('en-US');
       }
 
       var cd = document.getElementById('countdown');
