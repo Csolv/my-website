@@ -83,6 +83,8 @@
       opacity: 0.6;
       z-index: 0;
     }
+    /* Skip the 12MB video on mobile — the hero gradient looks fine without it */
+    @media (max-width: 768px) { .hero-video { display: none; } }
 
     .hero-overlay {
       position: absolute;
@@ -359,7 +361,7 @@
 
     <!-- HERO -->
     <section class="hero">
-      <video id="hero-video" class="hero-video" autoplay muted playsinline aria-hidden="true">
+      <video id="hero-video" class="hero-video" autoplay muted playsinline preload="none" aria-hidden="true">
         <source src="hero-video-1.mp4" type="video/mp4">
       </video>
       <div class="hero-overlay" aria-hidden="true"></div>
