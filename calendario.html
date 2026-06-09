@@ -71,7 +71,11 @@
       .schedule-grid { grid-template-columns:1fr 1fr; }
     }
     @media(max-width:560px){ .schedule-grid { grid-template-columns:1fr; } }
-  </style>||
+    /* Google Calendar embed — responsive wrapper */
+    .gcal-wrap { position:relative; width:100%; border-radius:14px; overflow:hidden; box-shadow:0 6px 28px rgba(0,0,0,0.09); background:var(--white); }
+    .gcal-wrap iframe { display:block; width:100%; height:600px; border:0; }
+    @media(max-width:700px){ .gcal-wrap iframe { height:460px; } }
+  </style>
 </head>
 <body>
   <a href="#main" class="skip-link">Saltar al contenido</a>
@@ -104,94 +108,29 @@
     <div class="page-hero" style="background:#0a1a10;">
       <div class="page-hero__overlay" style="background:linear-gradient(to top,rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.2) 100%);"></div>
       <div class="page-hero__content">
-        <p class="page-hero__label">Agenda 2025</p>
+        <p class="page-hero__label">Agenda 2026</p>
         <h1 class="page-hero__title">Calendario</h1>
       </div>
     </div>
 
-    <!-- Upcoming Events -->
+    <!-- Live Google Calendar -->
     <section class="section">
       <div class="section-inner">
-        <p class="section-label reveal">Próximos eventos</p>
+        <p class="section-label reveal">Calendario en vivo</p>
         <div class="section-divider reveal"></div>
-        <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:2.5rem;" class="reveal">
-          <div class="filter-bar" id="cal-filters">
-            <button class="filter-btn active" data-filter="all" aria-pressed="true">Todos</button>
-            <button class="filter-btn" data-filter="sport" aria-pressed="false">Deporte</button>
-            <button class="filter-btn" data-filter="edu" aria-pressed="false">Educación</button>
-            <button class="filter-btn" data-filter="nutri" aria-pressed="false">Nutrición</button>
-            <button class="filter-btn" data-filter="social" aria-pressed="false">Comunidad</button>
-          </div>
-          <button id="cal-refresh" class="btn btn--outline" style="padding:0.42rem 1rem; font-size:0.78rem; display:flex; align-items:center; gap:0.4rem;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-            Actualizar
-          </button>
+        <p class="body-text reveal" style="margin-bottom:2rem;">Este calendario se actualiza automáticamente con todos los eventos, entrenamientos y actividades de ADC. Haz clic en cualquier evento para ver los detalles.</p>
+        <div class="gcal-wrap reveal">
+          <iframe
+            src="https://calendar.google.com/calendar/embed?src=adcurundu%40gmail.com&ctz=America%2FPanama&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0&hl=es"
+            title="Calendario oficial de AD Curundú"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
         </div>
-        <div class="events-list" id="events-list">
-          <div class="event-row reveal" data-cat="sport">
-            <div class="event-date-box"><div class="event-day">15</div><div class="event-mon">Mar</div></div>
-            <div>
-              <span class="event-badge badge--sport">Deporte</span>
-              <div class="event-title">Entrenamiento General — Categoría Sub-12</div>
-              <div class="event-meta">📍 Cancha ADC, Curundú &nbsp;·&nbsp; 🕔 4:00 – 6:00 PM</div>
-            </div>
-            <div class="event-cta"><a href="participar.html" class="btn btn--primary" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Unirse</a></div>
-          </div>
-          <div class="event-row reveal" data-cat="edu">
-            <div class="event-date-box"><div class="event-day">18</div><div class="event-mon">Mar</div></div>
-            <div>
-              <span class="event-badge badge--edu">Educación</span>
-              <div class="event-title">Taller de Habilidades para la Vida</div>
-              <div class="event-meta">📍 Sede ADC, Curundú &nbsp;·&nbsp; 🕔 10:00 AM – 12:00 PM</div>
-            </div>
-            <div class="event-cta"><a href="participar.html" class="btn btn--primary" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Registrarse</a></div>
-          </div>
-          <div class="event-row reveal" data-cat="sport">
-            <div class="event-date-box"><div class="event-day">22</div><div class="event-mon">Mar</div></div>
-            <div>
-              <span class="event-badge badge--sport">Deporte</span>
-              <div class="event-title">Partido Amistoso — ADC vs Invitado</div>
-              <div class="event-meta">📍 Estadio Comunitario &nbsp;·&nbsp; 🕔 9:00 AM</div>
-            </div>
-            <div class="event-cta"><a href="contactanos.html" class="btn btn--outline" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Info</a></div>
-          </div>
-          <div class="event-row reveal" data-cat="nutri">
-            <div class="event-date-box"><div class="event-day">29</div><div class="event-mon">Mar</div></div>
-            <div>
-              <span class="event-badge badge--nutri">Nutrición</span>
-              <div class="event-title">Día de Nutrición y Salud Deportiva</div>
-              <div class="event-meta">📍 Sede ADC &nbsp;·&nbsp; 🕔 8:00 AM – 2:00 PM</div>
-            </div>
-            <div class="event-cta"><a href="participar.html" class="btn btn--primary" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Participar</a></div>
-          </div>
-          <div class="event-row reveal" data-cat="social">
-            <div class="event-date-box"><div class="event-day">05</div><div class="event-mon">Abr</div></div>
-            <div>
-              <span class="event-badge badge--social">Comunidad</span>
-              <div class="event-title">Asamblea Comunitaria ADC 2025</div>
-              <div class="event-meta">📍 Centro Comunal de Curundú &nbsp;·&nbsp; 🕔 6:00 PM</div>
-            </div>
-            <div class="event-cta"><a href="contactanos.html" class="btn btn--outline" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Info</a></div>
-          </div>
-          <div class="event-row reveal" data-cat="sport">
-            <div class="event-date-box"><div class="event-day">12</div><div class="event-mon">Abr</div></div>
-            <div>
-              <span class="event-badge badge--sport">Deporte</span>
-              <div class="event-title">Torneo Interno de Primavera</div>
-              <div class="event-meta">📍 Cancha ADC, Curundú &nbsp;·&nbsp; 🕔 Todo el día</div>
-            </div>
-            <div class="event-cta"><a href="participar.html" class="btn btn--primary" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Inscribirse</a></div>
-          </div>
-          <div class="event-row reveal">
-            <div class="event-date-box"><div class="event-day">Jul</div><div class="event-mon">2025</div></div>
-            <div>
-              <span class="event-badge badge--social">Comunidad</span>
-              <div class="event-title">Verano Feliz ADC 2025</div>
-              <div class="event-meta">📍 Curundú + Metropolitan School of Panama &nbsp;·&nbsp; 🕔 Varias semanas</div>
-            </div>
-            <div class="event-cta"><a href="participar.html" class="btn btn--primary" style="padding:0.55rem 1.25rem; font-size:0.8rem;">Más info</a></div>
-          </div>
-        </div>
+        <p style="font-size:0.8rem; color:var(--gray); margin-top:1rem; text-align:center;">
+          ¿Quieres agregar los eventos de ADC a tu propio calendario?
+          <a href="https://calendar.google.com/calendar/r?cid=adcurundu%40gmail.com" target="_blank" rel="noopener" style="color:var(--green); font-weight:600;">Suscribirse →</a>
+        </p>
       </div>
     </section>
 
@@ -265,61 +204,6 @@
     </div>
   </footer>
   <script src="nav.js"></script>
-  <script>
-    // Working calendar filter + refresh
-    (function() {
-      var rows = document.querySelectorAll('#events-list .event-row');
-      var filterBtns = document.querySelectorAll('#cal-filters .filter-btn');
-      var refreshBtn = document.getElementById('cal-refresh');
-      var active = 'all';
-
-      function applyFilter() {
-        rows.forEach(function(row) {
-          var cat = row.getAttribute('data-cat');
-          var show = active === 'all' || cat === active;
-          row.style.display = show ? '' : 'none';
-          if (show) {
-            row.style.animation = 'none';
-            row.offsetHeight; // reflow
-            row.style.animation = 'eventFadeIn 0.35s ease forwards';
-          }
-        });
-      }
-
-      filterBtns.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          filterBtns.forEach(function(b) { b.classList.remove('active'); });
-          btn.classList.add('active');
-          active = btn.getAttribute('data-filter');
-          applyFilter();
-        });
-      });
-
-      // Refresh button — animates a reload of visible events
-      if (refreshBtn) {
-        refreshBtn.addEventListener('click', function() {
-          var icon = refreshBtn.querySelector('svg');
-          icon.style.animation = 'spin 0.7s linear';
-          refreshBtn.disabled = true;
-          setTimeout(function() {
-            rows.forEach(function(row) {
-              if (row.style.display !== 'none') {
-                row.style.animation = 'none';
-                row.offsetHeight;
-                row.style.animation = 'eventFadeIn 0.4s ease forwards';
-              }
-            });
-            icon.style.animation = '';
-            refreshBtn.disabled = false;
-          }, 700);
-        });
-      }
-
-      var style = document.createElement('style');
-      style.textContent = '@keyframes eventFadeIn { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:translateX(0); } } @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }';
-      document.head.appendChild(style);
-    })();
-  </script>
   <script>
     // GA4 click tracking for donations and volunteer actions
     document.addEventListener('DOMContentLoaded', function() {
