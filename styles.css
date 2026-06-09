@@ -460,6 +460,39 @@ h1, h2, h3, h4, h5 { font-family: var(--font-h); line-height: 1.1; letter-spacin
 }
 
 /* ═══════════════════════════════════════════
+   LANGUAGE TOGGLE  ES | EN
+   ═══════════════════════════════════════════ */
+.lang-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.lang-btn {
+  font-family: var(--font-h);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.45);
+  padding: 0.22rem 0.5rem;
+  transition: color var(--t), border-color var(--t), background var(--t);
+  line-height: 1;
+}
+.lang-btn:hover { color: var(--white); border-color: rgba(255,255,255,0.6); }
+.lang-btn.active { color: var(--white); border-color: var(--green); background: rgba(43,173,109,0.15); }
+.lang-sep { color: rgba(255,255,255,0.2); font-size: 0.75rem; user-select: none; }
+
+/* Suppress Google Translate's own sticky toolbar */
+.goog-te-banner-frame { display: none !important; }
+.goog-te-gadget       { display: none !important; }
+body { top: 0 !important; }
+
+/* ═══════════════════════════════════════════
    CHATBOT WIDGET
    ═══════════════════════════════════════════ */
 #adc-chat {
