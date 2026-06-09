@@ -107,6 +107,7 @@
     .cat--edu    { background: #e8f0fe; color: #1d4ed8; }
     .cat--nutri  { background: #fff3e0; color: #c2410c; }
     .cat--social { background: #fce4ec; color: #b91c1c; }
+    .cat--media  { background: #ede9fe; color: #6d28d9; }
     .blog-card__date {
       font-family: var(--font-h);
       font-size: 0.72rem;
@@ -346,6 +347,7 @@
             <button class="filter-btn" data-filter="edu">Educación</button>
             <button class="filter-btn" data-filter="nutri">Nutrición</button>
             <button class="filter-btn" data-filter="social">Comunidad</button>
+            <button class="filter-btn" data-filter="media">Prensa</button>
           </div>
           <div class="blog-search">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -355,6 +357,24 @@
 
         <!-- Blog Grid -->
         <div class="blog-grid" id="blog-grid" style="grid-template-columns: repeat(2, 1fr);">
+
+          <article class="blog-card reveal" data-cat="media" data-title="prensa medios newsroom panama curundu resiliencia resilience adc reportaje noticia articulo">
+            <div class="blog-card__img" style="aspect-ratio:16/10; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.5rem; background:linear-gradient(135deg,#1f9059 0%,#0d8a4c 100%); color:var(--white);" aria-hidden="true">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg>
+              <span style="font-family:var(--font-h); font-size:0.72rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;">En las noticias</span>
+            </div>
+            <div class="blog-card__body">
+              <div class="blog-card__meta">
+                <span class="blog-card__cat cat--media">Prensa</span>
+                <span class="blog-card__date">12 ago 2025</span>
+              </div>
+              <h3 class="blog-card__title">Newsroom Panamá: lo que se esconde tras la palabra «resiliencia» en Curundú</h3>
+              <p class="blog-card__excerpt">Newsroom Panamá publicó un reportaje sobre Curundú que destaca a la Asociación Deportiva Curundú como «un equipo de fútbol que empodera a la juventud a través del deporte, la educación y la nutrición». El artículo recuerda los inicios de ADC —una sola pelota y setenta niños— y cómo, en diez años, ha atendido a más de 1,200 jóvenes de la comunidad.</p>
+              <a href="https://newsroompanama.com/2025/08/12/curundu-panama-city-what-is-buried-under-the-word-resilience/" target="_blank" rel="noopener" class="blog-card__link">
+                Leer en Newsroom Panamá <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+          </article>
 
           <article class="blog-card reveal" data-cat="sport" data-title="u14 primera victoria mosquera umecit liga">
             <img class="blog-card__img"
