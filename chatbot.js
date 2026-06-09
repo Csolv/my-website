@@ -133,10 +133,18 @@
     toggle.addEventListener('click', function() { isOpen ? closeChat() : openChat(); });
     wrap.querySelector('.ch-close-btn').addEventListener('click', closeChat);
 
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
     function addMsg(who, html) {
       var d = document.createElement('div');
       d.className = 'cm cm--' + who;
-      d.innerHTML = '<div class="cb">' + html + '</div>';
+      // Bot answers are trusted static HTML; user-typed text is escaped to block injection.
+      var content = (who === 'user') ? escapeHtml(html) : html;
+      d.innerHTML = '<div class="cb">' + content + '</div>';
       msgs.appendChild(d);
       msgs.scrollTop = msgs.scrollHeight;
     }
