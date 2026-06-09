@@ -69,7 +69,10 @@
       .values-grid { grid-template-columns:1fr; }
       .tl-item { grid-template-columns:80px 1fr; gap:1rem; }
     }
-    @media(max-width:560px) { .team-grid { grid-template-columns:1fr; } }
+    @media(max-width:560px) {
+      .team-grid { grid-template-columns:1fr; }
+      .achieve-grid { grid-template-columns:1fr !important; }
+    }
   </style>
 </head>
 <body>
@@ -263,7 +266,7 @@
         <p class="section-label reveal">Logros</p>
         <div class="section-divider reveal"></div>
         <h2 class="sub-heading reveal" style="margin-bottom:2rem;">Nuestros logros en cancha</h2>
-        <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem;" class="reveal">
+        <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem;" class="reveal achieve-grid">
           <div style="background:var(--white); border-radius:var(--radius); padding:1.5rem 1.75rem; box-shadow:0 3px 16px rgba(0,0,0,0.07); border-left:4px solid var(--green);">
             <div style="font-family:var(--font-h); font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--green); margin-bottom:0.5rem;">Selección Nacional</div>
             <div style="font-family:var(--font-h); font-size:1.1rem; font-weight:700;">5+ jugadores en la Selección de Panamá</div>
