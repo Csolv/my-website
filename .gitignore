@@ -3,3 +3,10 @@
 
 # Microsoft Office temp / lock files
 ~$*
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
