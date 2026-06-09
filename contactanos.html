@@ -232,17 +232,14 @@
 
     <!-- Email Subscription -->
     <section class="section section--light">
-      <div class="section-inner" style="max-width:640px; text-align:center;">
+      <div class="section-inner" style="max-width:680px; text-align:center;">
         <p class="section-label reveal">Mantente conectado</p>
         <div class="section-divider reveal"></div>
         <h2 class="sub-heading reveal">Suscríbete a nuestras noticias</h2>
         <p class="body-text reveal" style="margin:0.75rem auto 2rem;">Recibe actualizaciones sobre eventos, logros y noticias de ADC directamente en tu correo.</p>
-        <form class="reveal" id="email-sub-form" style="display:flex; gap:0.75rem; flex-wrap:wrap; justify-content:center;" onsubmit="handleSub(event)">
-          <input type="email" id="sub-email" placeholder="tu@correo.com" required
-            style="flex:1; min-width:220px; max-width:340px; padding:0.75rem 1rem; border:1.5px solid var(--border); border-radius:100px; font-size:0.95rem; outline:none;">
-          <button type="submit" class="btn btn--primary" style="border:none; cursor:pointer; border-radius:100px;">Suscríbete</button>
-        </form>
-        <p id="sub-thanks" style="display:none; color:var(--green); font-family:var(--font-h); font-weight:600; margin-top:1rem;">¡Gracias! Te hemos añadido a nuestra lista.</p>
+        <div style="width:100%; max-width:640px; margin:0 auto; overflow:hidden; border-radius:12px; box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+          <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdBWeaUzZQ6PCa1YbmTPJt7RhZi9svIpZ6-iOMniqNwXTTqhw/viewform?embedded=true" width="640" height="421" frameborder="0" marginheight="0" marginwidth="0" style="width:100%; border:0; display:block;" title="Formulario de suscripción ADC">Cargando…</iframe>
+        </div>
       </div>
     </section>
 
@@ -314,11 +311,7 @@
     });
   </script>
   <script>
-    function handleSub(e) {
-      e.preventDefault();
-      document.getElementById('email-sub-form').style.display = 'none';
-      document.getElementById('sub-thanks').style.display = 'block';
-    }
+
   </script>
   <script src="lang.js"></script>
   <script src="https://translate.googleapis.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
