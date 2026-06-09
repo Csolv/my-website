@@ -487,9 +487,10 @@ h1, h2, h3, h4, h5 { font-family: var(--font-h); line-height: 1.1; letter-spacin
 .lang-btn.active { color: var(--white); border-color: var(--green); background: rgba(43,173,109,0.15); }
 .lang-sep { color: rgba(255,255,255,0.2); font-size: 0.75rem; user-select: none; }
 
-/* Suppress Google Translate's own sticky toolbar */
-.goog-te-banner-frame { display: none !important; }
-.goog-te-gadget       { display: none !important; }
+/* Google Translate element must render (not display:none) for the widget to
+   initialize — so move it off-screen instead. Also hide Google's sticky banner. */
+#google_translate_element { position: absolute; left: -9999px; top: -9999px; height: 1px; width: 1px; overflow: hidden; }
+.goog-te-banner-frame, .goog-te-balloon-frame { display: none !important; }
 body { top: 0 !important; }
 
 /* ═══════════════════════════════════════════
