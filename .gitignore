@@ -3,3 +3,22 @@
 
 # Microsoft Office temp / lock files
 ~$*
+
+# ── Secrets & credentials — never commit ──
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+secrets.*
+credentials.*
+service-account*.json
+*.token
+
+# ── Editor / OS noise ──
+.vscode/
+.idea/
+*.log
+Thumbs.db
